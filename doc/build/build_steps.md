@@ -866,9 +866,61 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 **Notas:**
 - Mapeo `icono → @type`: utensils→Restaurant, coffee→CafeOrCoffeeShop, cake→Bakery, pill→Pharmacy, shopping-cart→GroceryStore, heart-pulse→HealthAndBeautyBusiness, briefcase→ProfessionalService, shirt→ClothingStore. Fallback: LocalBusiness
 - Propiedades incluidas: name, url, description (truncado a 300 chars), address (PostalAddress con zona como locality), telephone, email, sameAs (sitio_web), geo (GeoCoordinates si hay lat/lng), image (URL portada si existe)
-- `openingHoursSpecification` omitida — los horarios son texto libre, no datos estructurados (ej: "Lunes a Viernes: 9:00-18:00"), no se puede mapear a opens/closes sin parseo adicional
+- `openingHours` en formato "Mo-Fr HH:MM-HH:MM" generado desde el Repeater estructurado (Paso 36)
+- `specialOpeningHoursSpecification` generado desde horarios especiales activos (Paso 37)
 - Renderizado con `json_encode(..., JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)` para legibilidad
 - Todo el bloque PHP está dentro de `@php ... @endphp` en el `@push('meta')` de la vista
+
+---
+
+### Paso 36 — Horarios estructurado con Repeater ✅
+
+**Objetivo:** Reemplazar el campo `KeyValue` libre de horarios por un selector estructurado de franjas con días y horas, compatible con schema.org.
+
+**Resultado esperado:**
+- Tab "Horarios" en NegocioResource con Repeater de franjas: día inicio, día fin, apertura, cierre, cerrado
+- Formato JSON: `[{dia_inicio, dia_fin, apertura, cierre, cerrado}]`
+- Vista `negocios/show.blade.php` renderiza las franjas
+- JSON-LD incluye `openingHours` en formato "Mo-Fr HH:MM-HH:MM"
+
+**Criterio de terminado:**
+- Se puede cargar una franja de horario desde el admin ✅
+- La ficha del negocio muestra los horarios correctamente ✅
+- El JSON-LD incluye `openingHours` con formato válido ✅
+
+**Notas:**
+- Repeater con `Select` (Lunes–Domingo, `->native(false)`), `TimePicker` (sin segundos), `Toggle` cerrado (`->live()`)
+- `TimePicker` apertura/cierre con `->visible(fn(Get $get) => !$get('cerrado'))` — condicional por item
+- `use Filament\Forms\Get;` importado en NegocioResource
+- Mapeo día ES→schema.org: Lunes→Mo, Martes→Tu, Miércoles→We, Jueves→Th, Viernes→Fr, Sábado→Sa, Domingo→Su
+- NegocioSeeder actualizado con el nuevo formato estructurado
+
+---
+
+### Paso 37 — Horarios especiales (fechas puntuales activables) ✅
+
+**Objetivo:** Permitir cargar fechas especiales (feriados, eventos) con horario diferencial, activables y desactivables sin eliminarlas.
+
+**Resultado esperado:**
+- Columna `horarios_especiales` (JSON nullable) en tabla `negocios`
+- Section colapsable "Fechas especiales" dentro del tab Horarios de NegocioResource
+- Repeater: nombre libre, DatePicker, toggle se_repite anualmente, toggle activo, toggle cerrado + TimePickers condicionales
+- Vista muestra solo fechas activas, ordenadas por próxima ocurrencia
+- JSON-LD incluye `specialOpeningHoursSpecification` con las fechas activas
+
+**Criterio de terminado:**
+- Se puede cargar una fecha especial desde el admin ✅
+- Toggle activo/inactivo sin eliminar el registro ✅
+- Fecha anual se recalcula al año siguiente si ya pasó ✅
+- JSON-LD incluye `specialOpeningHoursSpecification` ✅
+
+**Notas:**
+- Migration: `horarios_especiales` JSON nullable after `horarios`
+- Model: `horarios_especiales` en `$fillable` y `$casts` como `array`
+- Section con `->collapsible()->collapsed()` en el form
+- `->visible(fn(Get $get) => !$get('cerrado'))` para TimePickers dentro del Repeater de especiales
+- Carbon: `setYear(now()->year)` + `addYear()` si la fecha ya pasó → próxima ocurrencia
+- `translatedFormat('j \d\e F')` para mostrar en español (requiere `APP_LOCALE=es`)
 
 ---
 
