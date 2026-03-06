@@ -17,7 +17,9 @@
                     class="px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-700 outline-none cursor-pointer focus:border-amber-400 transition-colors">
                 <option value="">📍 Elegí una zona...</option>
                 @foreach($zonas as $zona)
-                    <option value="{{ $zona->id }}">{{ $zona->nombre }}</option>
+                    <option value="{{ $zona->id }}" {{ $zonaInicial == $zona->id ? 'selected' : '' }}>
+                        {{ $zona->nombre }}
+                    </option>
                 @endforeach
             </select>
 
@@ -44,8 +46,8 @@
     </div>
 </div>
 
-{{-- Mapa --}}
-<div class="relative w-full" style="height: 520px;">
+{{-- Mapa: 55vh para que siempre se vea el listado debajo --}}
+<div class="relative w-full" style="height: clamp(320px, 55vh, 500px);">
     <div id="mapa-pagina" class="absolute inset-0"></div>
     {{-- Pill de estado --}}
     <div id="mapa-estado"
@@ -96,6 +98,8 @@
     var negocios = @json($negocios);
 
     // ── Mapa ─────────────────────────────────────────────────────────────────
+    var zonaInicial = {{ $zonaInicial ?? 'null' }};
+
     var map = L.map('mapa-pagina', {
         center: [-34.7667, -55.7621],
         zoom: 13,
@@ -291,6 +295,13 @@
 
     // Actualizar lista al mover/zoom el mapa
     map.on('moveend', actualizarLista);
+
+    // ── Auto-aplicar zona inicial (desde ?zona=ID) ────────────────────────────
+    if (zonaInicial) {
+        zonaActiva = zonaInicial;
+        document.getElementById('extra-filtros').classList.remove('hidden');
+        aplicarFiltros();
+    }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     function esc(str) {

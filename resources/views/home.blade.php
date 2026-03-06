@@ -182,7 +182,7 @@
                     </select>
 
                     <div class="mt-auto">
-                        <a href="{{ route('mapa.index') }}"
+                        <a id="btn-ver-mapa" href="{{ route('mapa.index') }}"
                            class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm">
                             Ver mapa completo
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,11 +216,8 @@
             <a href="{{ route('categorias.show', $categoria) }}"
                class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 transition-all duration-200 p-5 flex flex-col items-center text-center">
 
-                {{-- Ícono placeholder 48×48 px amber — reemplazar con SVG propio --}}
                 <div class="mb-3 w-12 h-12 flex items-center justify-center text-amber-500">
-                    <svg viewBox="0 0 48 48" fill="currentColor" width="48" height="48" aria-hidden="true">
-                        <rect x="6" y="6" width="36" height="36" rx="10"/>
-                    </svg>
+                    <x-cat-icon :name="$categoria->icono ?? 'default'" class="w-12 h-12" />
                 </div>
 
                 {{-- Nombre --}}
@@ -330,6 +327,12 @@
         zonaSelect.addEventListener('change', function () {
             var zonaId = this.value ? parseInt(this.value) : null;
             var bounds = [];
+
+            // Actualizar href del botón "Ver mapa completo"
+            var btnMapa = document.getElementById('btn-ver-mapa');
+            if (btnMapa) {
+                btnMapa.href = zonaId ? '/mapa?zona=' + zonaId : '/mapa';
+            }
 
             allMarkers.forEach(function (m) {
                 if (!zonaId || m.negocioZona === zonaId) {

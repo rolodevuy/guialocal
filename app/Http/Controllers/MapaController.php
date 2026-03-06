@@ -21,6 +21,8 @@ class MapaController extends Controller
             ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'descripcion', 'categoria_id', 'zona_id'])
             ->get();
 
-        return view('mapa', compact('zonas', 'categorias', 'negocios'));
+        $zonaInicial = request()->integer('zona') ?: null;
+
+        return view('mapa', compact('zonas', 'categorias', 'negocios', 'zonaInicial'));
     }
 }

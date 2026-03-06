@@ -26,7 +26,7 @@ class HomeController extends Controller
             ->whereNotNull('lat')
             ->whereNotNull('lng')
             ->with('categoria')
-            ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'categoria_id'])
+            ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'categoria_id', 'zona_id'])
             ->get();
 
         return view('home', compact('destacados', 'categorias', 'zonas', 'negocios_mapa'));

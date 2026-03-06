@@ -18,7 +18,11 @@
     </nav>
 
     {{-- Header categoría --}}
-    <div class="mb-8">
+    <div class="mb-8 flex items-center gap-4">
+        <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0 text-amber-500">
+            <x-cat-icon :name="$categoria->icono ?? 'default'" class="w-8 h-8" />
+        </div>
+        <div>
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">{{ $categoria->nombre }}</h1>
         @if($categoria->descripcion)
             <p class="text-gray-500 mt-2 text-base">{{ $categoria->descripcion }}</p>
@@ -26,7 +30,8 @@
         <p class="text-sm text-gray-400 mt-1">
             {{ $negocios->total() }} {{ $negocios->total() === 1 ? 'negocio' : 'negocios' }} encontrados
         </p>
-    </div>
+        </div>{{-- /texto --}}
+    </div>{{-- /header --}}
 
     {{-- Grid de negocios --}}
     @if($negocios->isNotEmpty())

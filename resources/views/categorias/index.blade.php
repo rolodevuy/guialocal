@@ -21,11 +21,8 @@
             @foreach($categorias as $categoria)
             <a href="{{ route('categorias.show', $categoria) }}"
                class="group bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-amber-200 transition-all text-center flex flex-col items-center gap-3">
-                <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center group-hover:bg-amber-100 transition-colors">
-                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                    </svg>
+                <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center group-hover:bg-amber-100 transition-colors text-amber-500">
+                    <x-cat-icon :name="$categoria->icono ?? 'default'" class="w-7 h-7" />
                 </div>
                 <div>
                     <p class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors text-sm leading-tight">

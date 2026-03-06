@@ -659,6 +659,115 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+---
+
+## Bloque 8 — Home redesign + Mapas
+
+---
+
+### Paso 28 — Rediseño completo de la Home ✅
+
+**Objetivo:** Reemplazar la home básica por un diseño de producción con secciones diferenciadas.
+
+**Resultado esperado:**
+- Hero con buscador + 3 quick actions (overlap visual hacia la sección siguiente)
+- Sección destacados (3 negocios con `featured=true`)
+- Sección mapa (card imagen + Leaflet)
+- Sección categorías (grid con ícono + count)
+- Sección CTA registro
+
+**Criterio de terminado:**
+- Home carga con HTTP 200 ✅
+- Círculos de quick actions visualmente a mitad entre hero y destacados ✅
+- Mapa Leaflet con CartoDB Voyager visible ✅
+- Categorías muestran ícono desde `<x-cat-icon>` ✅
+
+**Notas:**
+- Overlap: `absolute left-1/2 bottom-0 z-30 -translate-x-1/2 translate-y-1/2` en el contenedor de círculos dentro del hero (`position: relative`)
+- Layout: `@stack('styles')` y `@stack('scripts')` agregados a `layouts/app.blade.php`
+- HomeController: destacados limitados a 3, agrega `$negocios_mapa` (negocios con lat+lng) y `$zonas`
+- Tailwind v4 quirk: `h-1/2` en flex compila como `height: 50%` — solución: usar `h-40` (explícito)
+- `npm run build` requerido después de agregar nuevas clases de Tailwind
+- Quick actions: "Buscar negocios" → `/negocios`, "Ver en el mapa" → `/mapa`, "Explorar categorías" → `/categorias`
+
+---
+
+### Paso 29 — Mapa interactivo en admin (Filament) ✅
+
+**Objetivo:** Reemplazar los inputs manuales de lat/lng por un mapa clickeable en el form de NegocioResource.
+
+**Resultado esperado:**
+- Tab "Ubicación" en NegocioResource muestra mapa Leaflet
+- Click en el mapa fija el marcador y actualiza lat/lng vía `$wire`
+- Marcador arrastrable para ajustar posición
+- Inputs lat/lng en modo solo lectura muestran el valor actual
+
+**Criterio de terminado:**
+- Mapa carga en `/admin/negocios/create` ✅
+- Click en mapa actualiza los campos lat/lng del form ✅
+- Drag del marcador también actualiza lat/lng ✅
+
+**Notas:**
+- Componente: `resources/views/filament/forms/components/map-picker.blade.php`
+- Lógica JS en `<script>` con `window.mapPickerData = function(){}` — NO en `x-data=""` (las comillas rompen el parser de Alpine)
+- `wire:ignore` en el div del mapa para evitar re-render de Livewire
+- Carga de Leaflet dinámica vía JS (no @push) para compatibilidad con Livewire navigate
+- `$wire.data.lat` / `$wire.data.lng` accesibles desde Alpine mediante `this.$wire`
+- Scroll wheel zoom: activo solo en mouseenter, desactivado en mouseleave
+
+---
+
+### Paso 30 — Página /mapa completa con filtros ✅
+
+**Objetivo:** Tener una página dedicada al mapa con filtros en cascada y lista de negocios visibles.
+
+**Resultado esperado:**
+- Ruta `GET /mapa` → `MapaController@index`
+- Barra sticky: select zona (paso 1) → al elegir zona aparecen select categoría + buscador
+- Mapa Leaflet full-width con pines reales de negocios
+- Al elegir zona: oculta otros pines + hace fitBounds + muestra filtros extra
+- Pill flotante con count de pines activos
+- Lista debajo: negocios visibles en el viewport, se actualiza en moveend
+- Integración con home: select zona en home filtra pines y actualiza href "Ver mapa completo → /mapa?zona=ID"
+- Al abrir /mapa?zona=ID: pre-selecciona la zona y auto-aplica el filtro
+
+**Criterio de terminado:**
+- `/mapa` carga HTTP 200 ✅
+- Filtro de zona hace zoom a la zona ✅
+- Lista de negocios se actualiza al mover el mapa ✅
+- Zona persiste al navegar desde home ✅
+
+**Notas:**
+- `MapaController`: pasa `$zonas`, `$categorias`, `$negocios` (con lat/lng), `$zonaInicial` desde `request()->integer('zona')`
+- Pines: tooltips en hover (nombre), popup en click (nombre, categoría, link)
+- Altura del mapa: `clamp(320px, 55vh, 500px)` para que siempre se vea contenido debajo
+- Marcadores tienen propiedades `negocioZona`, `negocioCat`, `negocioNombre` para filtrado en JS sin requests al servidor
+- `esc()` helper para sanitizar strings en el HTML del popup
+
+---
+
+### Paso 31 — Componente x-cat-icon en todas las vistas ✅
+
+**Objetivo:** Unificar el uso de íconos de categoría con el componente `<x-cat-icon>` en todo el sitio.
+
+**Resultado esperado:**
+- `<x-cat-icon :name="$categoria->icono">` disponible en home, /categorias y /categorias/{slug}
+- 8 íconos mapeados por nombre: coffee, pill, shirt, cake, utensils, heart-pulse, briefcase, shopping-cart
+- Fallback a ícono genérico si el nombre no existe
+
+**Criterio de terminado:**
+- Home muestra íconos diferenciados por categoría ✅
+- `/categorias` muestra íconos en las cards ✅
+- `/categorias/{slug}` muestra ícono en el header ✅
+
+**Notas:**
+- Componente en `resources/views/components/cat-icon.blade.php`
+- `viewBox="0 0 24 24"`, `stroke="currentColor"` — escala a cualquier tamaño con clase CSS
+- Tamaños usados: `w-12 h-12` (home), `w-7 h-7` (categorias/index), `w-8 h-8` (categorias/show header)
+- Los paths SVG actuales son placeholders de Heroicons — el usuario los reemplazará con SVGs propios en 48×48
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
