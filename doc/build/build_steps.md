@@ -83,7 +83,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 4 — Migración y modelo Categoria
+### Paso 4 — Migración y modelo Categoria ✅
 
 **Objetivo:** Tener la entidad Categoría persistible y accesible vía Eloquent.
 
@@ -95,6 +95,14 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 **Criterio de terminado:**
 - `php artisan migrate` corre sin errores
 - `Categoria::create([...])` funciona en tinker
+
+**Notas:**
+- Tabla `categorias`: `nombre`, `slug` (unique), `descripcion` (nullable), `icono` (nullable), `activo` (bool, default true)
+- `HasSlug` genera slug desde `nombre` automáticamente
+- `getRouteKeyName()` retorna `slug` (para rutas `/categorias/{slug}`)
+- Scope `activo()` filtra por `activo = true`
+- Relación `hasMany(Negocio::class)` declarada (Negocio aún no existe, se resuelve en Paso 6)
+- Verificado con tinker: `Categoria::create(['nombre' => 'Restaurantes', ...])` genera slug `restaurantes` automáticamente
 
 ---
 
