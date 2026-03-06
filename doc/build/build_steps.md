@@ -495,7 +495,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 21 — Página "quiénes somos"
+### Paso 21 — Página "quiénes somos" ✅
 
 **Objetivo:** Tener la página estática institucional.
 
@@ -504,8 +504,13 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Vista `pages/about.blade.php` con contenido del proyecto
 
 **Criterio de terminado:**
-- `/quienes-somos` carga sin errores
-- El layout (nav y footer) está presente
+- `/quienes-somos` carga sin errores ✅
+- El layout (nav y footer) está presente ✅
+
+**Notas:**
+- Secciones: misión, cómo funciona, para negocios (con íconos amber)
+- Sidebar: stats en tiempo real (negocios/categorías/zonas con queries directas en la vista) + CTA registrar negocio
+- Stats usan `App\Models\*::count()` directamente desde la vista (página estática, no requiere controller)
 
 ---
 

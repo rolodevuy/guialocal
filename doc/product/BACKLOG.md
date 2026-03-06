@@ -27,7 +27,7 @@ Referencia detallada de pasos: [build_steps.md](../build/build_steps.md)
 - [x] Página de categoría (Paso 18 ✅)
 - [x] Página de zona (Paso 19 ✅)
 - [x] Página de contacto con formulario (Paso 20 ✅)
-- [ ] Página "quiénes somos" (Paso 21)
+- [x] Página "quiénes somos" (Paso 21 ✅)
 
 ---
 
