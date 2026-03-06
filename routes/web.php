@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticuloController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\HomeController;
@@ -20,6 +21,9 @@ Route::get('/categorias', [CategoriaController::class, 'index'])->name('categori
 Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->name('categorias.show');
 
 Route::get('/zonas/{zona}', [ZonaController::class, 'show'])->name('zonas.show');
+
+Route::get('/articulos', [ArticuloController::class, 'index'])->name('articulos.index');
+Route::get('/articulos/{articulo}', [ArticuloController::class, 'show'])->name('articulos.show');
 
 Route::get('/contacto', [ContactoController::class, 'show'])->name('contacto.show');
 Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
