@@ -166,7 +166,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 8 — Seeders de datos de prueba
+### Paso 8 — Seeders de datos de prueba ✅
 
 **Objetivo:** Tener datos realistas para desarrollar y probar el frontend.
 
@@ -176,9 +176,17 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - `NegocioSeeder`: 20 negocios distribuidos en categorías y zonas, con `featured` en algunos
 
 **Criterio de terminado:**
-- `php artisan db:seed` corre sin errores
-- `Negocio::count()` retorna 20 en tinker
-- Hay al menos 3 negocios con `featured = true`
+- `php artisan db:seed` corre sin errores ✅
+- `Negocio::count()` retorna 20 en tinker ✅
+- Hay al menos 3 negocios con `featured = true` ✅ (4 featured)
+
+**Notas:**
+- `DatabaseSeeder` deshabilita FK checks para permitir truncate en orden: Categoria → Zona → Negocio
+- `NegocioSeeder` resuelve IDs de categoria/zona por slug con `pluck('id', 'slug')` — sin IDs hardcodeados
+- 8 categorías: Restaurantes, Cafés y Bares, Panaderías y Pastelerías, Farmacias, Supermercados, Salud y Bienestar, Servicios Profesionales, Indumentaria y Calzado
+- 5 zonas: Centro, Villa del Parque, Palermo, San Telmo, Belgrano
+- 20 negocios con planes mixtos (gratuito/basico/premium) y 4 featured
+- Verificado: `Negocio::count()` → 20, `Negocio::featured()->count()` → 4
 
 ---
 

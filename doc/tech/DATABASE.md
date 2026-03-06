@@ -18,6 +18,16 @@ Esquema de la base de datos del proyecto. Motor: MariaDB 10.x vía XAMPP.
 | `negocios` | ✅ creada | Paso 6 |
 | `consultas` | ✅ creada | Paso 7 |
 
+## Datos de prueba (Seeders — Paso 8 ✅)
+
+| Tabla | Registros |
+|---|---|
+| `categorias` | 8 |
+| `zonas` | 5 |
+| `negocios` | 20 (4 featured) |
+
+Comando: `php artisan db:seed`
+
 ---
 
 ## Esquema detallado
@@ -37,7 +47,7 @@ CREATE TABLE categorias (
 );
 ```
 
-### zonas (pendiente — Paso 5)
+### zonas ✅
 
 ```sql
 CREATE TABLE zonas (
@@ -49,7 +59,7 @@ CREATE TABLE zonas (
 );
 ```
 
-### negocios (pendiente — Paso 6)
+### negocios ✅
 
 ```sql
 CREATE TABLE negocios (
@@ -76,7 +86,7 @@ CREATE TABLE negocios (
 );
 ```
 
-### consultas (pendiente — Paso 7)
+### consultas ✅
 
 ```sql
 CREATE TABLE consultas (
