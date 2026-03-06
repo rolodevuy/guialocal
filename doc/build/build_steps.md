@@ -971,6 +971,34 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+## Bloque 11 — Capa editorial
+
+---
+
+### Paso 40 — Modelo Articulo + Resource Filament + frontend ✅
+
+**Objetivo:** Tener una sección editorial de artículos gestionable desde el admin y visible en el sitio público.
+
+**Resultado esperado:**
+- Tabla `articulos` con titulo, slug, extracto, cuerpo (rich text), publicado, publicado_en, categoria_id, negocio_id
+- Modelo `Articulo` con HasSlug, HasMedia (portada), scopePublicado, relaciones a Categoria y Negocio
+- `ArticuloResource` en Filament con tabs: Contenido (RichEditor), Imagen, Relaciones, Configuración
+- Frontend: `/articulos` (listado paginado) + `/articulos/{slug}` (detalle)
+
+**Criterio de terminado:**
+- Se puede crear un artículo con rich text desde `/admin/articulos` ✅
+- Solo artículos publicados son visibles en el frontend ✅
+- Link "Artículos" en el nav (desktop y mobile) ✅
+
+**Notas:**
+- `RichEditor` nativo de Filament (sin paquetes extra) con toolbar reducida: h2, h3, bold, italic, lists, link, blockquote
+- Slug auto-generado desde titulo con `->live(onBlur: true)` + `afterStateUpdated(Str::slug)`
+- Vista detalle usa clases Tailwind `prose` para el contenido del cuerpo
+- Negocio relacionado se muestra como card al pie del artículo
+- `publicado_en` puede ser nulo; se ordenan por `publicado_en DESC, created_at DESC`
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

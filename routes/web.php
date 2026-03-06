@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ArticuloController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MapaController;
@@ -31,3 +32,4 @@ Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.s
 Route::get('/quienes-somos', [PageController::class, 'about'])->name('quienes-somos');
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/feed', [FeedController::class, 'index'])->name('feed');

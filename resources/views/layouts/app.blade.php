@@ -15,6 +15,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('title', 'Guía Local — Tu barrio en un solo lugar')">
     <meta property="og:description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
+    <link rel="alternate" type="application/rss+xml" title="{{ config('app.name') }} — Artículos" href="{{ route('feed') }}">
     @stack('meta')
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -47,6 +48,10 @@
                     <a href="{{ route('categorias.index') }}"
                        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('categorias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
                         Categorías
+                    </a>
+                    <a href="{{ route('articulos.index') }}"
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('articulos.*') ? 'text-amber-600 bg-amber-50' : '' }}">
+                        Artículos
                     </a>
                     <a href="{{ route('contacto.show') }}"
                        class="ml-2 px-4 py-2 rounded-lg text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors">
@@ -98,6 +103,10 @@
                 <a href="{{ route('categorias.index') }}" @click="open = false"
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                     Categorías
+                </a>
+                <a href="{{ route('articulos.index') }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                    Artículos
                 </a>
                 <a href="{{ route('contacto.show') }}" @click="open = false"
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors">
