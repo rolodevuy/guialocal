@@ -12,6 +12,8 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Support\Str;
 
 class NegocioResource extends Resource
@@ -137,6 +139,29 @@ class NegocioResource extends Resource
                                     ->default(true)
                                     ->helperText('Solo los negocios activos son visibles en el sitio.'),
                             ]),
+
+                        Forms\Components\Tabs\Tab::make('Imágenes')
+                            ->icon('heroicon-o-photo')
+                            ->schema([
+                                SpatieMediaLibraryFileUpload::make('portada')
+                                    ->label('Imagen de portada')
+                                    ->collection('portada')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->maxSize(2048)
+                                    ->helperText('Imagen principal del negocio. Máx 2MB.')
+                                    ->columnSpanFull(),
+                                SpatieMediaLibraryFileUpload::make('galeria')
+                                    ->label('Galería')
+                                    ->collection('galeria')
+                                    ->image()
+                                    ->multiple()
+                                    ->reorderable()
+                                    ->maxFiles(10)
+                                    ->maxSize(2048)
+                                    ->helperText('Hasta 10 imágenes. Podés reordenarlas arrastrando.')
+                                    ->columnSpanFull(),
+                            ]),
                     ])
                     ->columnSpanFull(),
             ]);
@@ -146,6 +171,11 @@ class NegocioResource extends Resource
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('portada')
+                    ->label('')
+                    ->collection('portada')
+                    ->circular()
+                    ->defaultImageUrl(fn () => 'https://ui-avatars.com/api/?name=N&background=f59e0b&color=fff&size=64'),
                 Tables\Columns\TextColumn::make('nombre')
                     ->label('Negocio')
                     ->searchable()

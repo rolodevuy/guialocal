@@ -266,7 +266,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 12 — Imágenes de negocio en Filament
+### Paso 12 — Imágenes de negocio en Filament ✅
 
 **Objetivo:** Poder subir y gestionar imágenes de cada negocio desde el admin.
 
@@ -276,9 +276,18 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Imágenes almacenadas en `storage/app/public`
 
 **Criterio de terminado:**
-- Se puede subir una imagen de portada y múltiples de galería
-- Las imágenes se ven en el form de edición
-- `$negocio->getFirstMediaUrl('portada')` retorna URL válida en tinker
+- Se puede subir una imagen de portada y múltiples de galería ✅
+- Las imágenes se ven en el form de edición ✅
+- `$negocio->getFirstMediaUrl('portada')` retorna URL válida en tinker ✅
+
+**Notas:**
+- Plugin instalado: `filament/spatie-laravel-media-library-plugin ^3.2`
+- Tab "Imágenes" agregado al form de NegocioResource
+- `portada`: `SpatieMediaLibraryFileUpload` con `imageEditor()`, máx 2MB
+- `galeria`: múltiple, reorderable, máx 10 imágenes, máx 2MB c/u
+- Columna `SpatieMediaLibraryImageColumn` circular en la tabla (thumbnail)
+- `php artisan storage:link` ejecutado — symlink `public/storage` creado
+- Imagen por defecto en tabla: avatar generado con ui-avatars.com
 
 ---
 
