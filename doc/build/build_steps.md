@@ -54,7 +54,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 3 — Instalar paquetes base
+### Paso 3 — Instalar paquetes base ✅
 
 **Objetivo:** Tener todos los paquetes del stack MVP instalados y publicados.
 
@@ -68,6 +68,14 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - `composer show` lista los paquetes sin errores
 - `npm run build` compila sin errores
 - Migraciones de Media Library corridas sin errores
+
+**Notas:**
+- `spatie/laravel-medialibrary` v11.21 — migración `create_media_table` corrida
+- `laravel/scout` v10.24 — config publicada en `config/scout.php`, `SCOUT_DRIVER=database` en `.env`
+- `spatie/laravel-sluggable` v3.8
+- Tailwind CSS v4 ya venía incluido en Laravel 12 via `@tailwindcss/vite` (no requirió instalación extra)
+- Alpine.js v3.15 instalado como dependencia npm, inicializado en `resources/js/app.js`
+- `npm run build` genera 39KB CSS + 83KB JS sin errores
 
 ---
 
