@@ -768,6 +768,83 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+## Bloque 9 — Mejoras de contenido y admin
+
+---
+
+### Paso 32 — Logo de negocio ✅
+
+**Objetivo:** Permitir subir un logo opcional por negocio que se muestre en la ficha de detalle.
+
+**Resultado esperado:**
+- Colección `logo` (singleFile) en el modelo Negocio
+- Campo de upload en el tab "Imágenes" de NegocioResource
+- Sidebar de `negocios/show` muestra el logo si existe, no cambia nada si no
+
+**Criterio de terminado:**
+- Se puede subir logo desde el admin ✅
+- El logo aparece en el sidebar de la ficha del negocio ✅
+- Si no hay logo, la página se ve igual que antes ✅
+
+**Notas:**
+- Colección `logo` con `->singleFile()` registrada antes de `portada` en `registerMediaCollections()`
+- Campo en Filament: `SpatieMediaLibraryFileUpload` con `imageEditor()`, máx 1MB
+- Vista: `@if($negocio->hasMedia('logo'))` → `<img class="max-h-20 ... rounded-2xl">`
+- Aparece al inicio del sidebar, antes de la sección "Contacto"
+
+---
+
+### Paso 33 — Filtros cruzados zona↔categoría ✅
+
+**Objetivo:** Agregar filtros por localidad en la página de categoría y filtros por categoría en la página de zona.
+
+**Resultado esperado:**
+- `/categorias/{slug}`: pills de filtro por zona (solo zonas con negocios en esa categoría)
+- `/zonas/{slug}`: pills de filtro por categoría (solo categorías con negocios en esa zona)
+- Pills activos resaltados en amber, filtro mantiene query string en paginación
+
+**Criterio de terminado:**
+- Filtro por zona en categorias/show funciona ✅
+- Filtro por categoría en zonas/show funciona ✅
+- Solo aparecen las pills que tienen negocios reales ✅
+- Pills desaparecen si solo hay una opción (zonas/show) ✅
+
+**Notas:**
+- `CategoriaController@show`: `$zonaId = request()->integer('zona') ?: null`, `->when($zonaId, ...)`, `->withQueryString()`
+- `$zonas` filtradas con `whereHas('negocios', fn($q) => $q->activo()->where('categoria_id', $categoria->id))`
+- `ZonaController@show`: misma lógica inversa para categorías
+- Pills: `@if($categorias->count() > 1)` en zonas/show (no tiene sentido mostrar filtro con una sola opción)
+- Placeholder de cards sin portada mejorado: gradiente amber-50→amber-100 con `<x-cat-icon>` centrado
+
+---
+
+### Paso 34 — Consultas en admin + notificación email ✅
+
+**Objetivo:** Ver los mensajes del formulario de contacto en el panel admin y recibir notificación por email.
+
+**Resultado esperado:**
+- `ConsultaResource` en Filament con badge de no leídos en el nav
+- Vista de consulta con mensaje completo, toggle "marcar leído/no leído"
+- Email automático a `MAIL_ADMIN` al recibir una consulta nueva
+
+**Criterio de terminado:**
+- Las consultas aparecen en `/admin/consultas` ✅
+- Badge naranja muestra el count de no leídas ✅
+- Toggle de leído funciona desde la tabla ✅
+- Email se envía al guardar la consulta (va al log en desarrollo) ✅
+
+**Notas:**
+- `ConsultaResource`: solo ruta `index` (sin create ni edit), `ViewAction` para leer completo
+- Badge: `getNavigationBadge()` + `getNavigationBadgeColor()` = `warning`
+- Ícono nav: `heroicon-o-envelope`, sort 10
+- `Mail\NuevaConsulta`: Mailable con markdown `emails/nueva-consulta.blade.php`
+- Email incluye nombre, email, mensaje y botón "Ver en el panel" → `/admin/consultas`
+- `config/app.php`: `admin_email => env('MAIL_ADMIN', 'admin@example.com')`
+- `.env`: `MAIL_ADMIN="rolodev.uy@gmail.com"`, `MAIL_FROM_ADDRESS="no-reply@guialocal.test"`
+- En producción: cambiar `MAIL_MAILER=log` a `smtp` con credenciales reales
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
