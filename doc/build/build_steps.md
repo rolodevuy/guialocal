@@ -194,7 +194,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 9 — Resource Categoría en Filament
+### Paso 9 — Resource Categoría en Filament ✅
 
 **Objetivo:** Poder crear, editar y eliminar categorías desde el admin.
 
@@ -204,9 +204,17 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Filtros y búsqueda en la tabla
 
 **Criterio de terminado:**
-- Desde `/admin/categorias` se puede crear una categoría nueva
-- El slug se genera automáticamente al escribir el nombre
-- La categoría aparece en el listado
+- Desde `/admin/categorias` se puede crear una categoría nueva ✅
+- El slug se genera automáticamente al escribir el nombre ✅
+- La categoría aparece en el listado ✅
+
+**Notas:**
+- Slug se genera en el form con `->live(onBlur: true)` + `afterStateUpdated()` usando `Str::slug()`
+- Columna `negocios_count` con `->counts('negocios')` muestra cantidad por categoría
+- `TernaryFilter` para filtrar por `activo`
+- Ícono de nav: `heroicon-o-tag`, sort 1
+- Labels en español: Categoría / Categorías
+- Rutas: `/admin/categorias`, `/admin/categorias/create`, `/admin/categorias/{id}/edit`
 
 ---
 
