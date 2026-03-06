@@ -130,6 +130,47 @@ Renderiza el SVG de categoría según el campo `icono` del modelo Categoria.
 
 ---
 
+### Pills de filtro (zona / categoría)
+
+Barra horizontal de pills sobre el grid de negocios, en páginas de categoría y zona.
+Solo se renderizan si hay más de una opción disponible.
+
+```html
+<div class="mb-6 flex flex-wrap items-center gap-2">
+    <!-- Pill activa -->
+    <a href="..." class="px-4 py-1.5 rounded-full text-sm font-medium bg-amber-500 text-white transition-colors">
+        Todas
+    </a>
+    <!-- Pill inactiva -->
+    <a href="..." class="px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
+        Zona / Categoría
+    </a>
+</div>
+```
+
+| Estado   | Clases                                        |
+|----------|-----------------------------------------------|
+| Activa   | `bg-amber-500 text-white`                     |
+| Inactiva | `bg-gray-100 text-gray-600 hover:bg-gray-200` |
+
+---
+
+### Logo en sidebar de ficha
+
+El logo se muestra solo si el negocio tiene media en la colección `logo`. Se centra y tiene altura máxima para evitar logos gigantes.
+
+```html
+@if($negocio->hasMedia('logo'))
+<div class="flex justify-center pb-1">
+    <img src="{{ $negocio->getFirstMediaUrl('logo') }}"
+         alt="Logo {{ $negocio->nombre }}"
+         class="max-h-20 max-w-full object-contain rounded-2xl">
+</div>
+@endif
+```
+
+---
+
 ### Card de negocio
 
 ```html
@@ -144,6 +185,13 @@ Renderiza el SVG de categoría según el campo `icono` del modelo Categoria.
         </div>
     </div>
 </a>
+```
+
+**Placeholder (sin portada):** fondo degradado `from-amber-50 to-amber-100` con `<x-cat-icon>` centrado en `text-amber-300`:
+```html
+<div class="h-48 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center">
+    <x-cat-icon :name="$negocio->categoria->icono ?? 'default'" class="w-14 h-14 text-amber-300" />
+</div>
 ```
 
 Badge PREMIUM:
@@ -269,6 +317,8 @@ Link inactivo: `text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg px
 | Card negocio       | `shadow-sm border-gray-100`| `shadow-lg`                  |
 | Card categoría     | `border-gray-100`          | `border-amber-200 shadow-md` |
 | Filtro activo      | `bg-amber-50 text-amber-700 font-semibold` | —          |
+| Pill filtro activa | `bg-amber-500 text-white`                  | —          |
+| Pill filtro inact. | `bg-gray-100 text-gray-600`               | `hover:bg-gray-200` |
 
 ---
 
@@ -301,8 +351,8 @@ Todos los íconos del sistema usan **Heroicons v2 outline**:
 
 ## Pendientes / mejoras futuras
 
-- [ ] Íconos de categoría más específicos (tenedor+cuchillo, taza, etc.)
+- [ ] Íconos de categoría más específicos (tenedor+cuchillo, taza, etc.) — usuario diseñará SVGs propios
 - [ ] Modo oscuro con `dark:` de Tailwind
 - [ ] Componente Blade `<x-negocio-card>` reutilizable
 - [ ] Evaluar Inter vs Instrument Sans en pantalla
-- [ ] Tokens de color como variables CSS en `app.css`
+- [x] Tokens de color como variables CSS en `app.css` (`--color-marca`, `--color-marca-oscuro`, `--color-marca-claro`)

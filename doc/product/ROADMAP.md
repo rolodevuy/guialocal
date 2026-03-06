@@ -4,37 +4,43 @@ Evolución planificada por etapas. Cada etapa es funcional y desplegable de form
 
 ---
 
-## Etapa 1 — Directorio base (MVP)
+## Etapa 1 — Directorio base (MVP) ✅
 
-**Stack activo:** Laravel 11 · Filament v3 · Blade · Tailwind CSS · MySQL
+**Stack activo:** Laravel 12 · Filament v3 · Blade · Tailwind CSS v4 · Alpine.js · MariaDB
 
-| Feature | Detalle técnico |
-|---|---|
-| Modelo de datos base | Migraciones: `negocios`, `categorias`, `zonas`, `imagenes` |
-| Panel admin | Filament v3: Resources para Negocio, Categoría, Zona |
-| Carga de imágenes | Spatie Media Library |
-| Página home | Blade + negocios destacados (scope `featured`) |
-| Listado de negocios | Paginación Laravel, filtro por categoría y zona |
-| Página detalle | Ruta `/negocios/{slug}` con SEO meta básico |
-| Búsqueda básica | Laravel Scout + MySQL fulltext driver |
-| Página contacto | Formulario → tabla `consultas`, mail con Mailable |
-| Página "quiénes somos" | Blade estático |
-| Diseño responsive | Tailwind CSS + Alpine.js para interacciones mínimas |
+| Feature | Estado | Detalle técnico |
+|---|---|---|
+| Modelo de datos base | ✅ | Migraciones: `negocios`, `categorias`, `zonas`, `consultas` |
+| Panel admin | ✅ | Filament v3: Negocio, Categoría, Zona, Consulta |
+| Carga de imágenes | ✅ | Spatie Media Library: logo, portada, galería |
+| Página home | ✅ | Hero + quick-actions overlap + destacados + mapa + categorías |
+| Listado de negocios | ✅ | Paginación, filtro por categoría y zona |
+| Página detalle | ✅ | `/negocios/{slug}` con logo, galería, sidebar contacto |
+| Búsqueda básica | ✅ | Laravel Scout + MySQL fulltext driver |
+| Página contacto | ✅ | Formulario → `consultas` + email a admin (Mailable) |
+| Consultas en admin | ✅ | ConsultaResource con badge no-leídos, toggle leído |
+| Página "quiénes somos" | ✅ | Blade estático con stats en tiempo real |
+| Diseño responsive | ✅ | Tailwind CSS v4 + Alpine.js |
+| Páginas de error | ✅ | 404 y 500 con diseño del sitio |
+| SEO básico | ✅ | Meta tags, Open Graph, sitemap XML, canonical |
+| Mapa de negocios | ✅ | Leaflet.js + página /mapa con filtros en cascada |
+| Mapa en admin | ✅ | Picker lat/lng clickeable en NegocioResource |
+| Página de zona | ✅ | `/zonas/{slug}` con filtro por categoría |
+| Página de categoría | ✅ | `/categorias/{slug}` con filtro por zona |
+| Componente cat-icon | ✅ | `<x-cat-icon>` SVG inline por categoría |
 
 ---
 
 ## Etapa 2 — Mejora de descubrimiento
 
-**Stack adicional:** Livewire 3 · Leaflet.js · Meilisearch (opcional)
+**Stack adicional:** Livewire 3 · Meilisearch (opcional)
 
 | Feature | Detalle técnico |
 |---|---|
-| Filtros dinámicos | Livewire components sin reload de página |
-| Mapa de negocios | Leaflet.js con coordenadas lat/lng en tabla `negocios` |
-| Galería de fotos | Spatie Media Library multi-colección |
-| SEO avanzado | Spatie Laravel SEO: sitemap, Open Graph, JSON-LD |
+| Filtros dinámicos (sin reload) | Livewire components para filtros en tiempo real |
+| SEO estructurado | JSON-LD por negocio (schema.org LocalBusiness) |
 | Búsqueda mejorada | Migrar Scout driver a Meilisearch si el volumen lo justifica |
-| URLs canónicas | Slugs únicos, redirects 301 para SEO |
+| URLs canónicas / redirects | Redirects 301 para slugs cambiados |
 
 ---
 

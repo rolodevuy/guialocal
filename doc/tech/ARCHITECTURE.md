@@ -13,7 +13,7 @@ Directorio comercial local — Guía Local
 | Lenguaje | PHP | 8.2+ | Runtime |
 | Base de datos | MariaDB | 10.x (XAMPP) | Persistencia principal |
 | Frontend público | Blade + Alpine.js | — | Renderizado SSR, interacciones livianas |
-| CSS | Tailwind CSS | 3.x | Estilos y diseño responsive |
+| CSS | Tailwind CSS | 4.x | Estilos y diseño responsive |
 | Componentes reactivos | Livewire | 3.x | Filtros y búsqueda sin reload (Etapa 2+) |
 | Imágenes/media | Spatie Media Library | 11.x | Upload, conversiones, storage |
 | Búsqueda | Laravel Scout | — | Abstracción de motores de búsqueda |
@@ -59,35 +59,52 @@ Directorio comercial local — Guía Local
 ```
 app/
 ├── Filament/
-│   ├── Resources/
-│   │   ├── NegocioResource.php
-│   │   ├── CategoriaResource.php
-│   │   └── ZonaResource.php
-│   └── Widgets/
+│   └── Resources/
+│       ├── NegocioResource.php
+│       ├── CategoriaResource.php
+│       ├── ZonaResource.php
+│       └── ConsultaResource.php      ← solo lectura, badge no-leídos
 ├── Http/
 │   └── Controllers/
 │       ├── HomeController.php
 │       ├── NegocioController.php
 │       ├── CategoriaController.php
-│       └── ContactoController.php
+│       ├── ZonaController.php
+│       ├── MapaController.php        ← página /mapa
+│       ├── ContactoController.php
+│       ├── PageController.php
+│       └── SitemapController.php
+├── Mail/
+│   └── NuevaConsulta.php             ← notificación email al recibir consulta
 ├── Models/
 │   ├── Negocio.php
 │   ├── Categoria.php
 │   ├── Zona.php
 │   └── Consulta.php
-└── Services/
-    └── BusquedaService.php
 
 resources/
 ├── views/
 │   ├── layouts/
 │   │   └── app.blade.php
+│   ├── components/
+│   │   └── cat-icon.blade.php        ← íconos de categoría (SVG inline)
+│   ├── filament/forms/components/
+│   │   └── map-picker.blade.php      ← mapa Leaflet para picker de lat/lng en admin
+│   ├── emails/
+│   │   └── nueva-consulta.blade.php  ← template email Markdown
 │   ├── home.blade.php
+│   ├── mapa.blade.php                ← página /mapa con filtros en cascada
 │   ├── negocios/
 │   │   ├── index.blade.php
 │   │   └── show.blade.php
 │   ├── categorias/
+│   │   ├── index.blade.php
 │   │   └── show.blade.php
+│   ├── zonas/
+│   │   └── show.blade.php
+│   ├── errors/
+│   │   ├── 404.blade.php
+│   │   └── 500.blade.php
 │   └── contacto.blade.php
 
 database/
@@ -108,6 +125,7 @@ negocios
 ├── featured (bool), activo (bool), plan (enum)
 ├── categoria_id, zona_id
 └── timestamps
+   ↳ media: colecciones 'logo' (singleFile), 'portada' (singleFile), 'galeria' (múltiple)
 
 categorias
 ├── id, slug, nombre, descripcion, icono
@@ -132,11 +150,14 @@ consultas
 GET  /                          → HomeController@index
 GET  /negocios                  → NegocioController@index
 GET  /negocios/{slug}           → NegocioController@show
-GET  /categorias/{slug}         → CategoriaController@show
-GET  /zonas/{slug}              → ZonaController@show
+GET  /categorias                → CategoriaController@index
+GET  /categorias/{slug}         → CategoriaController@show   (?zona=ID)
+GET  /zonas/{slug}              → ZonaController@show        (?categoria=ID)
+GET  /mapa                      → MapaController@index       (?zona=ID)
 GET  /contacto                  → ContactoController@show
 POST /contacto                  → ContactoController@store
 GET  /quienes-somos             → PageController@about
+GET  /sitemap.xml               → SitemapController@index
 
 GET  /admin/*                   → Filament (panel admin)
 ```

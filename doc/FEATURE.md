@@ -4,50 +4,62 @@ Descripción de cada feature por etapa. Referencia: ver [ROADMAP](product/ROADMA
 
 ---
 
-## Etapa 1 — MVP
+## Etapa 1 — MVP ✅
 
 ### Home con negocios destacados
 Página principal que muestra una selección de negocios marcados como `featured`. Incluye acceso rápido a categorías principales y buscador.
 
 ### Listado de negocios
-Página `/negocios` con todos los negocios activos paginados. Permite ordenar y filtrar por categoría y zona mediante parámetros en la URL.
+Página `/negocios` con todos los negocios activos paginados. Permite filtrar por categoría y zona mediante parámetros en la URL.
 
 ### Búsqueda básica
 Campo de búsqueda por nombre, descripción y tags. Implementado con Laravel Scout + MySQL fulltext. Resultados en página de listado.
 
 ### Página detalle de negocio
-Ruta `/negocios/{slug}`. Muestra toda la información del negocio: nombre, descripción, dirección, teléfono, email, sitio web, horarios, categoría, zona e imágenes.
+Ruta `/negocios/{slug}`. Muestra toda la información del negocio: nombre, descripción, dirección, teléfono, email, sitio web, horarios, categoría, zona, logo y galería de imágenes.
+
+### Galería de fotos
+Cada negocio puede tener logo (singleFile), portada (singleFile) y múltiples imágenes en galería. Gestionadas con Spatie Media Library. El logo aparece en el sidebar de la ficha; la portada en el encabezado de la card.
 
 ### Categorías
-Ruta `/categorias/{slug}`. Lista los negocios pertenecientes a una categoría. Las categorías tienen nombre, descripción e ícono.
+Ruta `/categorias/{slug}`. Lista los negocios pertenecientes a una categoría, con pills de zona para filtrar. Solo aparecen las zonas que tienen negocios en esa categoría.
+
+### Zonas
+Ruta `/zonas/{slug}`. Lista los negocios de una zona o barrio, con pills de categoría para filtrar. Solo aparecen las categorías que tienen negocios en esa zona.
+
+### Mapa de negocios
+Página `/mapa` con markers por negocio usando Leaflet.js. Filtros en cascada por zona y categoría. Los negocios tienen campos `lat` y `lng` cargables desde el admin con picker interactivo.
 
 ### Panel admin
-Acceso en `/admin`. Permite crear, editar y eliminar negocios, categorías y zonas. Gestión de imágenes incluida. Implementado con Filament v3.
+Acceso en `/admin`. Permite crear, editar y eliminar negocios, categorías y zonas. Gestión de imágenes incluida (logo, portada, galería). Implementado con Filament v3.
+
+### Consultas en admin
+Sección `/admin/consultas` con badge de no-leídos en la navegación. Vista completa de cada consulta, toggle leído/no-leído desde la tabla. Solo lectura (sin crear ni editar desde admin).
 
 ### Página de contacto
-Formulario con nombre, email y mensaje. Los envíos se guardan en la tabla `consultas` y se notifica por mail al administrador.
+Formulario con nombre, email y mensaje. Los envíos se guardan en la tabla `consultas` y se envía notificación por mail al administrador (`MAIL_ADMIN` en `.env`).
 
 ### Página "quiénes somos"
-Página estática con información del proyecto/equipo. Sin lógica dinámica.
+Página estática con información del proyecto/equipo. Muestra stats en tiempo real (negocios activos, categorías, zonas).
+
+### SEO básico
+Meta tags dinámicos, Open Graph, sitemap XML (`/sitemap.xml`) y URLs canónicas. Implementado con Spatie Laravel SEO.
 
 ---
 
 ## Etapa 2 — Mejora de descubrimiento
 
-### Filtros dinámicos
-Filtros por categoría, zona y otras propiedades sin recargar la página. Implementado con Livewire 3.
+### Filtros dinámicos (sin reload)
+Filtros por categoría, zona y otras propiedades reactivos sin recargar la página. Implementado con Livewire 3.
 
-### Mapa de negocios
-Vista de mapa con markers por negocio usando Leaflet.js. Los negocios tienen campos `lat` y `lng` cargables desde el admin.
+### SEO estructurado
+Datos JSON-LD (schema.org LocalBusiness) por negocio.
 
-### Galería de fotos
-Cada negocio puede tener múltiples imágenes organizadas en colecciones (portada, galería). Gestionadas con Spatie Media Library.
+### Búsqueda mejorada
+Migrar Scout driver a Meilisearch si el volumen lo justifica *(actualmente MySQL fulltext)*.
 
-### Zonas
-Ruta `/zonas/{slug}`. Lista los negocios de una zona o barrio específico.
-
-### SEO avanzado
-Meta tags dinámicos, Open Graph, sitemap XML automático y datos estructurados JSON-LD por negocio. Implementado con Spatie Laravel SEO.
+### URLs canónicas / redirects
+Redirects 301 automáticos para slugs cambiados.
 
 ---
 
