@@ -29,7 +29,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 2 — Instalar y configurar Filament v3
+### Paso 2 — Instalar y configurar Filament v3 ✅
 
 **Objetivo:** Tener el panel admin accesible en `/admin` con un usuario creado.
 
@@ -41,6 +41,16 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 **Criterio de terminado:**
 - Login en `/admin` con el usuario creado funciona
 - Se ve el dashboard vacío de Filament
+
+**Notas:**
+- Filament v3.3 instalado con `composer require filament/filament:"^3.2" -W`
+- Panel ID: `admin`, ruta `/admin`, color primario: Amber
+- Extensions habilitadas en `php.ini`: `intl`, `gd`, `zip` (requeridas por Filament)
+- Usuario creado vía tinker (make:filament-user requiere TTY interactivo)
+- Livewire genera URLs root-relative → resuelto configurando VirtualHost Apache `guialocal.test`
+  - `APP_URL=http://guialocal.test` en `.env`
+  - `127.0.0.1 guialocal.test` en hosts de Windows
+- Widget `FilamentInfoWidget` removido del dashboard (solo mostraba link a docs)
 
 ---
 
