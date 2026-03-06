@@ -14,7 +14,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/mapa', [MapaController::class, 'index'])->name('mapa.index');
 
 Route::get('/negocios', [NegocioController::class, 'index'])->name('negocios.index');
-Route::get('/negocios/{negocio}', [NegocioController::class, 'show'])->name('negocios.show');
+Route::get('/negocios/{slug}', [NegocioController::class, 'show'])->name('negocios.show');
 
 Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->name('categorias.show');

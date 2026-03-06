@@ -96,4 +96,18 @@ class Negocio extends Model implements HasMedia
     {
         return (bool) $this->activo;
     }
+
+    // ── Slug redirect ──────────────────────────────────────────────────────────
+
+    protected static function booted(): void
+    {
+        static::updating(function (Negocio $negocio) {
+            if ($negocio->isDirty('slug')) {
+                SlugRedirect::updateOrCreate(
+                    ['old_slug' => $negocio->getOriginal('slug')],
+                    ['negocio_id' => $negocio->id],
+                );
+            }
+        });
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Negocio;
+use App\Models\SlugRedirect;
 
 class NegocioController extends Controller
 {
@@ -11,9 +12,22 @@ class NegocioController extends Controller
         return view('negocios.index');
     }
 
-    public function show(Negocio $negocio)
+    public function show(string $slug)
     {
+        $negocio = Negocio::where('slug', $slug)->first();
+
+        if (! $negocio) {
+            $redirect = SlugRedirect::where('old_slug', $slug)->with('negocio')->first();
+
+            if ($redirect?->negocio) {
+                return redirect()->route('negocios.show', $redirect->negocio->slug, 301);
+            }
+
+            abort(404);
+        }
+
         abort_unless($negocio->activo, 404);
+
         return view('negocios.show', compact('negocio'));
     }
 }
