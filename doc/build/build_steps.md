@@ -125,7 +125,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 6 — Migración y modelo Negocio
+### Paso 6 — Migración y modelo Negocio ✅
 
 **Objetivo:** Tener la entidad principal del sistema persistible con todas sus relaciones.
 
@@ -137,6 +137,13 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 **Criterio de terminado:**
 - `php artisan migrate` sin errores
 - `Negocio::with(['categoria','zona'])->first()` funciona en tinker
+
+**Notas:**
+- FKs con `foreignId()->constrained()` a `categorias` y `zonas`
+- `horarios` cast a `array`, `lat`/`lng` cast a `float`
+- `plan` enum: `gratuito`, `basico`, `premium` (default: `gratuito`)
+- Colecciones de media: `portada` (singleFile) y `galeria` (múltiple)
+- `Negocio::with(['categoria','zona'])->first()` retorna `null` (sin datos aún — OK, se puebla en Paso 8)
 
 ---
 

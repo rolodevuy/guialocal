@@ -15,7 +15,7 @@ Esquema de la base de datos del proyecto. Motor: MariaDB 10.x vía XAMPP.
 | `media` | ✅ creada (Spatie Media Library) | Paso 3 |
 | `categorias` | ✅ creada | Paso 4 |
 | `zonas` | ✅ creada | Paso 5 |
-| `negocios` | pendiente | Paso 6 |
+| `negocios` | ✅ creada | Paso 6 |
 | `consultas` | pendiente | Paso 7 |
 
 ---
