@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
@@ -11,7 +12,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Negocio extends Model implements HasMedia
 {
-    use HasSlug, InteractsWithMedia;
+    use HasSlug, InteractsWithMedia, Searchable;
 
     protected $fillable = [
         'nombre',
@@ -75,5 +76,21 @@ class Negocio extends Model implements HasMedia
     public function zona()
     {
         return $this->belongsTo(Zona::class);
+    }
+
+    // ── Scout ─────────────────────────────────────────────────────────────────
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'nombre'      => $this->nombre,
+            'descripcion' => $this->descripcion,
+            'direccion'   => $this->direccion,
+        ];
+    }
+
+    public function shouldBeSearchable(): bool
+    {
+        return (bool) $this->activo;
     }
 }

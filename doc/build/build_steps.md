@@ -518,22 +518,28 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 22 — Configurar Laravel Scout con driver MySQL
+### Paso 22 — Configurar Laravel Scout con driver MySQL ✅
 
 **Objetivo:** Tener búsqueda fulltext funcional sin infraestructura adicional.
 
 **Resultado esperado:**
 - Scout configurado con `SCOUT_DRIVER=database` en `.env`
 - Modelo `Negocio` implementa `Searchable`
-- Método `toSearchableArray()` incluye: nombre, descripcion, categoria, zona
-- Índices fulltext aplicados en la migración o con `php artisan scout:sync-index-settings`
+- Método `toSearchableArray()` incluye: nombre, descripcion, direccion
+- `shouldBeSearchable()` retorna `(bool) $this->activo`
 
 **Criterio de terminado:**
-- `Negocio::search('cafe')->get()` retorna resultados relevantes en tinker
+- `Negocio::search('almacen')->get()` retorna resultados relevantes ✅
+- `php artisan scout:import "App\Models\Negocio"` importa los 20 negocios ✅
+
+**Notas:**
+- `toSearchableArray()` incluye nombre, descripcion y direccion (columnas de la tabla, no relaciones)
+- Con driver `database`, Scout hace LIKE queries directamente sobre la tabla
+- `shouldBeSearchable()` excluye negocios inactivos del índice
 
 ---
 
-### Paso 23 — Buscador en el sitio público
+### Paso 23 — Buscador en el sitio público ✅
 
 **Objetivo:** Tener el campo de búsqueda del header y la home funcionando.
 
@@ -543,9 +549,15 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Los filtros de categoría/zona se combinan con la búsqueda
 
 **Criterio de terminado:**
-- Buscar "café" muestra negocios relevantes
-- La búsqueda se combina con filtros de categoría/zona
-- Si no hay resultados, se muestra un mensaje claro
+- Buscar "almacen" muestra negocios relevantes ✅
+- La búsqueda se combina con filtros de categoría/zona ✅
+- Si no hay resultados, se muestra mensaje claro ✅
+
+**Notas:**
+- Cuando `q` está presente: `Negocio::search($q)->query(fn($q) => ...)` con filtros en el callback
+- Cuando no hay `q`: Eloquent puro (path anterior sin cambios)
+- Los filtros `categoria` y `zona` se aplican con `->when()` dentro del Scout `->query()` callback
+- `GET /negocios?q=almacen` responde HTTP 200 ✅
 
 ---
 
