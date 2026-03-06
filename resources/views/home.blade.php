@@ -204,39 +204,32 @@
 
 {{-- ============================================================
      SECCIÓN: categorias
-     Grid de categorías con número decorativo, ícono, nombre y count
+     Grid de categorías: número top-left, ícono 48×48 centrado, nombre, count
      ============================================================ --}}
 <section id="categorias" class="bg-gray-50 border-t border-gray-100 py-12 sm:py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Explorar por categoría</h2>
-            <a href="{{ route('categorias.index') }}"
-               class="text-sm text-amber-600 hover:text-amber-700 font-medium transition-colors">
-                Ver todas →
-            </a>
-        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-8">Explorar por categoría</h2>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             @foreach($categorias as $categoria)
             <a href="{{ route('categorias.show', $categoria) }}"
-               class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 transition-all p-5 flex flex-col">
+               class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 transition-all duration-200 p-5 flex flex-col items-center text-center">
 
-                {{-- Número decorativo grande --}}
-                <span class="text-5xl font-extrabold text-gray-100 leading-none mb-2 self-start group-hover:text-amber-100 transition-colors select-none">
-                    {{ $categoria->negocios_count }}
-                </span>
-
-                {{-- Ícono --}}
-                <div class="w-10 h-10 rounded-xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center mb-3 transition-colors">
-                    <x-cat-icon :name="$categoria->icono" class="w-5 h-5 text-amber-500" />
+                {{-- Ícono placeholder 48×48 px amber — reemplazar con SVG propio --}}
+                <div class="mb-3 w-12 h-12 flex items-center justify-center text-amber-500">
+                    <svg viewBox="0 0 48 48" fill="currentColor" width="48" height="48" aria-hidden="true">
+                        <rect x="6" y="6" width="36" height="36" rx="10"/>
+                    </svg>
                 </div>
 
-                {{-- Nombre y cantidad --}}
+                {{-- Nombre --}}
                 <p class="font-semibold text-gray-800 text-sm leading-tight group-hover:text-amber-700 transition-colors">
                     {{ $categoria->nombre }}
                 </p>
-                <p class="text-xs text-gray-400 mt-0.5">
+
+                {{-- Cantidad --}}
+                <p class="text-xs text-gray-400 mt-1">
                     {{ $categoria->negocios_count }} {{ $categoria->negocios_count === 1 ? 'negocio' : 'negocios' }}
                 </p>
 
@@ -319,6 +312,11 @@
     pines.forEach(function (coord) {
         L.marker(coord, { icon: pinIcon }).addTo(map);
     });
+
+    // Scroll zoom solo cuando el mouse está sobre el mapa
+    var container = map.getContainer();
+    container.addEventListener('mouseenter', function () { map.scrollWheelZoom.enable(); });
+    container.addEventListener('mouseleave', function () { map.scrollWheelZoom.disable(); });
 }());
 </script>
 @endpush

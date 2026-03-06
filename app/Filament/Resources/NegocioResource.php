@@ -108,14 +108,22 @@ class NegocioResource extends Resource
                         Forms\Components\Tabs\Tab::make('Ubicación')
                             ->icon('heroicon-o-map-pin')
                             ->schema([
+                                // Mapa interactivo: click o drag para fijar posición
+                                Forms\Components\View::make('filament.forms.components.map-picker')
+                                    ->columnSpanFull()
+                                    ->dehydrated(false),
                                 Forms\Components\TextInput::make('lat')
                                     ->label('Latitud')
                                     ->numeric()
-                                    ->step(0.0000001),
+                                    ->step(0.0000001)
+                                    ->readOnly()
+                                    ->helperText('Se actualiza al hacer click en el mapa.'),
                                 Forms\Components\TextInput::make('lng')
                                     ->label('Longitud')
                                     ->numeric()
-                                    ->step(0.0000001),
+                                    ->step(0.0000001)
+                                    ->readOnly()
+                                    ->helperText('Se actualiza al hacer click en el mapa.'),
                             ])
                             ->columns(2),
 
