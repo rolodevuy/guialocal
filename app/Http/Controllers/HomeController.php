@@ -22,6 +22,13 @@ class HomeController extends Controller
 
         $zonas = Zona::orderBy('nombre')->get();
 
-        return view('home', compact('destacados', 'categorias', 'zonas'));
+        $negocios_mapa = Negocio::activo()
+            ->whereNotNull('lat')
+            ->whereNotNull('lng')
+            ->with('categoria')
+            ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'categoria_id'])
+            ->get();
+
+        return view('home', compact('destacados', 'categorias', 'zonas', 'negocios_mapa'));
     }
 }

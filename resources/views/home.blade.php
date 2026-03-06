@@ -58,7 +58,7 @@
                     <span class="mt-3 text-sm sm:text-base font-medium text-slate-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">Buscar negocios</span>
                 </a>
 
-                <a href="{{ route('negocios.index') }}" class="group flex flex-col items-center text-center w-36 sm:w-44">
+                <a href="{{ route('mapa.index') }}" class="group flex flex-col items-center text-center w-36 sm:w-44">
                     <span class="flex items-center justify-center bg-white border border-gray-200 shadow-md" style="width:64px;height:64px;border-radius:9999px;">
                         <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
@@ -174,15 +174,15 @@
                 <div class="p-5 flex flex-col gap-3 flex-1 min-h-0">
                     <h3 class="font-bold text-gray-900">Mapa de negocios cercanos</h3>
 
-                    <select class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-600 outline-none cursor-pointer focus:border-amber-400 transition-colors">
-                        <option value="">Buscar por zona en Atlántida</option>
+                    <select id="home-mapa-zona" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-600 outline-none cursor-pointer focus:border-amber-400 transition-colors">
+                        <option value="">Todas las zonas</option>
                         @foreach($zonas as $zona)
-                            <option value="{{ $zona->slug }}">{{ $zona->nombre }}</option>
+                            <option value="{{ $zona->id }}">{{ $zona->nombre }}</option>
                         @endforeach
                     </select>
 
                     <div class="mt-auto">
-                        <a href="{{ route('negocios.index') }}"
+                        <a href="{{ route('mapa.index') }}"
                            class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm">
                             Ver mapa completo
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,24 +299,54 @@
         className: '',
     });
 
-    // Pines demostrativos en Atlántida (se reemplazarán con coords reales de negocios en Etapa 2)
-    var pines = [
-        [-34.7627, -55.7665],
-        [-34.7650, -55.7590],
-        [-34.7695, -55.7540],
-        [-34.7710, -55.7635],
-        [-34.7680, -55.7700],
-        [-34.7742, -55.7572],
-    ];
+    // Negocios reales con coordenadas
+    var negocios = @json($negocios_mapa);
+    var allMarkers = [];
 
-    pines.forEach(function (coord) {
-        L.marker(coord, { icon: pinIcon }).addTo(map);
+    negocios.forEach(function (n) {
+        var marker = L.marker([n.lat, n.lng], { icon: pinIcon });
+        marker.bindTooltip(n.nombre, { direction: 'top', offset: [0, -36] });
+        marker.bindPopup(
+            '<div style="min-width:140px">'
+            + '<strong style="font-size:13px">' + n.nombre + '</strong>'
+            + (n.categoria ? '<br><span style="font-size:11px;color:#6b7280">' + n.categoria.nombre + '</span>' : '')
+            + '<br><a href="/negocios/' + n.slug + '" style="font-size:12px;color:#d97706;font-weight:600">Ver negocio \u2192</a>'
+            + '</div>'
+        );
+        marker.negocioZona = n.zona_id;
+        marker.negocioData = n;
+        marker.addTo(map);
+        allMarkers.push(marker);
     });
 
     // Scroll zoom solo cuando el mouse está sobre el mapa
     var container = map.getContainer();
     container.addEventListener('mouseenter', function () { map.scrollWheelZoom.enable(); });
     container.addEventListener('mouseleave', function () { map.scrollWheelZoom.disable(); });
+
+    // Filtro por zona desde el select de la card izquierda
+    var zonaSelect = document.getElementById('home-mapa-zona');
+    if (zonaSelect) {
+        zonaSelect.addEventListener('change', function () {
+            var zonaId = this.value ? parseInt(this.value) : null;
+            var bounds = [];
+
+            allMarkers.forEach(function (m) {
+                if (!zonaId || m.negocioZona === zonaId) {
+                    if (!map.hasLayer(m)) m.addTo(map);
+                    bounds.push([m.negocioData.lat, m.negocioData.lng]);
+                } else {
+                    if (map.hasLayer(m)) map.removeLayer(m);
+                }
+            });
+
+            if (bounds.length === 1) {
+                map.setView(bounds[0], 16);
+            } else if (bounds.length > 1) {
+                map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+            }
+        });
+    }
 }());
 </script>
 @endpush
