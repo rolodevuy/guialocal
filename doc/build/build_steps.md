@@ -845,6 +845,33 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+## Bloque 10 — SEO estructurado
+
+---
+
+### Paso 35 — JSON-LD por negocio ✅
+
+**Objetivo:** Agregar datos estructurados schema.org a la ficha de cada negocio para mejorar el SEO y los rich results de Google.
+
+**Resultado esperado:**
+- `<script type="application/ld+json">` en el `<head>` de `negocios/show.blade.php`
+- Tipo schema.org mapeado según la categoría del negocio
+- Propiedades opcionales solo incluidas si el dato existe
+
+**Criterio de terminado:**
+- JSON-LD válido en el `<head>` de cualquier ficha de negocio ✅
+- Tipo correcto según categoría (Restaurant, Pharmacy, Bakery, etc.) ✅
+- Propiedades opcionales ausentes si el negocio no tiene el dato ✅
+
+**Notas:**
+- Mapeo `icono → @type`: utensils→Restaurant, coffee→CafeOrCoffeeShop, cake→Bakery, pill→Pharmacy, shopping-cart→GroceryStore, heart-pulse→HealthAndBeautyBusiness, briefcase→ProfessionalService, shirt→ClothingStore. Fallback: LocalBusiness
+- Propiedades incluidas: name, url, description (truncado a 300 chars), address (PostalAddress con zona como locality), telephone, email, sameAs (sitio_web), geo (GeoCoordinates si hay lat/lng), image (URL portada si existe)
+- `openingHoursSpecification` omitida — los horarios son texto libre, no datos estructurados (ej: "Lunes a Viernes: 9:00-18:00"), no se puede mapear a opens/closes sin parseo adicional
+- Renderizado con `json_encode(..., JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)` para legibilidad
+- Todo el bloque PHP está dentro de `@php ... @endphp` en el `@push('meta')` de la vista
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

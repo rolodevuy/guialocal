@@ -9,6 +9,59 @@
     @if($negocio->hasMedia('portada'))
         <meta property="og:image" content="{{ $negocio->getFirstMediaUrl('portada') }}">
     @endif
+
+    {{-- JSON-LD: schema.org LocalBusiness --}}
+    @php
+        $schemaTypes = [
+            'utensils'      => 'Restaurant',
+            'coffee'        => 'CafeOrCoffeeShop',
+            'cake'          => 'Bakery',
+            'pill'          => 'Pharmacy',
+            'shopping-cart' => 'GroceryStore',
+            'heart-pulse'   => 'HealthAndBeautyBusiness',
+            'briefcase'     => 'ProfessionalService',
+            'shirt'         => 'ClothingStore',
+        ];
+        $schemaType = $schemaTypes[$negocio->categoria->icono ?? ''] ?? 'LocalBusiness';
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type'    => $schemaType,
+            'name'     => $negocio->nombre,
+            'url'      => route('negocios.show', $negocio),
+        ];
+
+        if ($negocio->descripcion)
+            $schema['description'] = Str::limit($negocio->descripcion, 300);
+
+        if ($negocio->direccion)
+            $schema['address'] = [
+                '@type'           => 'PostalAddress',
+                'streetAddress'   => $negocio->direccion,
+                'addressLocality' => $negocio->zona->nombre,
+                'addressCountry'  => 'AR',
+            ];
+
+        if ($negocio->telefono)
+            $schema['telephone'] = $negocio->telefono;
+
+        if ($negocio->email)
+            $schema['email'] = $negocio->email;
+
+        if ($negocio->sitio_web)
+            $schema['sameAs'] = $negocio->sitio_web;
+
+        if ($negocio->lat && $negocio->lng)
+            $schema['geo'] = [
+                '@type'     => 'GeoCoordinates',
+                'latitude'  => $negocio->lat,
+                'longitude' => $negocio->lng,
+            ];
+
+        if ($negocio->hasMedia('portada'))
+            $schema['image'] = $negocio->getFirstMediaUrl('portada');
+    @endphp
+    <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @endpush
 
 @section('content')
