@@ -1,52 +1,44 @@
-# Backlog del Proyecto
+# Sistema de Diseño
 
-Lista de tareas del proyecto.
+## Stack de UI
 
-Las tareas pueden cambiar de prioridad a medida que el proyecto evoluciona.
-
----
-
-# Alta prioridad (MVP)
-
-- [ ] crear estructura del proyecto
-- [ ] diseñar base de datos
-- [ ] crear modelo de negocios
-- [ ] crear página home
-- [ ] crear listado de negocios
-- [ ] crear página detalle de negocio
-- [ ] crear sistema de categorías
-- [ ] crear panel admin básico
-- [ ] crear página contacto
-- [ ] crear página "quiénes somos"
+| Herramienta | Versión | Rol |
+|---|---|---|
+| Tailwind CSS | v4 (vía `@tailwindcss/vite`) | Estilos y layout |
+| Alpine.js | v3.15 | Interacciones livianas (menú mobile, toggles) |
+| Blade | Laravel 12 | Templates SSR |
+| Livewire | v3 | Componentes reactivos (Etapa 2+) |
 
 ---
 
-# Prioridad media
+## Paleta de colores
 
-- [ ] implementar buscador
-- [ ] filtro por categorías
-- [ ] filtro por zona
-- [ ] galería de fotos en negocios
-- [ ] integración con Google Maps
-- [ ] diseño responsive
+Por definir al implementar el layout (Paso 13). Se configurará en `resources/css/app.css` usando el bloque `@theme` de Tailwind v4.
+
+Referencia de color primario del admin: **Amber** (Filament).
 
 ---
 
-# Prioridad baja
+## Tipografía
 
-- [ ] sistema de artículos
-- [ ] sección promociones
-- [ ] reseñas de usuarios
-- [ ] ranking de negocios
-- [ ] favoritos
-- [ ] panel para negocios
+Por defecto: `Instrument Sans` (incluido en el stack de Laravel 12).
 
 ---
 
-# Ideas futuras
+## Componentes planificados (Paso 13+)
 
-- sistema de eventos
-- newsletter local
-- aplicación mobile
-- integración con WhatsApp Business
-- estadísticas para negocios
+- **Layout principal** (`layouts/app.blade.php`): header + nav + footer
+- **Card de negocio**: imagen, nombre, categoría, zona, teléfono
+- **Card de categoría**: ícono + nombre + cantidad de negocios
+- **Buscador**: input tipo GET apuntando a `/negocios?q=`
+- **Paginación**: componente nativo de Laravel con Tailwind
+- **Menú mobile**: toggle con Alpine.js (`x-show`, `x-on:click`)
+
+---
+
+## Notas
+
+- El diseño es **SSR-first**: prioridad a rendimiento y SEO.
+- No se usa JavaScript pesado (React/Vue) en el frontend público.
+- Alpine.js solo para interacciones que no requieren datos del servidor.
+- Tailwind v4 usa `@import 'tailwindcss'` + directivas `@theme` (sin `tailwind.config.js`).

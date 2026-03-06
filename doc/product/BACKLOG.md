@@ -1,52 +1,62 @@
 # Backlog del Proyecto
 
-Lista de tareas del proyecto.
-
-Las tareas pueden cambiar de prioridad a medida que el proyecto evoluciona.
-
----
-
-# Alta prioridad (MVP)
-
-- [ ] crear estructura del proyecto
-- [ ] diseñar base de datos
-- [ ] crear modelo de negocios
-- [ ] crear página home
-- [ ] crear listado de negocios
-- [ ] crear página detalle de negocio
-- [ ] crear sistema de categorías
-- [ ] crear panel admin básico
-- [ ] crear página contacto
-- [ ] crear página "quiénes somos"
+Lista de tareas del proyecto. Las tareas pueden cambiar de prioridad a medida que el proyecto evoluciona.
+Referencia detallada de pasos: [build_steps.md](../build/build_steps.md)
 
 ---
 
-# Prioridad media
+## Alta prioridad (MVP)
 
-- [ ] implementar buscador
-- [ ] filtro por categorías
-- [ ] filtro por zona
-- [ ] galería de fotos en negocios
-- [ ] integración con Google Maps
-- [ ] diseño responsive
+- [x] Crear estructura del proyecto, instalar paquetes base (Pasos 1–3 ✅)
+- [x] Panel admin básico — Filament v3 (Paso 2 ✅)
+- [ ] Base de datos y modelos — en progreso (Pasos 4–7)
+  - [x] Modelo Categoria (Paso 4 ✅)
+  - [ ] Modelo Zona (Paso 5)
+  - [ ] Modelo Negocio (Paso 6)
+  - [ ] Modelo Consulta (Paso 7)
+- [ ] Seeders de datos de prueba (Paso 8)
+- [ ] Resources Filament: Categoria, Zona, Negocio, imágenes (Pasos 9–12)
+- [ ] Layout principal y rutas públicas (Pasos 13–14)
+- [ ] Página home (Paso 15)
+- [ ] Listado de negocios con filtros (Paso 16)
+- [ ] Página detalle de negocio (Paso 17)
+- [ ] Página de categoría (Paso 18)
+- [ ] Página de zona (Paso 19)
+- [ ] Página de contacto con formulario (Paso 20)
+- [ ] Página "quiénes somos" (Paso 21)
 
 ---
 
-# Prioridad baja
+## Prioridad media
 
-- [ ] sistema de artículos
-- [ ] sección promociones
-- [ ] reseñas de usuarios
-- [ ] ranking de negocios
-- [ ] favoritos
-- [ ] panel para negocios
+- [ ] Buscador fulltext con Laravel Scout (Pasos 22–23)
+- [ ] Filtro por categorías y zona (incluido en Paso 16)
+- [ ] Galería de fotos en negocios — Spatie Media Library (Paso 12)
+- [ ] Meta tags SEO dinámicos (Paso 24)
+- [ ] Sitemap XML (Paso 25)
+- [ ] Páginas de error 404/500 (Paso 26)
+- [ ] Diseño responsive (Tailwind, durante Pasos 13–21)
+- [ ] Optimización para producción (Paso 27)
+- [ ] Integración con Google Maps (Etapa 2+)
 
 ---
 
-# Ideas futuras
+## Prioridad baja (Etapa 2+)
 
-- sistema de eventos
-- newsletter local
-- aplicación mobile
-- integración con WhatsApp Business
-- estadísticas para negocios
+- [ ] Sistema de artículos / editorial
+- [ ] Sección promociones
+- [ ] Reseñas de usuarios
+- [ ] Ranking de negocios
+- [ ] Favoritos
+- [ ] Panel de autogestión para negocios
+- [ ] Filtros reactivos con Livewire
+
+---
+
+## Ideas futuras
+
+- Sistema de eventos locales
+- Newsletter local
+- Aplicación mobile
+- Integración con WhatsApp Business
+- Estadísticas para negocios

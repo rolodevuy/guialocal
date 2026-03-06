@@ -1,52 +1,39 @@
-# Backlog del Proyecto
+# API
 
-Lista de tareas del proyecto.
+## Arquitectura actual (MVP)
 
-Las tareas pueden cambiar de prioridad a medida que el proyecto evoluciona.
+Este proyecto es un **monolito SSR** (Server-Side Rendering) con Blade + Laravel. No existe una REST API pública en el MVP.
 
----
+Las páginas públicas son renderizadas directamente por los controllers con vistas Blade:
 
-# Alta prioridad (MVP)
+```
+GET /                     → HomeController@index        → home.blade.php
+GET /negocios             → NegocioController@index     → negocios/index.blade.php
+GET /negocios/{slug}      → NegocioController@show      → negocios/show.blade.php
+GET /categorias/{slug}    → CategoriaController@show    → categorias/show.blade.php
+GET /zonas/{slug}         → ZonaController@show         → zonas/show.blade.php
+GET /contacto             → ContactoController@show     → contacto.blade.php
+POST /contacto            → ContactoController@store    → redirect con mensaje
+GET /quienes-somos        → PageController@about        → pages/about.blade.php
+GET /sitemap.xml          → SitemapController@index     → XML response
+```
 
-- [ ] crear estructura del proyecto
-- [ ] diseñar base de datos
-- [ ] crear modelo de negocios
-- [ ] crear página home
-- [ ] crear listado de negocios
-- [ ] crear página detalle de negocio
-- [ ] crear sistema de categorías
-- [ ] crear panel admin básico
-- [ ] crear página contacto
-- [ ] crear página "quiénes somos"
-
----
-
-# Prioridad media
-
-- [ ] implementar buscador
-- [ ] filtro por categorías
-- [ ] filtro por zona
-- [ ] galería de fotos en negocios
-- [ ] integración con Google Maps
-- [ ] diseño responsive
+El panel admin es gestionado por Filament en `/admin/*` (no es parte de la API pública).
 
 ---
 
-# Prioridad baja
+## API REST (Etapa 3+)
 
-- [ ] sistema de artículos
-- [ ] sección promociones
-- [ ] reseñas de usuarios
-- [ ] ranking de negocios
-- [ ] favoritos
-- [ ] panel para negocios
+Una API REST puede agregarse en etapas posteriores sin reescribir la base, por ejemplo para:
+- Una app mobile
+- Integraciones de terceros
+- Widgets para negocios
 
----
+Cuando se implemente, seguirá convenciones RESTful con autenticación via Laravel Sanctum.
 
-# Ideas futuras
-
-- sistema de eventos
-- newsletter local
-- aplicación mobile
-- integración con WhatsApp Business
-- estadísticas para negocios
+```
+GET  /api/v1/negocios
+GET  /api/v1/negocios/{slug}
+GET  /api/v1/categorias
+GET  /api/v1/zonas
+```

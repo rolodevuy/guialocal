@@ -1,168 +1,93 @@
-\# Proyecto: Guía Comercial Local
+# Proyecto: Guía Comercial Local
 
+## Visión
 
-
-\## Visión
-
-
-
-Crear una plataforma web que funcione como una revista digital y directorio
-
-de negocios locales, ayudando a los usuarios a descubrir comercios cercanos
-
-y a los negocios a tener mayor visibilidad online.
-
-
+Crear una plataforma web que funcione como una revista digital y directorio de negocios locales, ayudando a los usuarios a descubrir comercios cercanos y a los negocios a tener mayor visibilidad online.
 
 La plataforma combina tres ideas:
 
+- Directorio de negocios
+- Revista local con contenido editorial
+- Plataforma de promoción comercial
 
+---
 
-\- Directorio de negocios
+## Problema
 
-\- Revista local con contenido editorial
+Muchos negocios pequeños tienen poca presencia digital. Normalmente solo tienen:
 
-\- Plataforma de promoción comercial
-
-
-
-\## Problema
-
-
-
-Muchos negocios pequeños tienen poca presencia digital.
-
-
-
-Normalmente solo tienen:
-
-\- Instagram
-
-\- ficha en Google Maps
-
-
+- Instagram
+- Ficha en Google Maps
 
 Esto hace difícil descubrirlos, comparar opciones o conocer promociones.
 
+---
 
-
-\## Solución
-
-
+## Solución
 
 Una plataforma simple donde los usuarios puedan:
 
-
-
-\- descubrir negocios
-
-\- ver información clara
-
-\- encontrar promociones
-
-\- explorar por categoría o zona
-
-
+- Descubrir negocios
+- Ver información clara
+- Encontrar promociones
+- Explorar por categoría o zona
 
 Y donde los negocios puedan:
 
+- Mostrar su información
+- Aparecer en búsquedas
+- Promocionar ofertas
+- Aumentar su visibilidad local
 
+---
 
-\- mostrar su información
+## Público objetivo
 
-\- aparecer en búsquedas
+**Usuarios:**
+- Personas que buscan negocios locales
+- Turistas
+- Vecinos del barrio
 
-\- promocionar ofertas
+**Negocios:**
+- Comercios pequeños
+- Restaurantes
+- Panaderías
+- Servicios locales
+- Tiendas
 
-\- aumentar su visibilidad local.
+---
 
+## Propuesta de valor
 
+**Para usuarios:**
+- Descubrir negocios fácilmente
+- Encontrar promociones
+- Explorar el barrio
 
-\## Público objetivo
+**Para negocios:**
+- Visibilidad online
+- Promoción económica
+- Presencia digital simple
 
+---
 
-
-Usuarios:
-
-\- personas que buscan negocios locales
-
-\- turistas
-
-\- vecinos del barrio
-
-
-
-Negocios:
-
-\- comercios pequeños
-
-\- restaurantes
-
-\- panaderías
-
-\- servicios locales
-
-\- tiendas
-
-
-
-\## Propuesta de valor
-
-
-
-Para usuarios:
-
-\- descubrir negocios fácilmente
-
-\- encontrar promociones
-
-\- explorar el barrio
-
-
-
-Para negocios:
-
-\- visibilidad online
-
-\- promoción económica
-
-\- presencia digital simple
-
-
-
-\## Qué NO es el proyecto
-
-
+## Qué NO es el proyecto
 
 Este proyecto NO busca ser:
 
+- Un marketplace
+- Un sistema de pedidos
+- Una red social compleja
+- Un reemplazo de Google Maps
 
+El objetivo es ser una **guía comercial local simple y útil**.
 
-\- un marketplace
+---
 
-\- un sistema de pedidos
+## Principios del producto
 
-\- una red social compleja
-
-\- un reemplazo de Google Maps
-
-
-
-El objetivo es ser una \*\*guía comercial local simple y útil\*\*.
-
-
-
-\## Principios del producto
-
-
-
-\- simple
-
-\- rápido
-
-\- visual
-
-\- útil para el barrio
-
-\- fácil de usar
-
+- Simple
+- Rápido
+- Visual
+- Útil para el barrio
+- Fácil de usar
