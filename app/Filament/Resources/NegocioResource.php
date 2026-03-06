@@ -149,6 +149,59 @@ class NegocioResource extends Resource
                                     ->reorderable(false)
                                     ->defaultItems(0)
                                     ->columnSpanFull(),
+
+                                Forms\Components\Section::make('Fechas especiales')
+                                    ->description('Feriados, vacaciones u horarios puntuales. Se pueden activar y desactivar sin eliminarlos.')
+                                    ->icon('heroicon-o-calendar-days')
+                                    ->collapsible()
+                                    ->collapsed()
+                                    ->schema([
+                                        Forms\Components\Repeater::make('horarios_especiales')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('nombre')
+                                                    ->label('Descripción')
+                                                    ->placeholder('Ej: Navidad, Feriado patrio...')
+                                                    ->required()
+                                                    ->columnSpan(2),
+
+                                                Forms\Components\DatePicker::make('fecha')
+                                                    ->label('Fecha')
+                                                    ->required()
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y'),
+
+                                                Forms\Components\Toggle::make('se_repite')
+                                                    ->label('Se repite anualmente')
+                                                    ->helperText('Aplica cada año en esa fecha')
+                                                    ->default(false),
+
+                                                Forms\Components\Toggle::make('activo')
+                                                    ->label('Activo')
+                                                    ->helperText('Visible en la ficha del negocio')
+                                                    ->default(true),
+
+                                                Forms\Components\Toggle::make('cerrado')
+                                                    ->label('Cerrado ese día')
+                                                    ->default(false)
+                                                    ->live(),
+
+                                                Forms\Components\TimePicker::make('apertura')
+                                                    ->label('Apertura')
+                                                    ->seconds(false)
+                                                    ->visible(fn (Get $get) => !$get('cerrado')),
+
+                                                Forms\Components\TimePicker::make('cierre')
+                                                    ->label('Cierre')
+                                                    ->seconds(false)
+                                                    ->visible(fn (Get $get) => !$get('cerrado')),
+                                            ])
+                                            ->columns(2)
+                                            ->addButtonLabel('+ Agregar fecha especial')
+                                            ->reorderable(false)
+                                            ->defaultItems(0)
+                                            ->columnSpanFull(),
+                                    ]),
                             ]),
 
                         Forms\Components\Tabs\Tab::make('Ubicación')

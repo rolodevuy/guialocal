@@ -25,6 +25,7 @@ class Negocio extends Model implements HasMedia
         'lat',
         'lng',
         'horarios',
+        'horarios_especiales',
         'featured',
         'activo',
         'plan',
@@ -33,8 +34,9 @@ class Negocio extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'horarios'  => 'array',
-        'featured'  => 'boolean',
+        'horarios'            => 'array',
+        'horarios_especiales' => 'array',
+        'featured'            => 'boolean',
         'activo'    => 'boolean',
         'lat'       => 'float',
         'lng'       => 'float',

@@ -79,6 +79,36 @@
                 ->all();
             if ($openingHours) $schema['openingHours'] = $openingHours;
         }
+
+        if (!empty($negocio->horarios_especiales)) {
+            $hoy = now()->startOfDay();
+            $especiales = collect($negocio->horarios_especiales)
+                ->filter(fn($h) => ($h['activo'] ?? false) && !empty($h['fecha']))
+                ->map(function ($h) use ($hoy) {
+                    $fecha = \Carbon\Carbon::parse($h['fecha']);
+                    // Si se repite anualmente, usar el año actual (o siguiente si ya pasó)
+                    if ($h['se_repite'] ?? false) {
+                        $fecha = $fecha->setYear(now()->year);
+                        if ($fecha->lt($hoy)) $fecha = $fecha->addYear();
+                    }
+                    $spec = [
+                        '@type'   => 'OpeningHoursSpecification',
+                        'validFrom'  => $fecha->toDateString(),
+                        'validThrough' => $fecha->toDateString(),
+                    ];
+                    if ($h['cerrado'] ?? false) {
+                        $spec['opens']  = '00:00';
+                        $spec['closes'] = '00:00';
+                    } else {
+                        $spec['opens']  = $h['apertura'] ?? '00:00';
+                        $spec['closes'] = $h['cierre'] ?? '23:59';
+                    }
+                    return $spec;
+                })
+                ->values()
+                ->all();
+            if ($especiales) $schema['specialOpeningHoursSpecification'] = $especiales;
+        }
     @endphp
     <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @endpush
@@ -256,6 +286,56 @@
                             @else
                                 <span class="text-gray-700 text-right">{{ $franja['apertura'] }} – {{ $franja['cierre'] }}</span>
                             @endif
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                {{-- Fechas especiales activas --}}
+                @php
+                    $hoy = now()->startOfDay();
+                    $fechasActivas = collect($negocio->horarios_especiales ?? [])
+                        ->filter(function ($h) use ($hoy) {
+                            if (!($h['activo'] ?? false) || empty($h['fecha'])) return false;
+                            $fecha = \Carbon\Carbon::parse($h['fecha']);
+                            if ($h['se_repite'] ?? false) {
+                                $fecha = $fecha->setYear(now()->year);
+                                if ($fecha->lt($hoy)) $fecha = $fecha->addYear();
+                            }
+                            return true; // mostrar todas las activas (pasadas incluidas para info)
+                        })
+                        ->map(function ($h) {
+                            $fecha = \Carbon\Carbon::parse($h['fecha']);
+                            if ($h['se_repite'] ?? false) {
+                                $fecha = $fecha->setYear(now()->year);
+                                if ($fecha->lt(now()->startOfDay())) $fecha = $fecha->addYear();
+                            }
+                            return array_merge($h, ['_fecha_obj' => $fecha]);
+                        })
+                        ->sortBy(fn($h) => $h['_fecha_obj'])
+                        ->values();
+                @endphp
+                @if($fechasActivas->isNotEmpty())
+                <div class="border-t border-gray-100 pt-5">
+                    <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Fechas especiales</h2>
+                    <ul class="space-y-2">
+                        @foreach($fechasActivas as $fe)
+                        <li class="text-sm">
+                            <div class="flex items-start justify-between gap-2">
+                                <span class="font-medium text-gray-700">{{ $fe['nombre'] }}</span>
+                                @if($fe['cerrado'] ?? false)
+                                    <span class="text-gray-400 italic shrink-0">Cerrado</span>
+                                @else
+                                    <span class="text-gray-700 shrink-0">{{ $fe['apertura'] }} – {{ $fe['cierre'] }}</span>
+                                @endif
+                            </div>
+                            <div class="text-xs text-gray-400 mt-0.5">
+                                {{ $fe['_fecha_obj']->translatedFormat('j \d\e F') }}
+                                @if($fe['se_repite'] ?? false)
+                                    <span class="text-amber-500">· anual</span>
+                                @endif
+                            </div>
                         </li>
                         @endforeach
                     </ul>
