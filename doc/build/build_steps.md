@@ -237,7 +237,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 11 — Resource Negocio en Filament (datos básicos)
+### Paso 11 — Resource Negocio en Filament (datos básicos) ✅
 
 **Objetivo:** Poder cargar un negocio completo desde el admin.
 
@@ -251,9 +251,18 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Filtros: por categoría, zona, featured, activo
 
 **Criterio de terminado:**
-- Se puede crear un negocio completo desde el admin
-- El listado muestra los negocios con sus filtros funcionales
-- Toggle de `activo` y `featured` funcionan inline
+- Se puede crear un negocio completo desde el admin ✅
+- El listado muestra los negocios con sus filtros funcionales ✅
+- Toggle de `activo` y `featured` funcionan inline ✅
+
+**Notas:**
+- Form en 5 tabs: Info básica, Contacto, Horarios, Ubicación, Configuración
+- `horarios` usa `KeyValue` (campo/valor editable en el form)
+- `categoria_id` y `zona_id` con `Select` searchable
+- Columnas: nombre, categoría (badge), zona (badge info), plan (badge coloreado), featured, activo
+- Filtros: SelectFilter por categoría, zona, plan + TernaryFilter por featured y activo
+- `plan` badge: premium=warning, basico=success, gratuito=gray
+- Ícono nav: `heroicon-o-building-storefront`, sort 3
 
 ---
 
