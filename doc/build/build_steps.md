@@ -425,7 +425,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 18 — Página de categoría
+### Paso 18 — Página de categoría ✅
 
 **Objetivo:** Listar negocios filtrados por categoría en su propia URL.
 
@@ -436,9 +436,16 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
   - Grid de negocios de esa categoría (paginado)
 
 **Criterio de terminado:**
-- `/categorias/restaurante` lista solo restaurantes
-- Un slug inexistente devuelve 404
-- La paginación funciona
+- `/categorias/restaurantes` lista solo restaurantes ✅
+- Un slug inexistente devuelve 404 ✅
+- La paginación funciona ✅
+
+**Notas:**
+- `abort_unless($categoria->activo, 404)` en show()
+- Grid 3 cols igual que negocios/index, con imagen portada y badge destacado
+- Contador: "N negocios encontrados" en el header
+- `categorias/index.blade.php` también implementado: grid 4 cols con count de negocios
+- `CategoriaController@index` usa `withCount(['negocios' => fn ($q) => $q->where('activo', true)])`
 
 ---
 
