@@ -358,9 +358,16 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
   - Grid de categorías con íconos
 
 **Criterio de terminado:**
-- La home carga con datos de los seeders
-- Los negocios destacados se ven con imagen de portada
-- Las categorías linkean a su página correcta
+- La home carga con datos de los seeders ✅
+- Los negocios destacados se ven con imagen de portada ✅
+- Las categorías linkean a su página correcta ✅
+
+**Notas:**
+- Hero con gradiente amber, buscador que apunta a `/negocios?q=`
+- Cards de negocios: imagen portada (fallback con ícono), badge Premium, categoría, zona
+- Cards de categorías: inicial en círculo amber, count de negocios activos
+- CTA al final: "¿Tenés un negocio?" → `/contacto`
+- `withCount(['negocios' => fn($q) => $q->where('activo', true)])` para count correcto
 
 ---
 
