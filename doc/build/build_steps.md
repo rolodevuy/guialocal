@@ -449,7 +449,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 19 — Página de zona
+### Paso 19 — Página de zona ✅
 
 **Objetivo:** Listar negocios filtrados por zona en su propia URL.
 
@@ -458,8 +458,14 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Vista `zonas/show.blade.php` similar a la de categoría
 
 **Criterio de terminado:**
-- `/zonas/{slug}` lista negocios de esa zona
-- 404 para zonas inexistentes
+- `/zonas/{slug}` lista negocios de esa zona ✅
+- 404 para zonas inexistentes ✅
+
+**Notas:**
+- Negocios paginados (12), ordenados por featured desc + nombre asc
+- Header con icono pin + nombre zona + contador "N negocios en esta zona"
+- Cards con imagen, badge destacado, badge de categoría (link a categorias.show)
+- Empty state con mensaje específico de la zona
 
 ---
 
