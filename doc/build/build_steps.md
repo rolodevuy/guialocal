@@ -371,22 +371,27 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 16 — Listado de negocios
+### Paso 16 — Listado de negocios ✅
 
 **Objetivo:** Tener la página `/negocios` con listado paginado y filtros básicos por URL.
 
 **Resultado esperado:**
-- `NegocioController@index` acepta query params: `categoria`, `zona`
+- `NegocioController@index` acepta query params: `q`, `categoria`, `zona`
 - Consulta filtrada y paginada (12 por página)
-- Vista `negocios/index.blade.php` con:
-  - Grid de cards de negocio
-  - Sidebar o header con filtros (links por categoría y zona)
-  - Paginación de Laravel
+- Vista `negocios/index.blade.php` con sidebar de filtros y grid de cards
 
 **Criterio de terminado:**
-- `/negocios` lista todos los negocios activos
-- `/negocios?categoria=restaurante` filtra correctamente
-- La paginación funciona y mantiene los filtros activos
+- `/negocios` lista todos los negocios activos ✅
+- `/negocios?categoria=restaurantes` filtra correctamente ✅
+- La paginación mantiene los filtros activos (`withQueryString()`) ✅
+
+**Notas:**
+- Búsqueda por `q`: filtra nombre, descripción y nombre de categoría con `like`
+- Filtros de sidebar: categorías y zonas como links (resaltan si están activos)
+- "Limpiar filtros" solo aparece si hay filtro activo
+- Cards con imagen portada, badge featured (★), categoría y zona
+- `orderByDesc('featured')->orderBy('nombre')`: destacados primero
+- Empty state con mensaje y link "Ver todos"
 
 ---
 
