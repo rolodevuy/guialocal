@@ -395,7 +395,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 17 — Página detalle de negocio
+### Paso 17 — Página detalle de negocio ✅
 
 **Objetivo:** Tener la ficha completa de cada negocio.
 
@@ -409,9 +409,19 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
   - Meta tags básicos (title, description con datos del negocio)
 
 **Criterio de terminado:**
-- `/negocios/{slug}` carga la ficha correcta
-- Un slug inexistente devuelve 404
-- El `<title>` de la página contiene el nombre del negocio
+- `/negocios/{slug}` carga la ficha correcta ✅
+- Un slug inexistente devuelve 404 ✅
+- El `<title>` de la página contiene el nombre del negocio ✅
+
+**Notas:**
+- Layout: hero con imagen portada, columna principal (descripción + galería), sidebar contacto
+- Breadcrumb: Inicio › Negocios › Categoría › Nombre
+- Badges: categoría (amber), zona (gris), destacado (★)
+- Sidebar: iconos amber para teléfono/email/web/dirección + tabla de horarios
+- Galería: grid 2-3 cols con `getMedia('galeria')`, solo se muestra si hay imágenes
+- `parse_url()` para mostrar solo el host del sitio web
+- `abort_unless($negocio->activo, 404)` en el controller
+- `@section('description', Str::limit($negocio->descripcion, 155))`
 
 ---
 
