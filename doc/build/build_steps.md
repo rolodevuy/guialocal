@@ -218,7 +218,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 10 — Resource Zona en Filament
+### Paso 10 — Resource Zona en Filament ✅
 
 **Objetivo:** Poder gestionar zonas desde el admin.
 
@@ -227,7 +227,13 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Table con columnas: nombre, slug, cantidad de negocios
 
 **Criterio de terminado:**
-- Desde `/admin/zonas` se puede crear, editar y eliminar zonas
+- Desde `/admin/zonas` se puede crear, editar y eliminar zonas ✅
+
+**Notas:**
+- Misma lógica de slug auto que CategoriaResource (`live onBlur` + `Str::slug`)
+- Columna `negocios_count` con `->counts('negocios')`
+- Ícono de nav: `heroicon-o-map-pin`, sort 2
+- Sin filtros extra (zona no tiene campo activo)
 
 ---
 
