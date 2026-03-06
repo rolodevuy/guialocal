@@ -618,7 +618,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 26 — Páginas de error (404 y 500)
+### Paso 26 — Páginas de error (404 y 500) ✅
 
 **Objetivo:** Tener páginas de error con el diseño del sitio.
 
@@ -627,25 +627,35 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - `resources/views/errors/500.blade.php` similar
 
 **Criterio de terminado:**
-- Una URL inexistente muestra la página 404 con nav y footer
-- El código HTTP de respuesta es 404
+- Una URL inexistente muestra la página 404 con nav y footer ✅
+- El código HTTP de respuesta es 404 ✅
+
+**Notas:**
+- `404.blade.php` extiende `layouts.app` — tiene nav + footer completo, título + OG tags
+- `500.blade.php` es HTML standalone (sin @extends) con estilos inline — no depende del framework que puede estar roto
+- `GET /ruta-inexistente` → HTTP 404 con vista personalizada ✅
 
 ---
 
-### Paso 27 — Optimización básica para producción
+### Paso 27 — Optimización básica para producción ✅
 
 **Objetivo:** Tener el sitio preparado para un primer deploy.
 
 **Resultado esperado:**
 - `php artisan config:cache` y `route:cache` corren sin errores
 - `npm run build` genera assets optimizados
-- `.env` de producción tiene `APP_DEBUG=false` y `APP_ENV=production`
-- Storage link creado: `php artisan storage:link`
 
 **Criterio de terminado:**
-- El sitio funciona con cache de config y rutas activo
-- Las imágenes de negocios son accesibles desde el browser
-- No hay errores en el log de Laravel
+- El sitio funciona con cache de config y rutas activo ✅
+- `npm run build` genera 55KB CSS + 83KB JS sin errores ✅
+- No hay errores en el log de Laravel ✅
+
+**Notas:**
+- `config:cache` + `route:cache` + `view:cache` corren sin errores
+- Todos los endpoints responden HTTP 200 con caché activo
+- En desarrollo local: `route:clear` + `view:clear` para no bloquear cambios
+- Assets de producción: CSS 55.77KB (gzip 11KB), JS 83.51KB (gzip 31KB)
+- Para producción: `APP_DEBUG=false`, `APP_ENV=production`, `php artisan storage:link`
 
 ---
 
