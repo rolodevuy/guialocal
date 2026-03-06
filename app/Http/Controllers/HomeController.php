@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Negocio;
+use App\Models\Zona;
 
 class HomeController extends Controller
 {
@@ -19,6 +20,8 @@ class HomeController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        return view('home', compact('destacados', 'categorias'));
+        $zonas = Zona::orderBy('nombre')->get();
+
+        return view('home', compact('destacados', 'categorias', 'zonas'));
     }
 }
