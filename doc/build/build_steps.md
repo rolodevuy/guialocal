@@ -589,7 +589,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 25 — Sitemap XML
+### Paso 25 — Sitemap XML ✅
 
 **Objetivo:** Tener un sitemap para que los buscadores indexen el sitio.
 
@@ -601,9 +601,16 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
   - Una URL por zona
 
 **Criterio de terminado:**
-- `/sitemap.xml` responde con XML válido
-- Las URLs de los negocios están en el sitemap
-- El XML se puede validar en un validador online
+- `/sitemap.xml` responde con XML válido ✅
+- Content-Type: application/xml ✅
+- 38 URLs en total (5 estáticas + 20 negocios + 8 categorías + 5 zonas) ✅
+
+**Notas:**
+- `SitemapController@index` — consulta solo campos `slug` y `updated_at` (sin cargar el modelo completo)
+- Vista `sitemap.blade.php` en raíz de views — no extiende el layout app
+- `<?php echo '<?xml version...'; ?>` para evitar que Blade interprete `<?xml` como PHP
+- `lastmod` con `->toAtomString()` (ISO 8601, formato estándar de sitemaps)
+- Prioridades: home=1.0, negocios.index=0.9, categorias=0.8, negocios=0.8, categorias.show=0.7, zonas=0.6, estáticas=0.5/0.4
 
 ---
 
