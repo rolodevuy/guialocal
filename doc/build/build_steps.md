@@ -999,6 +999,29 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 41 — RSS feed + sitemap artículos ✅
+
+**Objetivo:** Distribuir los artículos via RSS y asegurarse de que Google los indexe via sitemap.
+
+**Resultado esperado:**
+- `GET /feed` devuelve RSS 2.0 con los últimos 20 artículos publicados
+- `<link rel="alternate">` en el `<head>` para autodescubrimiento
+- `SitemapController` incluye artículos publicados en `/sitemap.xml`
+
+**Criterio de terminado:**
+- `/feed` responde con `Content-Type: application/rss+xml` ✅
+- Cada `<item>` tiene title, link, guid, description, pubDate, category, enclosure ✅
+- `/sitemap.xml` incluye `/articulos` y cada artículo publicado ✅
+
+**Notas:**
+- `FeedController`: últimos 20 artículos, ordered by `publicado_en DESC, created_at DESC`
+- Vista `feed.blade.php`: CDATA en title y description para caracteres especiales
+- Enclosure con URL de portada (tipo `image/jpeg`) si existe
+- Sitemap: `/articulos/index` aparece solo si hay al menos un artículo publicado
+- Prioridad artículos en sitemap: `0.7` (igual que categorías)
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

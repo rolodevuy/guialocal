@@ -59,4 +59,21 @@
     </url>
     @endforeach
 
+    {{-- Artículos publicados --}}
+    @if($articulos->isNotEmpty())
+    <url>
+        <loc>{{ route('articulos.index') }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    @foreach($articulos as $articulo)
+    <url>
+        <loc>{{ route('articulos.show', $articulo->slug) }}</loc>
+        <lastmod>{{ $articulo->updated_at->toAtomString() }}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    @endforeach
+    @endif
+
 </urlset>
