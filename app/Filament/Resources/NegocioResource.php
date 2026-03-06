@@ -145,7 +145,7 @@ class NegocioResource extends Resource
                                             ->columnSpan(2),
                                     ])
                                     ->columns(2)
-                                    ->addButtonLabel('+ Agregar franja')
+                                    ->addActionLabel('+ Agregar franja')
                                     ->reorderable(false)
                                     ->defaultItems(0)
                                     ->columnSpanFull(),
@@ -197,7 +197,7 @@ class NegocioResource extends Resource
                                                     ->visible(fn (Get $get) => !$get('cerrado')),
                                             ])
                                             ->columns(2)
-                                            ->addButtonLabel('+ Agregar fecha especial')
+                                            ->addActionLabel('+ Agregar fecha especial')
                                             ->reorderable(false)
                                             ->defaultItems(0)
                                             ->columnSpanFull(),
