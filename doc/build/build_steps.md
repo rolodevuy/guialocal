@@ -924,6 +924,53 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 38 — Filtros dinámicos con Livewire en /negocios ✅
+
+**Objetivo:** Reemplazar los filtros por GET clásico con filtros reactivos sin reload de página.
+
+**Resultado esperado:**
+- Componente `NegociosIndex` con propiedades `$q`, `$categoria`, `$zona` sincronizadas en la URL
+- Buscador con debounce 300ms, pills de categoría/zona con click inmediato
+- Paginación Livewire con reset al cambiar filtros
+- Botón "Limpiar filtros" resetea todo en un click
+
+**Criterio de terminado:**
+- Filtrar por categoría no recarga la página ✅
+- La URL se actualiza con los filtros activos (?q=, ?categoria=, ?zona=) ✅
+- `NegocioController@index` simplificado a solo retornar la vista ✅
+
+**Notas:**
+- Componente: `app/Livewire/NegociosIndex.php` — usa `WithPagination` + `#[Url]`
+- Vista: `resources/views/livewire/negocios-index.blade.php`
+- Búsqueda con LIKE nativo (nombre, descripcion, direccion) — sin Scout dentro del componente
+- `updatingQ/Categoria/Zona()` llaman `resetPage()` para volver a la página 1
+- `wire:key="negocio-{{ $id }}"` en las cards para diff correcto de Livewire
+- Latencia ~2s en XAMPP local (dev); se optimiza en producción si hace falta
+
+---
+
+### Paso 39 — Redirects 301 para slugs de negocios cambiados ✅
+
+**Objetivo:** Evitar 404 cuando el nombre (y por ende el slug) de un negocio cambia, preservando el SEO acumulado.
+
+**Resultado esperado:**
+- Al guardar un negocio con nombre editado, el slug viejo queda registrado
+- Visitar `/negocios/slug-viejo` redirige 301 a `/negocios/slug-nuevo`
+- Si el negocio se elimina, el redirect queda huérfano y devuelve 404
+
+**Criterio de terminado:**
+- Editar nombre de negocio guarda el slug viejo automáticamente ✅
+- `/negocios/slug-viejo` responde HTTP 301 → `/negocios/slug-nuevo` ✅
+- Slug inexistente sin redirect devuelve 404 ✅
+
+**Notas:**
+- Tabla `slug_redirects`: `old_slug` (unique), `negocio_id` (FK nullable, nullOnDelete)
+- `Negocio::booted()`: hook `updating` con `isDirty('slug')` → `SlugRedirect::updateOrCreate()`
+- `NegocioController@show(string $slug)`: lookup manual + fallback a `slug_redirects` con 301
+- Ruta cambiada de `{negocio}` (route model binding) a `{slug}` (string) — `route('negocios.show', $negocio)` en Blade sigue funcionando
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
