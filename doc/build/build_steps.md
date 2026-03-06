@@ -295,7 +295,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 13 — Layout principal (nav + footer)
+### Paso 13 — Layout principal (nav + footer) ✅
 
 **Objetivo:** Tener el shell HTML del sitio público con navegación y pie de página.
 
@@ -306,32 +306,37 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - Alpine.js disponible para menú mobile
 
 **Criterio de terminado:**
-- El layout renderiza sin errores
-- El menú mobile funciona (toggle con Alpine)
-- Se ve correctamente en mobile y desktop
+- El layout renderiza sin errores ✅
+- El menú mobile funciona (toggle con Alpine) ✅
+- Se ve correctamente en mobile y desktop ✅
+
+**Notas:**
+- Nav sticky con sombra, link activo con clase amber
+- Hamburger con Alpine: `x-data="{ open: false }"`, `x-show`, `x-transition`
+- Footer de 3 columnas: brand + links explorar + CTA negocio
+- Color de marca: `--color-marca: #f59e0b` (amber-500) definido en `app.css` con `@theme`
+- `@stack('meta')` para meta tags dinámicos por vista (Paso 24)
 
 ---
 
-### Paso 14 — Definir rutas públicas
+### Paso 14 — Definir rutas públicas ✅
 
 **Objetivo:** Tener todas las rutas del MVP declaradas y apuntando a sus controllers.
 
 **Resultado esperado:**
-- Rutas en `routes/web.php`:
-  - `GET /` → `HomeController@index`
-  - `GET /negocios` → `NegocioController@index`
-  - `GET /negocios/{slug}` → `NegocioController@show`
-  - `GET /categorias/{slug}` → `CategoriaController@show`
-  - `GET /zonas/{slug}` → `ZonaController@show`
-  - `GET /contacto` → `ContactoController@show`
-  - `POST /contacto` → `ContactoController@store`
-  - `GET /quienes-somos` → `PageController@about`
-- Controllers creados (vacíos o con respuesta placeholder)
+- Rutas en `routes/web.php` para home, negocios, categorías, zonas, contacto, about
+- Controllers creados con métodos placeholder
 
 **Criterio de terminado:**
-- `php artisan route:list` muestra todas las rutas
-- Cada ruta devuelve 200 (aunque sea con placeholder)
-- No hay rutas duplicadas ni conflictos
+- `php artisan route:list` muestra todas las rutas ✅
+- `GET /` retorna 200 ✅
+- No hay rutas duplicadas ni conflictos ✅
+
+**Notas:**
+- 9 rutas públicas: GET /, GET+POST /contacto, GET /negocios, GET /negocios/{negocio}, GET /categorias, GET /categorias/{categoria}, GET /zonas/{zona}, GET /quienes-somos
+- Route model binding por slug (via `getRouteKeyName()` en los modelos)
+- Controllers: HomeController, NegocioController, CategoriaController, ZonaController, ContactoController, PageController
+- Vistas placeholder creadas para todas las rutas (contenido real: Pasos 15–21)
 
 ---
 

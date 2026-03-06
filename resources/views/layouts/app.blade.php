@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Guía Local — Tu barrio en un solo lugar')</title>
+    <meta name="description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
+    @stack('meta')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    {{-- NAVBAR --}}
+    <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+
+                {{-- Logo --}}
+                <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-xl text-amber-500 hover:text-amber-600 transition-colors">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    Guía Local
+                </a>
+
+                {{-- Nav desktop --}}
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="{{ route('home') }}"
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('home') ? 'text-amber-600 bg-amber-50' : '' }}">
+                        Inicio
+                    </a>
+                    <a href="{{ route('negocios.index') }}"
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('negocios.*') ? 'text-amber-600 bg-amber-50' : '' }}">
+                        Negocios
+                    </a>
+                    <a href="{{ route('categorias.index') }}"
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('categorias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
+                        Categorías
+                    </a>
+                    <a href="{{ route('contacto.show') }}"
+                       class="ml-2 px-4 py-2 rounded-lg text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors">
+                        Contacto
+                    </a>
+                </nav>
+
+                {{-- Hamburger mobile --}}
+                <button @click="open = !open"
+                        class="md:hidden p-2 rounded-lg text-gray-500 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                        aria-label="Menú">
+                    <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg x-show="open" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Mobile menu --}}
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             x-cloak
+             class="md:hidden border-t border-gray-100 bg-white">
+            <nav class="px-4 py-3 flex flex-col gap-1">
+                <a href="{{ route('home') }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                    Inicio
+                </a>
+                <a href="{{ route('negocios.index') }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                    Negocios
+                </a>
+                <a href="{{ route('categorias.index') }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                    Categorías
+                </a>
+                <a href="{{ route('contacto.show') }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors">
+                    Contacto
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    {{-- MAIN CONTENT --}}
+    <main>
+        @yield('content')
+    </main>
+
+    {{-- FOOTER --}}
+    <footer class="bg-gray-800 text-gray-300 mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                {{-- Brand --}}
+                <div>
+                    <div class="flex items-center gap-2 text-amber-400 font-bold text-lg mb-3">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        Guía Local
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Tu guía de negocios y servicios del barrio. Encontrá lo que necesitás cerca tuyo.
+                    </p>
+                </div>
+
+                {{-- Links --}}
+                <div>
+                    <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Explorar</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ route('negocios.index') }}" class="hover:text-amber-400 transition-colors">Todos los negocios</a></li>
+                        <li><a href="{{ route('categorias.index') }}" class="hover:text-amber-400 transition-colors">Categorías</a></li>
+                        <li><a href="{{ route('quienes-somos') }}" class="hover:text-amber-400 transition-colors">Quiénes somos</a></li>
+                        <li><a href="{{ route('contacto.show') }}" class="hover:text-amber-400 transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+
+                {{-- CTA --}}
+                <div>
+                    <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">¿Tenés un negocio?</h3>
+                    <p class="text-sm text-gray-400 mb-4">Sumá tu negocio a la guía y llegá a más clientes del barrio.</p>
+                    <a href="{{ route('contacto.show') }}"
+                       class="inline-block px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-lg transition-colors">
+                        Registrar mi negocio
+                    </a>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-10 pt-6 text-center text-xs text-gray-500">
+                &copy; {{ date('Y') }} Guía Local. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
