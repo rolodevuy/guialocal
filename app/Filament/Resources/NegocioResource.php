@@ -8,6 +8,7 @@ use App\Models\Negocio;
 use App\Models\Zona;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -97,11 +98,56 @@ class NegocioResource extends Resource
                         Forms\Components\Tabs\Tab::make('Horarios')
                             ->icon('heroicon-o-clock')
                             ->schema([
-                                Forms\Components\KeyValue::make('horarios')
+                                Forms\Components\Repeater::make('horarios')
                                     ->label('')
-                                    ->keyLabel('Período')
-                                    ->valueLabel('Horario')
-                                    ->addButtonLabel('Agregar horario')
+                                    ->schema([
+                                        Forms\Components\Select::make('dia_inicio')
+                                            ->label('Desde')
+                                            ->options([
+                                                'Lunes'     => 'Lunes',
+                                                'Martes'    => 'Martes',
+                                                'Miércoles' => 'Miércoles',
+                                                'Jueves'    => 'Jueves',
+                                                'Viernes'   => 'Viernes',
+                                                'Sábado'    => 'Sábado',
+                                                'Domingo'   => 'Domingo',
+                                            ])
+                                            ->required()
+                                            ->native(false),
+
+                                        Forms\Components\Select::make('dia_fin')
+                                            ->label('Hasta')
+                                            ->options([
+                                                'Lunes'     => 'Lunes',
+                                                'Martes'    => 'Martes',
+                                                'Miércoles' => 'Miércoles',
+                                                'Jueves'    => 'Jueves',
+                                                'Viernes'   => 'Viernes',
+                                                'Sábado'    => 'Sábado',
+                                                'Domingo'   => 'Domingo',
+                                            ])
+                                            ->placeholder('Solo ese día')
+                                            ->native(false),
+
+                                        Forms\Components\TimePicker::make('apertura')
+                                            ->label('Apertura')
+                                            ->seconds(false)
+                                            ->visible(fn (Get $get) => !$get('cerrado')),
+
+                                        Forms\Components\TimePicker::make('cierre')
+                                            ->label('Cierre')
+                                            ->seconds(false)
+                                            ->visible(fn (Get $get) => !$get('cerrado')),
+
+                                        Forms\Components\Toggle::make('cerrado')
+                                            ->label('Cerrado ese día')
+                                            ->live()
+                                            ->columnSpan(2),
+                                    ])
+                                    ->columns(2)
+                                    ->addButtonLabel('+ Agregar franja')
+                                    ->reorderable(false)
+                                    ->defaultItems(0)
                                     ->columnSpanFull(),
                             ]),
 

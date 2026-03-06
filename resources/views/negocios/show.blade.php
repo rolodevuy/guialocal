@@ -60,6 +60,25 @@
 
         if ($negocio->hasMedia('portada'))
             $schema['image'] = $negocio->getFirstMediaUrl('portada');
+
+        if (!empty($negocio->horarios)) {
+            $dayMap = [
+                'Lunes'     => 'Mo', 'Martes'    => 'Tu', 'Miércoles' => 'We',
+                'Jueves'    => 'Th', 'Viernes'   => 'Fr', 'Sábado'    => 'Sa',
+                'Domingo'   => 'Su',
+            ];
+            $openingHours = collect($negocio->horarios)
+                ->filter(fn($f) => !($f['cerrado'] ?? false) && !empty($f['apertura']) && !empty($f['cierre']))
+                ->map(function ($f) use ($dayMap) {
+                    $inicio = $dayMap[$f['dia_inicio']] ?? null;
+                    $fin    = !empty($f['dia_fin']) ? ($dayMap[$f['dia_fin']] ?? null) : null;
+                    $days   = $inicio . ($fin ? '-' . $fin : '');
+                    return $days . ' ' . $f['apertura'] . '-' . $f['cierre'];
+                })
+                ->values()
+                ->all();
+            if ($openingHours) $schema['openingHours'] = $openingHours;
+        }
     @endphp
     <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @endpush
@@ -227,10 +246,16 @@
                 <div class="border-t border-gray-100 pt-5">
                     <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Horarios</h2>
                     <ul class="space-y-1.5">
-                        @foreach($negocio->horarios as $periodo => $horario)
+                        @foreach($negocio->horarios as $franja)
                         <li class="flex items-start justify-between gap-2 text-sm">
-                            <span class="text-gray-500 shrink-0">{{ $periodo }}</span>
-                            <span class="text-gray-700 text-right">{{ $horario }}</span>
+                            <span class="text-gray-500 shrink-0">
+                                {{ $franja['dia_inicio'] }}{{ !empty($franja['dia_fin']) ? ' a ' . $franja['dia_fin'] : '' }}
+                            </span>
+                            @if($franja['cerrado'] ?? false)
+                                <span class="text-gray-400 italic">Cerrado</span>
+                            @else
+                                <span class="text-gray-700 text-right">{{ $franja['apertura'] }} – {{ $franja['cierre'] }}</span>
+                            @endif
                         </li>
                         @endforeach
                     </ul>
