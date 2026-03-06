@@ -147,7 +147,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 7 — Migración y modelo Consulta
+### Paso 7 — Migración y modelo Consulta ✅
 
 **Objetivo:** Tener la entidad para mensajes del formulario de contacto.
 
@@ -158,6 +158,11 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 **Criterio de terminado:**
 - Tabla `consultas` existe en la BD
 - `Consulta::create([...])` funciona en tinker
+
+**Notas:**
+- `leido` cast a boolean, default `false`
+- Sin relaciones (entidad standalone del formulario de contacto)
+- Verificado con tinker: `Consulta::create([...])` funciona correctamente
 
 ---
 
