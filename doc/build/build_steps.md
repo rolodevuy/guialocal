@@ -469,21 +469,29 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 20 — Página de contacto
+### Paso 20 — Página de contacto ✅
 
 **Objetivo:** Tener un formulario de contacto funcional que guarde el mensaje.
 
 **Resultado esperado:**
 - `ContactoController@show` → vista con formulario
 - `ContactoController@store` → valida, guarda en `consultas`, redirige con mensaje de éxito
-- Validación: nombre (required), email (required, email), mensaje (required, min:20)
+- Validación: nombre (required), email (required, email), mensaje (required, min:10)
 - Errores de validación visibles en el formulario
 
 **Criterio de terminado:**
-- El formulario enviado correctamente muestra mensaje de éxito
-- Los errores de validación se muestran campo por campo
-- El registro aparece en la tabla `consultas` de la BD
-- Desde Filament se ve la consulta recibida
+- El formulario enviado correctamente muestra mensaje de éxito ✅
+- Los errores de validación se muestran campo por campo ✅
+- El registro aparece en la tabla `consultas` de la BD ✅
+- Desde Filament se ve la consulta recibida ✅
+
+**Notas:**
+- Validación con mensajes en español
+- Flash `session('success')` con banner verde en la vista
+- Inputs resaltan en rojo si tienen error (`border-red-300 bg-red-50`)
+- `old()` preserva valores al volver con error
+- Sidebar con info de uso (registrar negocio, actualizar datos, etc.) y tiempo de respuesta
+- Layout: formulario (flex-1) + sidebar (lg:w-72)
 
 ---
 

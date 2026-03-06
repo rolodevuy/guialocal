@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Consulta;
 use Illuminate\Http\Request;
 
 class ContactoController extends Controller
@@ -13,7 +14,22 @@ class ContactoController extends Controller
 
     public function store(Request $request)
     {
-        // implementado en Paso 20
-        return redirect()->route('contacto.show');
+        $validated = $request->validate([
+            'nombre'  => ['required', 'string', 'max:100'],
+            'email'   => ['required', 'email', 'max:150'],
+            'mensaje' => ['required', 'string', 'min:10', 'max:2000'],
+        ], [
+            'nombre.required'  => 'El nombre es obligatorio.',
+            'email.required'   => 'El email es obligatorio.',
+            'email.email'      => 'Ingresá un email válido.',
+            'mensaje.required' => 'El mensaje es obligatorio.',
+            'mensaje.min'      => 'El mensaje debe tener al menos 10 caracteres.',
+        ]);
+
+        Consulta::create($validated);
+
+        return redirect()
+            ->route('contacto.show')
+            ->with('success', '¡Mensaje enviado! Te responderemos a la brevedad.');
     }
 }
