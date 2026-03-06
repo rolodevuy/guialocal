@@ -565,18 +565,27 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 24 — Meta tags dinámicos
+### Paso 24 — Meta tags dinámicos ✅
 
 **Objetivo:** Tener title y description únicos por página para SEO.
 
 **Resultado esperado:**
-- Stack en `layouts/app.blade.php` para `@stack('meta')`
-- Cada vista pushea su propio `<title>` y `<meta name="description">`
-- Páginas con entidad dinámica (negocio, categoría) usan datos del modelo
+- Canonical URL en el layout
+- Open Graph tags (og:title, og:description, og:url, og:type, og:site_name) en el layout
+- Ficha de negocio: og:type=article + og:image con la portada
 
 **Criterio de terminado:**
-- Cada página tiene un `<title>` único y descriptivo
-- La ficha de negocio tiene description con los primeros 160 chars de su descripción
+- Cada página tiene `<title>` único y descriptivo ✅
+- Canonical URL correcta en todas las páginas ✅
+- OG tags presentes en home y ficha de negocio ✅
+- Ficha de negocio tiene og:type=article y og:image cuando hay portada ✅
+
+**Notas:**
+- `@yield('title')` y `@yield('description')` ya estaban en el layout desde el Paso 13
+- Canonical: `<link rel="canonical" href="{{ url()->current() }}">` en el layout
+- OG base tags en el layout usando `@yield('title')`, `@yield('description')`, `@yield('og_type', 'website')`
+- `negocios/show.blade.php`: `@section('og_type', 'article')` + `@push('meta')` con og:image
+- Todas las vistas ya tenían `@section('title', ...)` y `@section('description', ...)`
 
 ---
 
