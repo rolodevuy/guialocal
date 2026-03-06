@@ -332,9 +332,6 @@
                             </div>
                             <div class="text-xs text-gray-400 mt-0.5">
                                 {{ $fe['_fecha_obj']->translatedFormat('j \d\e F') }}
-                                @if($fe['se_repite'] ?? false)
-                                    <span class="text-amber-500">· anual</span>
-                                @endif
                             </div>
                         </li>
                         @endforeach
