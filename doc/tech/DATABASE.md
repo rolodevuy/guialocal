@@ -14,7 +14,7 @@ Esquema de la base de datos del proyecto. Motor: MariaDB 10.x vía XAMPP.
 | `jobs` / `job_batches` / `failed_jobs` | ✅ creadas (Laravel default) | Paso 1 |
 | `media` | ✅ creada (Spatie Media Library) | Paso 3 |
 | `categorias` | ✅ creada | Paso 4 |
-| `zonas` | pendiente | Paso 5 |
+| `zonas` | ✅ creada | Paso 5 |
 | `negocios` | pendiente | Paso 6 |
 | `consultas` | pendiente | Paso 7 |
 

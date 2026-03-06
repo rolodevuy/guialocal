@@ -106,7 +106,7 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
-### Paso 5 — Migración y modelo Zona
+### Paso 5 — Migración y modelo Zona ✅
 
 **Objetivo:** Tener la entidad Zona persistible.
 
@@ -117,6 +117,11 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 **Criterio de terminado:**
 - Tabla `zonas` existe en la BD
 - `Zona::all()` responde en tinker
+
+**Notas:**
+- Tabla `zonas`: `nombre`, `slug` (unique)
+- `HasSlug`, `getRouteKeyName()` → `slug`, relación `hasMany(Negocio::class)`
+- Verificado con tinker: `Zona::create(['nombre' => 'Centro'])` genera slug `centro`
 
 ---
 
