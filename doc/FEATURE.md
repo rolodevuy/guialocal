@@ -103,3 +103,4 @@ Notificaciones por mail y en sistema para eventos relevantes: nuevas reseñas, c
 - **WhatsApp Business** — botón directo desde la ficha del negocio
 - **Aplicación mobile** — consumo de API Laravel con app nativa
 - **Estadísticas avanzadas** — dashboard completo para negocios premium
+- **Otros negocios cerca

@@ -12,7 +12,7 @@ class HomeController extends Controller
     {
         $destacados = Negocio::activo()->featured()
             ->with(['categoria', 'zona'])
-            ->limit(6)
+            ->limit(3)
             ->get();
 
         $categorias = Categoria::activo()

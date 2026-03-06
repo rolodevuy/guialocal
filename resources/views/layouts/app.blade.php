@@ -16,6 +16,7 @@
     <meta property="og:title" content="@yield('title', 'Guía Local — Tu barrio en un solo lugar')">
     <meta property="og:description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
     @stack('meta')
+    @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
@@ -157,5 +158,6 @@
         </div>
     </footer>
 
+    @stack('scripts')
 </body>
 </html>

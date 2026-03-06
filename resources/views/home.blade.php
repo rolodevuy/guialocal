@@ -5,11 +5,13 @@
 
 @section('content')
 
-{{-- ============================================================ --}}
-{{-- HERO                                                          --}}
-{{-- ============================================================ --}}
-<section class="bg-white border-b border-gray-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+{{-- ============================================================
+     SECCIÓN: hero
+     "Descubrí negocios cerca tuyo"
+     Contiene: h1, buscador, 3 quick actions (overlap hacia #destacados)
+     ============================================================ --}}
+<section id="hero" class="bg-gray-50 relative">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-20 sm:pb-24 text-center">
 
         <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-8">
             Descubrí negocios<br class="hidden sm:block"> cerca tuyo
@@ -28,7 +30,7 @@
                 <div class="hidden sm:block w-px bg-gray-100 my-3"></div>
                 <select name="zona"
                         class="px-4 py-4 text-sm text-gray-600 bg-transparent outline-none sm:w-44 shrink-0 border-t sm:border-t-0 border-gray-100 cursor-pointer">
-                    <option value="">Toda Atlántida</option>
+                    <option value="">Atlántida</option>
                     @foreach($zonas as $zona)
                         <option value="{{ $zona->slug }}" {{ request('zona') === $zona->slug ? 'selected' : '' }}>
                             {{ $zona->nombre }}
@@ -42,50 +44,49 @@
             </div>
         </form>
 
-        {{-- Quick actions --}}
-        <div class="flex justify-center gap-10 sm:gap-16 mt-10">
+        {{-- Quick actions: 50/50 exacto entre hero y destacados --}}
+        <div class="absolute left-1/2 bottom-0 z-30 -translate-x-1/2 translate-y-1/2">
+            <div class="flex items-start gap-6 sm:gap-16">
 
-            <a href="{{ route('negocios.index') }}" class="flex flex-col items-center gap-2.5 group">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center group-hover:border-amber-300 group-hover:shadow-md transition-all">
-                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/>
-                    </svg>
-                </div>
-                <span class="text-xs font-medium text-gray-500 group-hover:text-amber-600 transition-colors">Buscar negocios</span>
-            </a>
+                <a href="{{ route('negocios.index') }}" class="group flex flex-col items-center text-center w-36 sm:w-44">
+                    <span class="flex items-center justify-center bg-white border border-gray-200 shadow-md" style="width:64px;height:64px;border-radius:9999px;">
+                        <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/>
+                        </svg>
+                    </span>
+                    <span class="mt-3 text-sm sm:text-base font-medium text-slate-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">Buscar negocios</span>
+                </a>
 
-            <a href="{{ route('negocios.index') }}" class="flex flex-col items-center gap-2.5 group">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center group-hover:border-amber-300 group-hover:shadow-md transition-all">
-                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
-                    </svg>
-                </div>
-                <span class="text-xs font-medium text-gray-500 group-hover:text-amber-600 transition-colors">Ver en el mapa</span>
-            </a>
+                <a href="{{ route('negocios.index') }}" class="group flex flex-col items-center text-center w-36 sm:w-44">
+                    <span class="flex items-center justify-center bg-white border border-gray-200 shadow-md" style="width:64px;height:64px;border-radius:9999px;">
+                        <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                  d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                        </svg>
+                    </span>
+                    <span class="mt-3 text-sm sm:text-base font-medium text-slate-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">Ver en el mapa</span>
+                </a>
 
-            <a href="{{ route('categorias.index') }}" class="flex flex-col items-center gap-2.5 group">
-                <div class="w-14 h-14 rounded-full bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center group-hover:border-amber-300 group-hover:shadow-md transition-all">
-                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
-                    </svg>
-                </div>
-                <span class="text-xs font-medium text-gray-500 group-hover:text-amber-600 transition-colors">Explorar categorías</span>
-            </a>
+                <a href="{{ route('categorias.index') }}" class="group flex flex-col items-center text-center w-36 sm:w-44">
+                    <span class="flex items-center justify-center bg-white border border-gray-200 shadow-md" style="width:64px;height:64px;border-radius:9999px;">
+                        <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                  d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
+                        </svg>
+                    </span>
+                    <span class="mt-3 text-sm sm:text-base font-medium text-slate-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">Explorar categorías</span>
+                </a>
 
+            </div>
         </div>
     </div>
 </section>
 
-{{-- ============================================================ --}}
-{{-- NEGOCIOS DESTACADOS                                           --}}
-{{-- ============================================================ --}}
 @if($destacados->isNotEmpty())
-<section class="bg-gray-50 border-t border-gray-100 py-12 sm:py-16">
+<section id="destacados" class="relative z-10 bg-gray-50 border-t border-gray-200 pt-24 sm:pt-28 pb-12 sm:pb-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="flex items-center justify-between mb-8">
@@ -101,7 +102,7 @@
             <a href="{{ route('negocios.show', $negocio) }}"
                class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200">
 
-                {{-- Imagen --}}
+                {{-- Imagen con badge PREMIUM --}}
                 <div class="relative h-48 bg-amber-50 overflow-hidden">
                     @if($negocio->getFirstMediaUrl('portada'))
                         <img src="{{ $negocio->getFirstMediaUrl('portada') }}"
@@ -146,151 +147,66 @@
 </section>
 @endif
 
-{{-- ============================================================ --}}
-{{-- MAPA DE NEGOCIOS                                             --}}
-{{-- ============================================================ --}}
-<section class="bg-white border-t border-gray-100 py-12 sm:py-16">
+{{-- ============================================================
+     SECCIÓN: mapa
+     Placeholder de mapa interactivo (Etapa 2)
+     Izquierda: card amber con zonas como pills + CTA
+     Derecha: mapa SVG placeholder con pines
+     ============================================================ --}}
+<section id="mapa" class="bg-white border-t border-gray-100 py-12 sm:py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-8">Mapa de negocios cercanos</h2>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            {{-- Columna izquierda: visual card con overlay --}}
-            <div class="relative rounded-2xl overflow-hidden min-h-72 lg:min-h-0 bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500">
+            {{-- Izquierda: imagen (50%) + info (50%), altura fija --}}
+            <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white flex flex-col h-80">
 
-                {{-- Patrón decorativo de fondo --}}
-                <div class="absolute inset-0 opacity-10">
-                    <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
-                                <circle cx="2" cy="2" r="1.5" fill="white"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#dots)"/>
-                    </svg>
+                {{-- Foto: 160px = 50% de h-80 (320px), sin porcentajes --}}
+                <div class="h-40 shrink-0 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=80&auto=format&fit=crop"
+                         alt="Negocios en Atlántida"
+                         class="w-full h-full object-cover">
                 </div>
 
-                {{-- Círculos decorativos --}}
-                <div class="absolute -top-16 -right-16 w-64 h-64 bg-white/10 rounded-full"></div>
-                <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-white/10 rounded-full"></div>
+                {{-- Info: 50% restante --}}
+                <div class="p-5 flex flex-col gap-3 flex-1 min-h-0">
+                    <h3 class="font-bold text-gray-900">Mapa de negocios cercanos</h3>
 
-                {{-- Contenido --}}
-                <div class="relative h-full flex flex-col justify-between p-7 sm:p-8">
-                    <div>
-                        <div class="w-11 h-11 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-5">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2">Mapa de negocios cercanos</h3>
-                        <p class="text-sm text-amber-100 leading-relaxed">
-                            Explorá los negocios de cada zona de Atlántida. Filtrá por barrio y encontrá lo que necesitás cerca tuyo.
-                        </p>
+                    <select class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-white text-gray-600 outline-none cursor-pointer focus:border-amber-400 transition-colors">
+                        <option value="">Buscar por zona en Atlántida</option>
+                        @foreach($zonas as $zona)
+                            <option value="{{ $zona->slug }}">{{ $zona->nombre }}</option>
+                        @endforeach
+                    </select>
 
-                        {{-- Zonas como pills --}}
-                        <div class="flex flex-wrap gap-2 mt-5">
-                            @foreach($zonas as $zona)
-                                <a href="{{ route('zonas.show', $zona) }}"
-                                   class="px-3 py-1 bg-white/20 hover:bg-white/30 text-xs text-white font-medium rounded-full border border-white/30 transition-colors">
-                                    {{ $zona->nombre }}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="mt-6">
+                    <div class="mt-auto">
                         <a href="{{ route('negocios.index') }}"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-amber-600 hover:bg-amber-50 font-semibold rounded-xl text-sm transition-colors shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/>
-                            </svg>
+                           class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm">
                             Ver mapa completo
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
                         </a>
                     </div>
                 </div>
-
             </div>
 
-            {{-- Columna derecha: mapa placeholder --}}
-            <div class="relative bg-gray-100 rounded-2xl overflow-hidden min-h-72 lg:min-h-0">
-
-                {{-- Fondo tipo mapa --}}
-                <div class="absolute inset-0 bg-gradient-to-br from-slate-100 via-gray-50 to-amber-50/40">
-
-                    {{-- Grilla de calles --}}
-                    <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id="mapgrid" width="48" height="48" patternUnits="userSpaceOnUse">
-                                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#e5e7eb" stroke-width="0.5"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#mapgrid)"/>
-
-                        {{-- Avenidas principales --}}
-                        <rect x="0" y="37%" width="100%" height="7" fill="#dde1e7" rx="2"/>
-                        <rect x="0" y="62%" width="100%" height="5" fill="#e9ecf0" rx="2"/>
-                        <rect x="27%" y="0" width="7" height="100%" fill="#dde1e7" rx="2"/>
-                        <rect x="63%" y="0" width="5" height="100%" fill="#e9ecf0" rx="2"/>
-                        <rect x="0" y="20%" width="100%" height="3" fill="#edf0f3" rx="1"/>
-                        <rect x="47%" y="0" width="3" height="100%" fill="#edf0f3" rx="1"/>
-                    </svg>
-
-                    {{-- Pins de negocios --}}
-                    <div class="absolute" style="top:30%;left:27%">
-                        <div class="w-8 h-8 bg-amber-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center -translate-x-1/2 -translate-y-1/2 ring-4 ring-amber-100">
-                            <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="absolute" style="top:55%;left:65%">
-                        <div class="w-8 h-8 bg-amber-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center -translate-x-1/2 -translate-y-1/2 ring-4 ring-amber-100">
-                            <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="absolute" style="top:22%;left:62%">
-                        <div class="w-6 h-6 bg-amber-400 rounded-full border-2 border-white shadow-md flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
-                            <div class="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="absolute" style="top:72%;left:37%">
-                        <div class="w-6 h-6 bg-amber-400 rounded-full border-2 border-white shadow-md flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
-                            <div class="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="absolute" style="top:44%;left:48%">
-                        <div class="w-6 h-6 bg-gray-400 rounded-full border-2 border-white shadow-md flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
-                            <div class="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                    </div>
-                    <div class="absolute" style="top:67%;left:75%">
-                        <div class="w-5 h-5 bg-gray-300 rounded-full border-2 border-white shadow flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
-                            <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-                {{-- Chip "próximamente" --}}
-                <div class="absolute bottom-4 inset-x-0 flex justify-center">
-                    <span class="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-600 shadow-sm border border-gray-100">
-                        Mapa interactivo — próximamente
-                    </span>
-                </div>
-
+            {{-- Derecha: mapa Leaflet, misma altura --}}
+            <div class="relative rounded-2xl overflow-hidden h-80">
+                <div id="mapa-leaflet" class="absolute inset-0"></div>
             </div>
+
         </div>
-
     </div>
 </section>
 
-{{-- ============================================================ --}}
-{{-- EXPLORAR POR CATEGORÍA                                        --}}
-{{-- ============================================================ --}}
-<section class="bg-gray-50 border-t border-gray-100 py-12 sm:py-16">
+{{-- ============================================================
+     SECCIÓN: categorias
+     Grid de categorías con número decorativo, ícono, nombre y count
+     ============================================================ --}}
+<section id="categorias" class="bg-gray-50 border-t border-gray-100 py-12 sm:py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="flex items-center justify-between mb-8">
@@ -311,7 +227,7 @@
                     {{ $categoria->negocios_count }}
                 </span>
 
-                {{-- Icono --}}
+                {{-- Ícono --}}
                 <div class="w-10 h-10 rounded-xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center mb-3 transition-colors">
                     <x-cat-icon :name="$categoria->icono" class="w-5 h-5 text-amber-500" />
                 </div>
@@ -331,10 +247,11 @@
     </div>
 </section>
 
-{{-- ============================================================ --}}
-{{-- CTA                                                           --}}
-{{-- ============================================================ --}}
-<section class="bg-white border-t border-gray-100 py-14 sm:py-20">
+{{-- ============================================================
+     SECCIÓN: registro
+     CTA para que los negocios se registren
+     ============================================================ --}}
+<section id="registro" class="bg-white border-t border-gray-100 py-14 sm:py-20">
     <div class="max-w-2xl mx-auto px-4 text-center">
         <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3 leading-tight">
             ¿Tenés un negocio en Atlántida?
@@ -350,3 +267,67 @@
 </section>
 
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    var el = document.getElementById('mapa-leaflet');
+    if (!el) return;
+
+    var map = L.map('mapa-leaflet', {
+        center: [-34.7667, -55.7621],
+        zoom: 14,
+        scrollWheelZoom: false,
+        zoomControl: true,
+    });
+
+    // CartoDB Voyager — mapa con colores completos, sin API key
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Pin teardrop SVG amber
+    var pinSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">'
+        + '<path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22S28 24.5 28 14C28 6.268 21.732 0 14 0z" fill="#f59e0b"/>'
+        + '<circle cx="14" cy="14" r="6" fill="white"/>'
+        + '</svg>';
+
+    var pinIcon = L.divIcon({
+        html: pinSvg,
+        iconSize: [28, 36],
+        iconAnchor: [14, 36],
+        className: '',
+    });
+
+    // Pines demostrativos en Atlántida (se reemplazarán con coords reales de negocios en Etapa 2)
+    var pines = [
+        [-34.7627, -55.7665],
+        [-34.7650, -55.7590],
+        [-34.7695, -55.7540],
+        [-34.7710, -55.7635],
+        [-34.7680, -55.7700],
+        [-34.7742, -55.7572],
+    ];
+
+    pines.forEach(function (coord) {
+        L.marker(coord, { icon: pinIcon }).addTo(map);
+    });
+}());
+</script>
+@endpush
+
+
+
+
+
+
+
+
+
