@@ -54,6 +54,7 @@ class Negocio extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
+        $this->addMediaCollection('logo')->singleFile();
         $this->addMediaCollection('portada')->singleFile();
         $this->addMediaCollection('galeria');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Negocio;
+use App\Models\Zona;
 
 class CategoriaController extends Controller
 {
@@ -21,13 +22,21 @@ class CategoriaController extends Controller
     {
         abort_unless($categoria->activo, 404);
 
+        $zonaId = request()->integer('zona') ?: null;
+
         $negocios = Negocio::activo()
             ->where('categoria_id', $categoria->id)
+            ->when($zonaId, fn ($q) => $q->where('zona_id', $zonaId))
             ->with(['categoria', 'zona'])
             ->orderByDesc('featured')
             ->orderBy('nombre')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
-        return view('categorias.show', compact('categoria', 'negocios'));
+        $zonas = Zona::orderBy('nombre')
+            ->whereHas('negocios', fn ($q) => $q->activo()->where('categoria_id', $categoria->id))
+            ->get();
+
+        return view('categorias.show', compact('categoria', 'negocios', 'zonas', 'zonaId'));
     }
 }

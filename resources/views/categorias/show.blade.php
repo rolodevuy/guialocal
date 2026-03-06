@@ -33,6 +33,22 @@
         </div>{{-- /texto --}}
     </div>{{-- /header --}}
 
+    {{-- Filtro por zona --}}
+    <div class="mb-6 flex flex-wrap items-center gap-2">
+        <a href="{{ route('categorias.show', $categoria) }}"
+           class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ !$zonaId ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            Todas
+        </a>
+        @foreach($zonas as $zona)
+        <a href="{{ route('categorias.show', $categoria) }}?zona={{ $zona->id }}"
+           class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ $zonaId == $zona->id ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            {{ $zona->nombre }}
+        </a>
+        @endforeach
+    </div>
+
     {{-- Grid de negocios --}}
     @if($negocios->isNotEmpty())
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

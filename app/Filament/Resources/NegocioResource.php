@@ -151,6 +151,14 @@ class NegocioResource extends Resource
                         Forms\Components\Tabs\Tab::make('Imágenes')
                             ->icon('heroicon-o-photo')
                             ->schema([
+                                SpatieMediaLibraryFileUpload::make('logo')
+                                    ->label('Logo')
+                                    ->collection('logo')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->maxSize(1024)
+                                    ->helperText('Logo del negocio. Se muestra en la tarjeta de detalle. Máx 1MB.')
+                                    ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('portada')
                                     ->label('Imagen de portada')
                                     ->collection('portada')

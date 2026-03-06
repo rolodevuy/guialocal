@@ -33,6 +33,24 @@
         </p>
     </div>
 
+    {{-- Filtro por categoría (solo si hay más de una) --}}
+    @if($categorias->count() > 1)
+    <div class="mb-6 flex flex-wrap items-center gap-2">
+        <a href="{{ route('zonas.show', $zona) }}"
+           class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ !$categoriaId ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            Todas
+        </a>
+        @foreach($categorias as $categoria)
+        <a href="{{ route('zonas.show', $zona) }}?categoria={{ $categoria->id }}"
+           class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ $categoriaId == $categoria->id ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            {{ $categoria->nombre }}
+        </a>
+        @endforeach
+    </div>
+    @endif
+
     {{-- Grid de negocios --}}
     @if($negocios->isNotEmpty())
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -41,16 +59,14 @@
                class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
 
                 {{-- Imagen --}}
-                <div class="h-40 bg-amber-50 overflow-hidden relative">
+                <div class="h-40 overflow-hidden relative">
                     @if($negocio->getFirstMediaUrl('portada'))
                         <img src="{{ $negocio->getFirstMediaUrl('portada') }}"
                              alt="{{ $negocio->nombre }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     @else
-                        <div class="w-full h-full flex items-center justify-center">
-                            <svg class="w-12 h-12 text-amber-200" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
-                            </svg>
+                        <div class="w-full h-full bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center">
+                            <x-cat-icon :name="$negocio->categoria->icono ?? 'default'" class="w-14 h-14 text-amber-300" />
                         </div>
                     @endif
                     @if($negocio->featured)
@@ -67,10 +83,9 @@
                         <p class="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">{{ $negocio->descripcion }}</p>
                     @endif
                     <div class="mt-auto pt-3">
-                        <a href="{{ route('categorias.show', $negocio->categoria) }}"
-                           class="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full hover:bg-amber-100 transition-colors">
+                        <span class="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">
                             {{ $negocio->categoria->nombre }}
-                        </a>
+                        </span>
                     </div>
                 </div>
             </a>

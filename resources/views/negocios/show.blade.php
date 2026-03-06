@@ -96,6 +96,15 @@
         <aside class="lg:w-72 shrink-0">
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
 
+                {{-- Logo (solo si existe) --}}
+                @if($negocio->hasMedia('logo'))
+                <div class="flex justify-center pb-1">
+                    <img src="{{ $negocio->getFirstMediaUrl('logo') }}"
+                         alt="Logo {{ $negocio->nombre }}"
+                         class="max-h-20 max-w-full object-contain rounded-2xl">
+                </div>
+                @endif
+
                 {{-- Contacto --}}
                 <div>
                     <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Contacto</h2>

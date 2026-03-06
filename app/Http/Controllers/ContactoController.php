@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NuevaConsulta;
 use App\Models\Consulta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ContactoController extends Controller
 {
@@ -26,7 +28,9 @@ class ContactoController extends Controller
             'mensaje.min'      => 'El mensaje debe tener al menos 10 caracteres.',
         ]);
 
-        Consulta::create($validated);
+        $consulta = Consulta::create($validated);
+
+        Mail::to(config('app.admin_email'))->send(new NuevaConsulta($consulta));
 
         return redirect()
             ->route('contacto.show')
