@@ -1193,6 +1193,40 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 48 — Zona auto-detectada desde el mapa (centroide) ✅
+
+**Objetivo:** Eliminar la doble elección de zona (dropdown en Info básica + pin en mapa). La zona se asigna automáticamente al colocar el pin, y se puede ajustar manualmente.
+
+**Resultado esperado:**
+- `zona_id` movido del tab "Info básica" al tab "Ubicación" en NegocioResource
+- Al colocar o arrastrar el pin, se detecta la zona más cercana por distancia euclidiana a centroides
+- El admin puede sobrescribir la zona manualmente con el select
+- Zonas tienen coordenadas de centroide en BD (`lat_centro`, `lng_centro`)
+- Seeders actualizados con zonas uruguayas reales y centroides aproximados
+
+**Criterio de terminado:**
+- Migration `add_centroids_to_zonas_table`: decimal 10,7 nullable ✅
+- `Zona` model: `lat_centro` y `lng_centro` en `$fillable` y `$casts` ✅
+- `ZonaSeeder`: 7 zonas uruguayas con centroides reales ✅
+- `NegocioResource`: zona_id en tab Ubicación, lat/lng con `->live()` + `->afterStateUpdated()` ✅
+- Método `actualizarZona()`: calcula zona más cercana y la asigna vía `$set` ✅
+
+**Archivos modificados:**
+- `database/migrations/2026_03_07_101919_add_centroids_to_zonas_table.php`
+- `app/Models/Zona.php`
+- `database/seeders/ZonaSeeder.php`
+- `app/Filament/Resources/NegocioResource.php`
+
+**Limitación conocida / pendiente:**
+- Atlántida y Las Toscas son zonas limítrofes: la detección por centroide no es confiable en zonas adyacentes
+- **Paso 49 pendiente:** reemplazar centroide por Nominatim (reverse geocoding de OSM, gratuito, sin API key)
+  - Llamada: `GET https://nominatim.openstreetmap.org/reverse?lat=X&lon=Y&format=json`
+  - Extraer `address.village` / `address.town` / `address.suburb` y matchear con `Zona::nombre`
+  - Fallback a centroide si Nominatim falla (timeout / sin conexión)
+  - Timeout recomendado: 3 segundos
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

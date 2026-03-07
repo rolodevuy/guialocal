@@ -13,6 +13,13 @@ class Zona extends Model
     protected $fillable = [
         'nombre',
         'slug',
+        'lat_centro',
+        'lng_centro',
+    ];
+
+    protected $casts = [
+        'lat_centro' => 'float',
+        'lng_centro' => 'float',
     ];
 
     public function getSlugOptions(): SlugOptions

@@ -63,11 +63,6 @@ class NegocioResource extends Resource
                                     ->options(Categoria::orderBy('nombre')->pluck('nombre', 'id'))
                                     ->required()
                                     ->searchable(),
-                                Forms\Components\Select::make('zona_id')
-                                    ->label('Zona')
-                                    ->options(Zona::orderBy('nombre')->pluck('nombre', 'id'))
-                                    ->required()
-                                    ->searchable(),
                             ])
                             ->columns(2),
 
@@ -244,13 +239,24 @@ class NegocioResource extends Resource
                                     ->numeric()
                                     ->step(0.0000001)
                                     ->readOnly()
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::actualizarZona($set, $get))
                                     ->helperText('Se actualiza al hacer click en el mapa.'),
                                 Forms\Components\TextInput::make('lng')
                                     ->label('Longitud')
                                     ->numeric()
                                     ->step(0.0000001)
                                     ->readOnly()
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::actualizarZona($set, $get))
                                     ->helperText('Se actualiza al hacer click en el mapa.'),
+                                Forms\Components\Select::make('zona_id')
+                                    ->label('Zona')
+                                    ->options(Zona::orderBy('nombre')->pluck('nombre', 'id'))
+                                    ->required()
+                                    ->searchable()
+                                    ->helperText('Se asigna automáticamente al colocar el pin. Podés ajustarla manualmente.')
+                                    ->columnSpanFull(),
                             ])
                             ->columns(2),
 
@@ -396,6 +402,36 @@ class NegocioResource extends Resource
                 ]),
             ])
             ->defaultSort('nombre');
+    }
+
+    /**
+     * Auto-detecta la zona más cercana a las coordenadas del pin y la asigna al campo zona_id.
+     * Se llama cuando el usuario coloca o arrastra el marcador en el mapa.
+     */
+    private static function actualizarZona(Set $set, Get $get): void
+    {
+        $lat = (float) $get('lat');
+        $lng = (float) $get('lng');
+
+        if (!$lat || !$lng) {
+            return;
+        }
+
+        $zonas = Zona::whereNotNull('lat_centro')
+            ->whereNotNull('lng_centro')
+            ->get();
+
+        if ($zonas->isEmpty()) {
+            return;
+        }
+
+        $nearest = $zonas->sortBy(function (Zona $zona) use ($lat, $lng): float {
+            return ($lat - $zona->lat_centro) ** 2 + ($lng - $zona->lng_centro) ** 2;
+        })->first();
+
+        if ($nearest) {
+            $set('zona_id', $nearest->id);
+        }
     }
 
     public static function getRelations(): array
