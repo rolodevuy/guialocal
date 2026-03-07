@@ -4,6 +4,7 @@ use App\Http\Controllers\ArticuloController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ContactoController;
+use App\Http\Controllers\GuiaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MapaController;
 use App\Http\Controllers\NegocioController;
@@ -25,6 +26,9 @@ Route::get('/zonas/{zona}', [ZonaController::class, 'show'])->name('zonas.show')
 
 Route::get('/articulos', [ArticuloController::class, 'index'])->name('articulos.index');
 Route::get('/articulos/{articulo}', [ArticuloController::class, 'show'])->name('articulos.show');
+
+Route::get('/guias', [GuiaController::class, 'index'])->name('guias.index');
+Route::get('/guias/{guia}', [GuiaController::class, 'show'])->name('guias.show');
 
 Route::get('/contacto', [ContactoController::class, 'show'])->name('contacto.show');
 Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');

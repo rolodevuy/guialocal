@@ -59,6 +59,23 @@
     </url>
     @endforeach
 
+    {{-- Guías publicadas --}}
+    @if($guias->isNotEmpty())
+    <url>
+        <loc>{{ route('guias.index') }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    @foreach($guias as $guia)
+    <url>
+        <loc>{{ route('guias.show', $guia->slug) }}</loc>
+        <lastmod>{{ $guia->updated_at->toAtomString() }}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    @endforeach
+    @endif
+
     {{-- Artículos publicados --}}
     @if($articulos->isNotEmpty())
     <url>

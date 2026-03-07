@@ -1022,6 +1022,36 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 42 — Guías temáticas ✅
+
+**Objetivo:** Agregar un nuevo tipo de contenido editorial: guías temáticas que agrupan negocios seleccionados bajo un título, intro y cuerpo rich text.
+
+**Resultado esperado:**
+- Tabla `guias` con titulo, slug, intro, cuerpo, categoria_id, publicado, publicado_en
+- Tabla pivot `guia_negocio` con orden
+- Modelo `Guia` con HasSlug, HasMedia (portada), scopePublicado, BelongsToMany negocios
+- `GuiaResource` en Filament con 4 tabs: Contenido, Imagen, Negocios, Configuración
+- Frontend: `/guias` (listado paginado) + `/guias/{slug}` (detalle con lista de negocios)
+- Link "Guías" en nav desktop y mobile
+- Guías publicadas incluidas en `/sitemap.xml`
+
+**Criterio de terminado:**
+- `/guias` responde HTTP 200 ✅
+- `/admin/guias` accesible (redirect 302 a login si no autenticado) ✅
+- Sitemap incluye sección guías ✅
+- Nav muestra "Guías" con active state ✅
+
+**Notas:**
+- Pivot `guia_negocio`: `guia_id`, `negocio_id` (unique), `orden` (smallInt, default 0)
+- Negocios en el form: `Select::make('negocios')->multiple()->relationship()` — Filament gestiona el pivot automáticamente
+- Vista `guias/show.blade.php`: cuerpo con clases `prose` + grid 2 cols de cards de negocios (con imagen portada, categoría, zona, dirección)
+- Vista `guias/index.blade.php`: grid 3 cols con badge count de negocios flotante sobre la imagen
+- Sitemap: `/guias` index + cada guía publicada, prioridad 0.7
+- NavigationSort: 6 (después de Artículos en sort 5)
+- Link "Guías" en nav es condicional: solo aparece si hay al menos una guía publicada — `View::composer('layouts.app', ...)` en `AppServiceProvider` comparte `$hayGuias` (bool)
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

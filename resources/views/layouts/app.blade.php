@@ -49,10 +49,18 @@
                        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('categorias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
                         Categorías
                     </a>
+                    @if($hayArticulos)
                     <a href="{{ route('articulos.index') }}"
                        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('articulos.*') ? 'text-amber-600 bg-amber-50' : '' }}">
                         Artículos
                     </a>
+                    @endif
+                    @if($hayGuias)
+                    <a href="{{ route('guias.index') }}"
+                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('guias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
+                        Guías
+                    </a>
+                    @endif
                     <a href="{{ route('contacto.show') }}"
                        class="ml-2 px-4 py-2 rounded-lg text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors">
                         Contacto
@@ -104,10 +112,18 @@
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                     Categorías
                 </a>
+                @if($hayArticulos)
                 <a href="{{ route('articulos.index') }}" @click="open = false"
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                     Artículos
                 </a>
+                @endif
+                @if($hayGuias)
+                <a href="{{ route('guias.index') }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                    Guías
+                </a>
+                @endif
                 <a href="{{ route('contacto.show') }}" @click="open = false"
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors">
                     Contacto
