@@ -52,10 +52,10 @@ class PromocionResource extends Resource
                 ->default(now()),
 
             Forms\Components\DatePicker::make('fecha_fin')
-                ->label('Válida hasta')
+                ->label('Válida hasta (inclusive)')
                 ->native(false)
                 ->nullable()
-                ->helperText('Dejar vacío si no tiene vencimiento.'),
+                ->helperText('La promo estará activa durante todo ese día. Dejar vacío si no tiene vencimiento.'),
 
             Forms\Components\Toggle::make('activo')
                 ->label('Activa')
