@@ -1110,6 +1110,30 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 45 — Redes sociales en fichas de negocio ✅
+
+**Objetivo:** Permitir cargar links a redes sociales de cada negocio desde el admin y mostrarlos como pills con íconos en la ficha pública.
+
+**Resultado esperado:**
+- Columna `redes_sociales` (JSON nullable) en tabla `negocios`
+- Repeater en tab "Contacto" de NegocioResource: dropdown de red + input de URL
+- Ficha pública muestra las redes como pills neutros con ícono SVG de color de marca
+- JSON-LD `sameAs` incluye sitio_web + todas las URLs de redes
+
+**Criterio de terminado:**
+- Se puede agregar/quitar redes desde el admin con el botón "+ Agregar red social" ✅
+- Ficha pública muestra las redes solo si hay alguna cargada ✅
+- Íconos SVG correctos para Instagram, Facebook, TikTok, YouTube, X, LinkedIn, WhatsApp ✅
+- Pills: fondo gris neutro, ícono con color de marca, texto gris ✅
+
+**Notas:**
+- JSON almacenado como array de objetos `[{"red": "instagram", "url": "https://..."}]`
+- Componente `<x-social-icon :red="$red">` con SVGs inline por red (`resources/views/components/social-icon.blade.php`)
+- Colores de marca aplicados solo al ícono via `style="color: #hex"`, no al pill completo
+- `sameAs` en JSON-LD: string si solo hay una URL, array si hay varias
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

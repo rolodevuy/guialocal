@@ -48,8 +48,11 @@
         if ($negocio->email)
             $schema['email'] = $negocio->email;
 
-        if ($negocio->sitio_web)
-            $schema['sameAs'] = $negocio->sitio_web;
+        $sameAs = array_filter(array_merge(
+            $negocio->sitio_web ? [$negocio->sitio_web] : [],
+            collect($negocio->redes_sociales ?? [])->pluck('url')->all()
+        ));
+        if ($sameAs) $schema['sameAs'] = count($sameAs) === 1 ? array_values($sameAs)[0] : array_values($sameAs);
 
         if ($negocio->lat && $negocio->lng)
             $schema['geo'] = [
@@ -291,6 +294,36 @@
                         @endif
                     </ul>
                 </div>
+
+                {{-- Redes sociales --}}
+                @if(!empty($negocio->redes_sociales))
+                @php
+                    $redesConfig = [
+                        'instagram' => ['label' => 'Instagram', 'bg' => '#E1306C', 'text' => '#ffffff'],
+                        'facebook'  => ['label' => 'Facebook',  'bg' => '#1877F2', 'text' => '#ffffff'],
+                        'tiktok'    => ['label' => 'TikTok',    'bg' => '#010101', 'text' => '#ffffff'],
+                        'youtube'   => ['label' => 'YouTube',   'bg' => '#FF0000', 'text' => '#ffffff'],
+                        'twitter'   => ['label' => 'X',         'bg' => '#000000', 'text' => '#ffffff'],
+                        'linkedin'  => ['label' => 'LinkedIn',  'bg' => '#0A66C2', 'text' => '#ffffff'],
+                        'whatsapp'  => ['label' => 'WhatsApp',  'bg' => '#25D366', 'text' => '#ffffff'],
+                    ];
+                @endphp
+                <div class="border-t border-gray-100 pt-5">
+                    <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Redes sociales</h2>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($negocio->redes_sociales as $red)
+                        @php $cfg = $redesConfig[$red['red']] ?? ['label' => ucfirst($red['red']), 'bg' => '#6B7280', 'text' => '#ffffff']; @endphp
+                        <a href="{{ $red['url'] }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+                            <x-social-icon :red="$red['red']" class="w-3.5 h-3.5" style="color: {{ $cfg['bg'] }}" />
+                            {{ $cfg['label'] }}
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
 
                 {{-- Dirección --}}
                 @if($negocio->direccion)

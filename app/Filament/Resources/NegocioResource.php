@@ -92,6 +92,34 @@ class NegocioResource extends Resource
                                     ->maxLength(255)
                                     ->prefix('https://')
                                     ->columnSpanFull(),
+
+                                Forms\Components\Repeater::make('redes_sociales')
+                                    ->label('Redes sociales')
+                                    ->schema([
+                                        Forms\Components\Select::make('red')
+                                            ->label('Red')
+                                            ->options([
+                                                'instagram' => 'Instagram',
+                                                'facebook'  => 'Facebook',
+                                                'tiktok'    => 'TikTok',
+                                                'youtube'   => 'YouTube',
+                                                'twitter'   => 'X / Twitter',
+                                                'linkedin'  => 'LinkedIn',
+                                                'whatsapp'  => 'WhatsApp',
+                                            ])
+                                            ->required()
+                                            ->native(false),
+                                        Forms\Components\TextInput::make('url')
+                                            ->label('URL del perfil')
+                                            ->url()
+                                            ->required()
+                                            ->placeholder('https://instagram.com/mi_negocio'),
+                                    ])
+                                    ->columns(2)
+                                    ->addActionLabel('+ Agregar red social')
+                                    ->reorderable(false)
+                                    ->defaultItems(0)
+                                    ->columnSpanFull(),
                             ])
                             ->columns(2),
 

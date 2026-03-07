@@ -22,6 +22,7 @@ class Negocio extends Model implements HasMedia
         'telefono',
         'email',
         'sitio_web',
+        'redes_sociales',
         'lat',
         'lng',
         'horarios',
@@ -36,6 +37,7 @@ class Negocio extends Model implements HasMedia
     protected $casts = [
         'horarios'            => 'array',
         'horarios_especiales' => 'array',
+        'redes_sociales'      => 'array',
         'featured'            => 'boolean',
         'activo'    => 'boolean',
         'lat'       => 'float',
