@@ -81,6 +81,11 @@ class Negocio extends Model implements HasMedia
         return $this->belongsTo(Zona::class);
     }
 
+    public function promociones()
+    {
+        return $this->hasMany(Promocion::class);
+    }
+
     // ── Scout ─────────────────────────────────────────────────────────────────
 
     public function toSearchableArray(): array

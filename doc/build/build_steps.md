@@ -1079,6 +1079,37 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+## Bloque 12 — Capa comercial
+
+---
+
+### Paso 44 — Promociones ✅
+
+**Objetivo:** Permitir que los negocios tengan promociones con vigencia temporal, gestionables desde el admin y visibles en la ficha pública.
+
+**Resultado esperado:**
+- Tabla `promociones`: negocio_id, titulo, descripcion, fecha_inicio, fecha_fin, activo + Media (imagen)
+- Modelo `Promocion` con `InteractsWithMedia`, colección `imagen`, scope `vigente()`
+- `PromocionResource` en Filament: selector de negocio, título, descripción, fechas, toggle activo, upload imagen, columna "Vigente" calculada
+- `Negocio` tiene `hasMany(Promocion::class)`
+- `NegocioController@show` carga `$promociones` vigentes y las pasa a la vista
+- `negocios/show.blade.php` muestra sección "Promociones" si hay vigentes
+
+**Criterio de terminado:**
+- `/admin/promocions` accesible ✅
+- Ficha de negocio muestra promociones vigentes si las hay ✅
+- Sin promociones, la sección no aparece ✅
+
+**Notas:**
+- Scope `vigente()`: activo=true + fecha_inicio <= hoy + (fecha_fin null O fecha_fin >= hoy)
+- Imagen de promo: fallback con ícono de etiqueta si no hay imagen
+- `fecha_fin` con color danger en tabla si ya pasó
+- Columna calculada "Vigente" en tabla: `IconColumn` con state computado
+- NavigationSort: 4 (antes de Artículos)
+- Ruta Filament: `/admin/promocions` (pluralización automática de Laravel)
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

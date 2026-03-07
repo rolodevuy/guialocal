@@ -175,6 +175,42 @@
                 <p>{{ $negocio->descripcion }}</p>
             </div>
 
+            {{-- Promociones vigentes --}}
+            @if($promociones->isNotEmpty())
+            <div class="mb-8">
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Promociones</h2>
+                <div class="flex flex-col gap-3">
+                    @foreach($promociones as $promo)
+                    <div class="flex items-start gap-4 bg-amber-50 border border-amber-100 rounded-xl p-4">
+                        @if($promo->getFirstMediaUrl('imagen'))
+                            <img src="{{ $promo->getFirstMediaUrl('imagen') }}"
+                                 alt="{{ $promo->titulo }}"
+                                 class="w-16 h-16 rounded-lg object-cover shrink-0">
+                        @else
+                            <div class="w-16 h-16 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                                <svg class="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                          d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z"/>
+                                </svg>
+                            </div>
+                        @endif
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-800 text-sm">{{ $promo->titulo }}</p>
+                            @if($promo->descripcion)
+                                <p class="text-xs text-gray-500 mt-0.5">{{ $promo->descripcion }}</p>
+                            @endif
+                            @if($promo->fecha_fin)
+                                <p class="text-xs text-amber-600 mt-1 font-medium">
+                                    Válida hasta el {{ $promo->fecha_fin->translatedFormat('j \d\e F') }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             {{-- Galería --}}
             @php $galeria = $negocio->getMedia('galeria'); @endphp
             @if($galeria->isNotEmpty())

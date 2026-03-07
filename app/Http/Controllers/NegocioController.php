@@ -28,6 +28,8 @@ class NegocioController extends Controller
 
         abort_unless($negocio->activo, 404);
 
-        return view('negocios.show', compact('negocio'));
+        $promociones = $negocio->promociones()->vigente()->orderBy('fecha_fin')->get();
+
+        return view('negocios.show', compact('negocio', 'promociones'));
     }
 }
