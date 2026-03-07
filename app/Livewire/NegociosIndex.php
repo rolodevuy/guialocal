@@ -22,6 +22,14 @@ class NegociosIndex extends Component
     #[Url(as: 'zona')]
     public string $zona = '';
 
+    public function mount(): void
+    {
+        // Si no vino zona por URL, leer la cookie
+        if (empty($this->zona)) {
+            $this->zona = request()->cookie('zona_preferida', '');
+        }
+    }
+
     public function updatingQ(): void
     {
         $this->resetPage();
@@ -37,9 +45,15 @@ class NegociosIndex extends Component
         $this->resetPage();
     }
 
+    public function updatedZona(string $value): void
+    {
+        $this->dispatch('guardar-zona', slug: $value);
+    }
+
     public function limpiar(): void
     {
         $this->reset(['q', 'categoria', 'zona']);
+        $this->dispatch('guardar-zona', slug: '');
         $this->resetPage();
     }
 
@@ -59,7 +73,7 @@ class NegociosIndex extends Component
             })
             ->when($this->categoria, fn ($q) => $q->whereHas('categoria', fn ($c) => $c->where('slug', $this->categoria)))
             ->when($this->zona, fn ($q) => $q->whereHas('zona', fn ($z) => $z->where('slug', $this->zona)))
-            ->orderByDesc('featured')
+            ->orderByDesc('featured_score')
             ->orderBy('nombre')
             ->paginate(12);
 

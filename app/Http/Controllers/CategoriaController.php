@@ -28,7 +28,7 @@ class CategoriaController extends Controller
             ->where('categoria_id', $categoria->id)
             ->when($zonaId, fn ($q) => $q->where('zona_id', $zonaId))
             ->with(['categoria', 'zona'])
-            ->orderByDesc('featured')
+            ->orderByDesc('featured_score')
             ->orderBy('nombre')
             ->paginate(12)
             ->withQueryString();

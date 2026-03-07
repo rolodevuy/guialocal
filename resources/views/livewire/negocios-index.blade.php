@@ -1,4 +1,13 @@
-<div>
+<div
+    x-data
+    @guardar-zona.window="
+        if ($event.detail.slug) {
+            document.cookie = 'zona_preferida=' + $event.detail.slug + '; path=/; max-age=' + (60 * 60 * 24 * 30);
+        } else {
+            document.cookie = 'zona_preferida=; path=/; max-age=0';
+        }
+    "
+>
     {{-- Header --}}
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-800">Negocios</h1>

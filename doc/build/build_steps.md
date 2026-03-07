@@ -1164,6 +1164,35 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 47 — Ordenamiento por score + cookie de zona + rotación en home ✅
+
+**Objetivo:** Mejorar la relevancia de los listados públicos y personalizar ligeramente la experiencia del usuario recordando su zona preferida.
+
+**Resultado esperado:**
+- `/negocios` y `/categorias/{slug}` ordenan por `featured_score DESC, nombre ASC` en lugar de `featured DESC`
+- Al seleccionar una zona en el filtro de `/negocios`, se guarda en cookie `zona_preferida` (30 días)
+- Al volver a `/negocios`, la zona preferida se pre-aplica como filtro (si no hay parámetro en URL)
+- La home pre-selecciona la zona preferida en el buscador del hero
+- La home muestra un pill "Mostrando resultados para <Zona>" con link a `/zonas/{slug}` y opción "Cambiar zona"
+- En home, cuando varios negocios empatan en `featured_score`, se rota por hora del día
+
+**Criterio de terminado:**
+- `orderByDesc('featured_score')` en NegociosIndex y CategoriaController ✅
+- Cookie se guarda vía evento Livewire → listener Alpine.js ✅
+- `mount()` en NegociosIndex lee la cookie si no hay parámetro de URL ✅
+- HomeController lee cookie y pasa `$zonaPreferida` a la vista ✅
+- Pill de zona visible en el hero cuando hay zona guardada ✅
+- Rotación por `now()->hour % $empates->count()` implementada en HomeController ✅
+
+**Archivos modificados:**
+- `app/Livewire/NegociosIndex.php` — mount, updatedZona, dispatch evento
+- `resources/views/livewire/negocios-index.blade.php` — listener Alpine cookie
+- `app/Http/Controllers/CategoriaController.php` — orderByDesc featured_score
+- `app/Http/Controllers/HomeController.php` — rotación + cookie zona
+- `resources/views/home.blade.php` — pre-selección zona + pill
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

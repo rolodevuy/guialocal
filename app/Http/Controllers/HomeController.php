@@ -24,7 +24,7 @@ class HomeController extends Controller
             ->get()
             ->pluck('slotable')
             ->filter()
-            ->take(3);
+            ->take(6);
 
         if ($slotsNegocios->isNotEmpty()) {
             $destacados = $slotsNegocios;
@@ -33,23 +33,37 @@ class HomeController extends Controller
             $topCategorias = Categoria::activo()
                 ->where('popularidad_score', '>', 0)
                 ->orderByDesc('popularidad_score')
-                ->limit(3)
+                ->limit(6)
                 ->get();
 
-            $destacados = $topCategorias->map(
-                fn (Categoria $cat) => Negocio::activo()
+            $destacados = $topCategorias->map(function (Categoria $cat) {
+                // Candidatos con el score más alto de la categoría
+                $candidatos = Negocio::activo()
                     ->where('categoria_id', $cat->id)
                     ->orderByDesc('featured_score')
                     ->with(['categoria', 'zona'])
-                    ->first()
-            )->filter()->values();
+                    ->limit(5)
+                    ->get();
+
+                if ($candidatos->isEmpty()) {
+                    return null;
+                }
+
+                $topScore = $candidatos->first()->featured_score;
+                $empates  = $candidatos->where('featured_score', $topScore)->values();
+
+                // Si hay empate, rotar por hora del día para dar visibilidad a todos
+                $offset = $empates->count() > 1 ? (now()->hour % $empates->count()) : 0;
+
+                return $empates->get($offset);
+            })->filter()->values();
 
             // Fallback si todavía no hay scores calculados
             if ($destacados->isEmpty()) {
                 $destacados = Negocio::activo()
                     ->featured()
                     ->with(['categoria', 'zona'])
-                    ->limit(3)
+                    ->limit(6)
                     ->get();
             }
         }
@@ -70,6 +84,12 @@ class HomeController extends Controller
 
         $zonas = Zona::orderBy('nombre')->get();
 
+        // ── Zona preferida del usuario (cookie) ───────────────────────────────
+        $zonaPreferida = null;
+        if ($cookieSlug = request()->cookie('zona_preferida')) {
+            $zonaPreferida = Zona::where('slug', $cookieSlug)->first();
+        }
+
         // ── Negocios con coordenadas para el mapa ─────────────────────────────
         $negocios_mapa = Negocio::activo()
             ->whereNotNull('lat')
@@ -83,6 +103,7 @@ class HomeController extends Controller
             'slotsEditoriales',
             'categorias',
             'zonas',
+            'zonaPreferida',
             'negocios_mapa',
         ));
     }

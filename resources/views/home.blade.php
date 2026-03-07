@@ -30,9 +30,10 @@
                 <div class="hidden sm:block w-px bg-gray-100 my-3"></div>
                 <select name="zona"
                         class="px-4 py-4 text-sm text-gray-600 bg-transparent outline-none sm:w-44 shrink-0 border-t sm:border-t-0 border-gray-100 cursor-pointer">
-                    <option value="">Atlántida</option>
+                    <option value="">Todas las zonas</option>
                     @foreach($zonas as $zona)
-                        <option value="{{ $zona->slug }}" {{ request('zona') === $zona->slug ? 'selected' : '' }}>
+                        <option value="{{ $zona->slug }}"
+                            {{ request('zona') === $zona->slug || ($zonaPreferida && $zonaPreferida->id === $zona->id && !request('zona')) ? 'selected' : '' }}>
                             {{ $zona->nombre }}
                         </option>
                     @endforeach
@@ -43,6 +44,17 @@
                 </button>
             </div>
         </form>
+
+        {{-- Pill zona preferida --}}
+        @if($zonaPreferida)
+        <p class="mt-4 text-sm text-gray-500">
+            Mostrando resultados para
+            <a href="{{ route('zonas.show', $zonaPreferida) }}" class="font-semibold text-amber-600 hover:underline">{{ $zonaPreferida->nombre }}</a>
+            ·
+            <a href="{{ route('negocios.index') }}" class="text-gray-400 hover:text-gray-600 transition-colors"
+               onclick="document.cookie='zona_preferida=; path=/; max-age=0'">Cambiar zona</a>
+        </p>
+        @endif
 
         {{-- Quick actions: 50/50 exacto entre hero y destacados --}}
         <div class="absolute left-1/2 bottom-0 z-30 -translate-x-1/2 translate-y-1/2">
@@ -97,51 +109,135 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($destacados as $negocio)
-            <a href="{{ route('negocios.show', $negocio) }}"
-               class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200">
+        {{-- ── Carousel ───────────────────────────────────────────────────── --}}
+        <div
+            x-data="{
+                idx: 0,
+                n: {{ $destacados->count() }},
+                gap: 24,
+                cardWidth: 0,
+                offset: 0,
+                get pp()  { return window.innerWidth >= 1024 ? 3 : 1; },
+                get max() { return Math.max(0, this.n - this.pp); },
+                prev() {
+                    this.idx = this.idx <= 0 ? this.max : this.idx - 1;
+                    this.update();
+                },
+                next() {
+                    this.idx = this.idx >= this.max ? 0 : this.idx + 1;
+                    this.update();
+                },
+                goto(i) { this.idx = i; this.update(); },
+                update() {
+                    const pp = this.pp;
+                    const W  = this.$refs.wrap.offsetWidth;
+                    if (!W) return;
+                    this.cardWidth = (W - this.gap * (pp - 1)) / pp;
+                    this.offset    = -this.idx * (this.cardWidth + this.gap);
+                },
+                init() {
+                    this.$nextTick(() => this.update());
+                    window.addEventListener('resize', () => {
+                        this.idx = Math.min(this.idx, this.max);
+                        this.update();
+                    });
+                }
+            }"
+        >
+            {{-- Fila: [◀] [track] [▶] --}}
+            <div class="flex items-center gap-3">
 
-                {{-- Imagen con badge PREMIUM --}}
-                <div class="relative h-48 bg-amber-50 overflow-hidden">
-                    @if($negocio->getFirstMediaUrl('portada'))
-                        <img src="{{ $negocio->getFirstMediaUrl('portada') }}"
-                             alt="{{ $negocio->nombre }}"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center">
-                            <svg class="w-14 h-14 text-amber-200" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
-                            </svg>
+                {{-- Botón anterior --}}
+                <button
+                    @click="prev()"
+                    class="shrink-0 w-9 h-9 bg-white rounded-full shadow border border-gray-200 flex items-center justify-center text-gray-500 hover:text-amber-600 hover:border-amber-300 transition cursor-pointer"
+                    aria-label="Anterior"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                {{-- Track --}}
+                <div class="overflow-hidden flex-1" x-ref="wrap">
+                    <div
+                        class="flex"
+                        :style="`gap:${gap}px; transform:translateX(${offset}px); transition:transform .45s cubic-bezier(.25,.46,.45,.94)`"
+                    >
+                        @foreach($destacados as $negocio)
+                        <div class="shrink-0" :style="`width:${cardWidth}px`">
+                            <a href="{{ route('negocios.show', $negocio) }}"
+                               class="group flex flex-col bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200 h-full">
+
+                                {{-- Imagen con badge PREMIUM --}}
+                                <div class="relative h-48 bg-amber-50 overflow-hidden shrink-0">
+                                    @if($negocio->getFirstMediaUrl('portada'))
+                                        <img src="{{ $negocio->getFirstMediaUrl('portada') }}"
+                                             alt="{{ $negocio->nombre }}"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <svg class="w-14 h-14 text-amber-200" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    @if($negocio->plan === 'premium')
+                                        <span class="absolute top-3 right-3 text-xs font-bold bg-amber-500 text-white px-2.5 py-1 rounded-full uppercase tracking-wide shadow-sm">
+                                            Premium
+                                        </span>
+                                    @endif
+                                </div>
+
+                                {{-- Info --}}
+                                <div class="p-4 flex flex-col flex-1">
+                                    <h3 class="font-bold text-gray-900 text-base group-hover:text-amber-600 transition-colors leading-snug">
+                                        {{ $negocio->nombre }}
+                                    </h3>
+                                    <p class="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed flex-1">
+                                        {{ $negocio->descripcion }}
+                                    </p>
+                                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
+                                        <span class="text-xs text-gray-400">
+                                            {{ $negocio->categoria->nombre }} · {{ $negocio->zona->nombre }}
+                                        </span>
+                                        <span class="text-xs text-amber-600 font-medium">Ver más →</span>
+                                    </div>
+                                </div>
+
+                            </a>
                         </div>
-                    @endif
-
-                    @if($negocio->plan === 'premium')
-                        <span class="absolute top-3 right-3 text-xs font-bold bg-amber-500 text-white px-2.5 py-1 rounded-full uppercase tracking-wide shadow-sm">
-                            Premium
-                        </span>
-                    @endif
-                </div>
-
-                {{-- Info --}}
-                <div class="p-4">
-                    <h3 class="font-bold text-gray-900 text-base group-hover:text-amber-600 transition-colors leading-snug">
-                        {{ $negocio->nombre }}
-                    </h3>
-                    <p class="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-                        {{ $negocio->descripcion }}
-                    </p>
-                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                        <span class="text-xs text-gray-400">
-                            {{ $negocio->categoria->nombre }} · {{ $negocio->zona->nombre }}
-                        </span>
-                        <span class="text-xs text-amber-600 font-medium">Ver más →</span>
+                        @endforeach
                     </div>
                 </div>
 
-            </a>
-            @endforeach
+                {{-- Botón siguiente --}}
+                <button
+                    @click="next()"
+                    class="shrink-0 w-9 h-9 bg-white rounded-full shadow border border-gray-200 flex items-center justify-center text-gray-500 hover:text-amber-600 hover:border-amber-300 transition cursor-pointer"
+                    aria-label="Siguiente"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+            </div>
+
+            {{-- Dots --}}
+            <div class="flex items-center justify-center gap-2 mt-6">
+                <template x-for="i in (max + 1)" :key="i">
+                    <button
+                        @click="goto(i - 1)"
+                        :class="idx === i - 1 ? 'bg-amber-500 w-5' : 'bg-gray-300 w-2'"
+                        class="h-2 rounded-full transition-all duration-300"
+                        :aria-label="`Ir a posición ${i}`"
+                    ></button>
+                </template>
+            </div>
+
         </div>
+        {{-- ── /Carousel ───────────────────────────────────────────────────── --}}
 
     </div>
 </section>
