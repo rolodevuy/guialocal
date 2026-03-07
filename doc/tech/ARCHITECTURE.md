@@ -64,6 +64,10 @@ app/
 │       ├── FichaResource.php         ← perfil gestionado (contacto, horarios, plan)
 │       ├── CategoriaResource.php     ← jerarquía 3 niveles
 │       ├── ZonaResource.php
+│       ├── ArticuloResource.php
+│       ├── GuiaResource.php
+│       ├── PromocionResource.php
+│       ├── FeaturedSlotResource.php   ← slots destacados editoriales
 │       └── ConsultaResource.php      ← solo lectura, badge no-leídos
 ├── Http/
 │   └── Controllers/
@@ -71,6 +75,8 @@ app/
 │       ├── NegocioController.php
 │       ├── CategoriaController.php
 │       ├── ZonaController.php
+│       ├── GuiaController.php
+│       ├── ArticuloController.php
 │       ├── MapaController.php        ← página /mapa
 │       ├── ContactoController.php
 │       ├── PageController.php
@@ -82,6 +88,11 @@ app/
 │   ├── Ficha.php              ← perfil gestionado (1:1 con Lugar)
 │   ├── Categoria.php          ← jerarquía 3 niveles (parent_id)
 │   ├── Zona.php
+│   ├── Articulo.php           ← blog/artículos editoriales
+│   ├── Guia.php               ← guías temáticas (M:N con Lugar)
+│   ├── Promocion.php          ← promos de fichas (ficha_id)
+│   ├── FeaturedSlot.php       ← slots destacados editoriales
+│   ├── SlugRedirect.php       ← redirects 301 para slugs antiguos
 │   └── Consulta.php
 
 resources/
@@ -103,6 +114,11 @@ resources/
 │   │   ├── index.blade.php
 │   │   └── show.blade.php
 │   ├── zonas/
+│   │   └── show.blade.php
+│   ├── guias/
+│   │   ├── index.blade.php
+│   │   └── show.blade.php
+│   ├── articulos/
 │   │   └── show.blade.php
 │   ├── errors/
 │   │   ├── 404.blade.php
@@ -151,6 +167,38 @@ zonas
 ├── lat_centro, lng_centro (centroides para auto-detección)
 └── timestamps
 
+articulos
+├── id, titulo, slug, extracto, cuerpo
+├── publicado (bool), publicado_en (datetime)
+├── categoria_id → FK categorias (nullable)
+├── lugar_id → FK lugares (nullable)
+└── timestamps
+   ↳ media: colección 'portada' (singleFile)
+
+guias
+├── id, titulo, slug, intro, cuerpo
+├── publicado (bool), publicado_en (datetime)
+├── categoria_id → FK categorias (nullable)
+└── timestamps
+   ↳ media: colección 'portada' (singleFile)
+   ↳ pivot: guia_negocio (guia_id, negocio_id → lugar_id, orden)
+
+promociones
+├── id, ficha_id → FK fichas
+├── titulo, descripcion
+├── fecha_inicio, fecha_fin, activo (bool)
+└── timestamps
+   ↳ media: colección 'imagen' (singleFile)
+
+featured_slots
+├── id, posicion (enum), slotable_type, slotable_id (polymorphic)
+├── orden, activo (bool), valido_hasta (date nullable)
+└── timestamps
+
+slug_redirects
+├── old_slug, new_slug, model_type
+└── timestamps
+
 (media) → Spatie Media Library (tabla polymórfica)
 
 consultas
@@ -171,6 +219,9 @@ GET  /negocios/{slug}           → NegocioController@show
 GET  /categorias                → CategoriaController@index
 GET  /categorias/{slug}         → CategoriaController@show   (?zona=ID)
 GET  /zonas/{slug}              → ZonaController@show        (?categoria=ID)
+GET  /guias                     → GuiaController@index
+GET  /guias/{guia}               → GuiaController@show
+GET  /articulos/{slug}           → ArticuloController@show
 GET  /mapa                      → MapaController@index       (?zona=ID)
 GET  /contacto                  → ContactoController@show
 POST /contacto                  → ContactoController@store

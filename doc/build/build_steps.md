@@ -1286,6 +1286,30 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 - `app/Livewire/NegociosIndex.php`
 - `resources/views/{home,mapa,sitemap,negocios/show,negocios/index,categorias/show,articulos/show}.blade.php`
 
+### Paso 49e — Fixes post-refactor y soporte ngrok ✅
+
+**Resultado:**
+- Corregir referencias rotas a `negocio`/`Negocio` en todo el admin Filament:
+  - `ZonaResource`: `negocios` → `lugares`
+  - `GuiaResource`: `negocios` → `lugares`
+  - `FeaturedSlotResource`: `Negocio` → `Lugar`
+  - `PromocionResource`: `negocio_id` → `ficha_id`, relación `ficha()`, selector con nombre del lugar
+  - `ArticuloResource`: `negocio_id` → `lugar_id`, relación `lugar()`
+- Corregir controladores: `ZonaController`, `GuiaController` (usar Ficha/Lugar)
+- Corregir vistas: `zonas/show`, `guias/show`, `guias/index` (usar Ficha/Lugar)
+- Soporte ngrok/proxy: `AppServiceProvider` detecta `X-Forwarded-Host` y fuerza root URL + scheme
+- `config/livewire.php`: `inject_assets => true` (necesario para que Filament admin cargue Livewire JS)
+- `resources/js/app.js`: Alpine standalone (Livewire se auto-inyecta)
+- `bootstrap/app.php`: `trustProxies(at: '*')` para confiar en proxies
+
+**Archivos modificados:**
+- `app/Filament/Resources/{ZonaResource,GuiaResource,FeaturedSlotResource,PromocionResource,ArticuloResource}.php`
+- `app/Http/Controllers/{ZonaController,GuiaController}.php`
+- `app/Models/Guia.php` (relación `lugares()` con pivot explícito)
+- `resources/views/{zonas/show,guias/show,guias/index}.blade.php`
+- `app/Providers/AppServiceProvider.php`
+- `config/livewire.php`, `resources/js/app.js`, `bootstrap/app.php`
+
 ---
 
 ## Bloque 13 — Sistema de clasificación
