@@ -11,6 +11,8 @@ class Promocion extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
+    protected $table = 'promociones';
+
     protected $fillable = [
         'negocio_id',
         'titulo',
