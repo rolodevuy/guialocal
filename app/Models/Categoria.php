@@ -17,10 +17,12 @@ class Categoria extends Model
         'descripcion',
         'icono',
         'activo',
+        'popularidad_score',
     ];
 
     protected $casts = [
-        'activo' => 'boolean',
+        'activo'            => 'boolean',
+        'popularidad_score' => 'integer',
     ];
 
     public function getSlugOptions(): SlugOptions

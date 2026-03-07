@@ -1134,6 +1134,36 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 46 — Sistema de scores: featured_score y popularidad_score ✅
+
+**Objetivo:** Ordenar la home de forma automática priorizando las categorías más activas y los negocios mejor posicionados, sin depender del flag `featured` manual.
+
+**Resultado esperado:**
+- Columna `featured_score` (smallint, default 0) en `negocios`
+- Columna `popularidad_score` (smallint, default 0) en `categorias`
+- Score calculado automáticamente al guardar cada negocio (evento `saving`)
+- `popularidad_score` de la categoría recalculado cuando se guarda un negocio (evento `saved`)
+- Artisan command `app:recalcular-scores` para inicializar/recomputar en batch
+- Home: top 3 categorías por `popularidad_score` → 1 negocio top por `featured_score` de cada una
+- Columna "Score" visible en la tabla del admin (Filament)
+
+**Criterio de terminado:**
+- Migration corrida sin errores ✅
+- `php artisan app:recalcular-scores` calcula scores en 20 negocios y 8 categorías ✅
+- Top negocios: premium+featured=80, basico+featured=50, basico=20 ✅
+- Home muestra 1 negocio por cada una de las 3 categorías más populares ✅
+- Fallback a `featured` booleano si no hay scores calculados ✅
+- Slots manuales (FeaturedSlot) siguen teniendo prioridad sobre el algoritmo ✅
+
+**Notas:**
+- Fórmula `featured_score`: premium(50) + basico(20) + featured(+30)
+- Fórmula `popularidad_score`: negocios_activos×5 + negocios_premium×10
+- El evento `saving` inyecta el score directamente en el modelo antes de persistir (sin loop)
+- El evento `saved` usa `Categoria::withoutEvents()` para prevenir cascada de eventos
+- `app:recalcular-scores` usa `withoutEvents()` en batch para no disparar eventos innecesarios
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

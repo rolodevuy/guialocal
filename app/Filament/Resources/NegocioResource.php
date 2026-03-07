@@ -346,6 +346,16 @@ class NegocioResource extends Resource
                     ->boolean()
                     ->alignCenter()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('featured_score')
+                    ->label('Score')
+                    ->alignCenter()
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state >= 80 => 'warning',
+                        $state >= 20 => 'success',
+                        default      => 'gray',
+                    }),
                 Tables\Columns\IconColumn::make('activo')
                     ->label('Activo')
                     ->boolean()

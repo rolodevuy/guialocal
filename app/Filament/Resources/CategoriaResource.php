@@ -80,6 +80,16 @@ class CategoriaResource extends Resource
                     ->counts('negocios')
                     ->sortable()
                     ->alignCenter(),
+                Tables\Columns\TextColumn::make('popularidad_score')
+                    ->label('Popularidad')
+                    ->alignCenter()
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state >= 30 => 'warning',
+                        $state >= 10 => 'success',
+                        default      => 'gray',
+                    }),
                 Tables\Columns\IconColumn::make('activo')
                     ->label('Activa')
                     ->boolean()

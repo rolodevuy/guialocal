@@ -28,6 +28,7 @@ class Negocio extends Model implements HasMedia
         'horarios',
         'horarios_especiales',
         'featured',
+        'featured_score',
         'activo',
         'plan',
         'categoria_id',
@@ -39,9 +40,10 @@ class Negocio extends Model implements HasMedia
         'horarios_especiales' => 'array',
         'redes_sociales'      => 'array',
         'featured'            => 'boolean',
-        'activo'    => 'boolean',
-        'lat'       => 'float',
-        'lng'       => 'float',
+        'activo'              => 'boolean',
+        'lat'                 => 'float',
+        'lng'                 => 'float',
+        'featured_score'      => 'integer',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -108,12 +110,48 @@ class Negocio extends Model implements HasMedia
 
     protected static function booted(): void
     {
+        // Redireccionamiento de slugs cambiados
         static::updating(function (Negocio $negocio) {
             if ($negocio->isDirty('slug')) {
                 SlugRedirect::updateOrCreate(
                     ['old_slug' => $negocio->getOriginal('slug')],
                     ['negocio_id' => $negocio->id],
                 );
+            }
+        });
+
+        // Calcular featured_score antes de guardar
+        static::saving(function (Negocio $negocio) {
+            $score = match ($negocio->plan ?? 'gratuito') {
+                'premium' => 50,
+                'basico'  => 20,
+                default   => 0,
+            };
+            if ($negocio->featured) {
+                $score += 30;
+            }
+            $negocio->featured_score = $score;
+        });
+
+        // Recalcular popularidad_score de la categoría tras guardar
+        static::saved(function (Negocio $negocio) {
+            $categoriaId = $negocio->categoria_id
+                ?? $negocio->getOriginal('categoria_id');
+
+            if ($categoriaId) {
+                $cat = Categoria::find($categoriaId);
+                if ($cat) {
+                    $activos = $cat->negocios()->where('activo', true)->count();
+                    $premium = $cat->negocios()
+                        ->where('activo', true)
+                        ->where('plan', 'premium')
+                        ->count();
+                    Categoria::withoutEvents(
+                        fn () => $cat->update([
+                            'popularidad_score' => $activos * 5 + $premium * 10,
+                        ])
+                    );
+                }
             }
         });
     }
