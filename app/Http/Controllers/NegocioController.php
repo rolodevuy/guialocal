@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Negocio;
+use App\Models\Ficha;
+use App\Models\Lugar;
 use App\Models\SlugRedirect;
 
 class NegocioController extends Controller
@@ -14,22 +15,26 @@ class NegocioController extends Controller
 
     public function show(string $slug)
     {
-        $negocio = Negocio::where('slug', $slug)->first();
+        $lugar = Lugar::where('slug', $slug)->first();
 
-        if (! $negocio) {
-            $redirect = SlugRedirect::where('old_slug', $slug)->with('negocio')->first();
+        if (! $lugar) {
+            $redirect = SlugRedirect::where('old_slug', $slug)->with('lugar')->first();
 
-            if ($redirect?->negocio) {
-                return redirect()->route('negocios.show', $redirect->negocio->slug, 301);
+            if ($redirect?->lugar) {
+                return redirect()->route('negocios.show', $redirect->lugar->slug, 301);
             }
 
             abort(404);
         }
 
-        abort_unless($negocio->activo, 404);
+        abort_unless($lugar->activo, 404);
 
-        $promociones = $negocio->promociones()->vigente()->orderBy('fecha_fin')->get();
+        $ficha = $lugar->fichas()->activo()->with('media')->first();
 
-        return view('negocios.show', compact('negocio', 'promociones'));
+        $promociones = $ficha
+            ? $ficha->promociones()->vigente()->orderBy('fecha_fin')->get()
+            : collect();
+
+        return view('negocios.show', compact('lugar', 'ficha', 'promociones'));
     }
 }

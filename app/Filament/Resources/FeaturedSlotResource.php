@@ -6,7 +6,7 @@ use App\Filament\Resources\FeaturedSlotResource\Pages;
 use App\Models\Articulo;
 use App\Models\FeaturedSlot;
 use App\Models\Guia;
-use App\Models\Negocio;
+use App\Models\Lugar;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -26,7 +26,7 @@ class FeaturedSlotResource extends Resource
 
     // Mapeo tipo → clase PHP
     const TIPOS = [
-        'App\\Models\\Negocio'  => 'Negocio',
+        'App\\Models\\Lugar'    => 'Negocio',
         'App\\Models\\Articulo' => 'Artículo',
         'App\\Models\\Guia'     => 'Guía',
     ];
@@ -53,7 +53,7 @@ class FeaturedSlotResource extends Resource
                 ->label('Elemento')
                 ->options(function (Get $get) {
                     return match ($get('slotable_type')) {
-                        'App\\Models\\Negocio'  => Negocio::activo()->orderBy('nombre')->pluck('nombre', 'id'),
+                        'App\\Models\\Lugar'    => Lugar::activo()->orderBy('nombre')->pluck('nombre', 'id'),
                         'App\\Models\\Articulo' => Articulo::publicado()->orderBy('titulo')->pluck('titulo', 'id'),
                         'App\\Models\\Guia'     => Guia::publicado()->orderBy('titulo')->pluck('titulo', 'id'),
                         default                 => [],

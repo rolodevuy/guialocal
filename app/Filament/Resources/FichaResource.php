@@ -2,77 +2,56 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\NegocioResource\Pages;
-use App\Models\Categoria;
-use App\Models\Negocio;
-use App\Models\Zona;
+use App\Filament\Resources\FichaResource\Pages;
+use App\Models\Ficha;
+use App\Models\Lugar;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Illuminate\Support\Str;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
-class NegocioResource extends Resource
+class FichaResource extends Resource
 {
-    protected static ?string $model = Negocio::class;
+    protected static ?string $model = Ficha::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static ?string $navigationLabel = 'Negocios';
+    protected static ?string $navigationLabel = 'Fichas';
 
-    protected static ?string $modelLabel = 'Negocio';
+    protected static ?string $modelLabel = 'Ficha';
 
-    protected static ?string $pluralModelLabel = 'Negocios';
+    protected static ?string $pluralModelLabel = 'Fichas';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Tabs::make('Negocio')
+                Forms\Components\Tabs::make('Ficha')
                     ->tabs([
-                        Forms\Components\Tabs\Tab::make('Info básica')
+                        Forms\Components\Tabs\Tab::make('Lugar y descripción')
                             ->icon('heroicon-o-information-circle')
                             ->schema([
-                                Forms\Components\TextInput::make('nombre')
-                                    ->label('Nombre')
+                                Forms\Components\Select::make('lugar_id')
+                                    ->label('Lugar')
+                                    ->options(Lugar::orderBy('nombre')->pluck('nombre', 'id'))
                                     ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) =>
-                                        $set('slug', Str::slug($state ?? ''))
-                                    ),
-                                Forms\Components\TextInput::make('slug')
-                                    ->label('Slug')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->unique(ignoreRecord: true)
-                                    ->helperText('Se genera automáticamente desde el nombre.'),
+                                    ->searchable()
+                                    ->columnSpanFull(),
                                 Forms\Components\Textarea::make('descripcion')
                                     ->label('Descripción')
                                     ->rows(4)
                                     ->columnSpanFull(),
-                                Forms\Components\Select::make('categoria_id')
-                                    ->label('Categoría')
-                                    ->options(Categoria::orderBy('nombre')->pluck('nombre', 'id'))
-                                    ->required()
-                                    ->searchable(),
-                            ])
-                            ->columns(2),
+                            ]),
 
                         Forms\Components\Tabs\Tab::make('Contacto')
                             ->icon('heroicon-o-phone')
                             ->schema([
-                                Forms\Components\TextInput::make('direccion')
-                                    ->label('Dirección')
-                                    ->maxLength(255)
-                                    ->columnSpanFull(),
                                 Forms\Components\TextInput::make('telefono')
                                     ->label('Teléfono')
                                     ->tel()
@@ -137,7 +116,6 @@ class NegocioResource extends Resource
                                             ])
                                             ->required()
                                             ->native(false),
-
                                         Forms\Components\Select::make('dia_fin')
                                             ->label('Hasta')
                                             ->options([
@@ -151,17 +129,14 @@ class NegocioResource extends Resource
                                             ])
                                             ->placeholder('Solo ese día')
                                             ->native(false),
-
                                         Forms\Components\TimePicker::make('apertura')
                                             ->label('Apertura')
                                             ->seconds(false)
                                             ->visible(fn (Get $get) => !$get('cerrado')),
-
                                         Forms\Components\TimePicker::make('cierre')
                                             ->label('Cierre')
                                             ->seconds(false)
                                             ->visible(fn (Get $get) => !$get('cerrado')),
-
                                         Forms\Components\Toggle::make('cerrado')
                                             ->label('Cerrado ese día')
                                             ->live()
@@ -174,7 +149,7 @@ class NegocioResource extends Resource
                                     ->columnSpanFull(),
 
                                 Forms\Components\Section::make('Fechas especiales')
-                                    ->description('Feriados, vacaciones u horarios puntuales. Se pueden activar y desactivar sin eliminarlos.')
+                                    ->description('Feriados, vacaciones u horarios puntuales.')
                                     ->icon('heroicon-o-calendar-days')
                                     ->collapsible()
                                     ->collapsed()
@@ -187,33 +162,25 @@ class NegocioResource extends Resource
                                                     ->placeholder('Ej: Navidad, Feriado patrio...')
                                                     ->required()
                                                     ->columnSpan(2),
-
                                                 Forms\Components\DatePicker::make('fecha')
                                                     ->label('Fecha')
                                                     ->required()
                                                     ->native(false)
                                                     ->displayFormat('d/m/Y'),
-
                                                 Forms\Components\Toggle::make('se_repite')
                                                     ->label('Se repite anualmente')
-                                                    ->helperText('Aplica cada año en esa fecha')
                                                     ->default(false),
-
                                                 Forms\Components\Toggle::make('activo')
                                                     ->label('Activo')
-                                                    ->helperText('Visible en la ficha del negocio')
                                                     ->default(true),
-
                                                 Forms\Components\Toggle::make('cerrado')
                                                     ->label('Cerrado ese día')
                                                     ->default(false)
                                                     ->live(),
-
                                                 Forms\Components\TimePicker::make('apertura')
                                                     ->label('Apertura')
                                                     ->seconds(false)
                                                     ->visible(fn (Get $get) => !$get('cerrado')),
-
                                                 Forms\Components\TimePicker::make('cierre')
                                                     ->label('Cierre')
                                                     ->seconds(false)
@@ -227,39 +194,6 @@ class NegocioResource extends Resource
                                     ]),
                             ]),
 
-                        Forms\Components\Tabs\Tab::make('Ubicación')
-                            ->icon('heroicon-o-map-pin')
-                            ->schema([
-                                // Mapa interactivo: click o drag para fijar posición
-                                Forms\Components\View::make('filament.forms.components.map-picker')
-                                    ->columnSpanFull()
-                                    ->dehydrated(false),
-                                Forms\Components\TextInput::make('lat')
-                                    ->label('Latitud')
-                                    ->numeric()
-                                    ->step(0.0000001)
-                                    ->readOnly()
-                                    ->live()
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::actualizarZona($set, $get))
-                                    ->helperText('Se actualiza al hacer click en el mapa.'),
-                                Forms\Components\TextInput::make('lng')
-                                    ->label('Longitud')
-                                    ->numeric()
-                                    ->step(0.0000001)
-                                    ->readOnly()
-                                    ->live()
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::actualizarZona($set, $get))
-                                    ->helperText('Se actualiza al hacer click en el mapa.'),
-                                Forms\Components\Select::make('zona_id')
-                                    ->label('Zona')
-                                    ->options(Zona::orderBy('nombre')->pluck('nombre', 'id'))
-                                    ->required()
-                                    ->searchable()
-                                    ->helperText('Se asigna automáticamente al colocar el pin. Podés ajustarla manualmente.')
-                                    ->columnSpanFull(),
-                            ])
-                            ->columns(2),
-
                         Forms\Components\Tabs\Tab::make('Configuración')
                             ->icon('heroicon-o-cog-6-tooth')
                             ->schema([
@@ -272,13 +206,21 @@ class NegocioResource extends Resource
                                     ])
                                     ->default('gratuito')
                                     ->required(),
+                                Forms\Components\Select::make('estado')
+                                    ->label('Estado')
+                                    ->options(Ficha::ESTADOS)
+                                    ->default('activa')
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText('pendiente = esperando revisión admin | activa = visible | rechazada | suspendida')
+                                    ->columnSpanFull(),
                                 Forms\Components\Toggle::make('featured')
                                     ->label('Destacado')
                                     ->helperText('Aparece en la home y resultados prioritarios.'),
                                 Forms\Components\Toggle::make('activo')
                                     ->label('Activo')
                                     ->default(true)
-                                    ->helperText('Solo los negocios activos son visibles en el sitio.'),
+                                    ->helperText('Solo las fichas activas son visibles en el sitio.'),
                             ]),
 
                         Forms\Components\Tabs\Tab::make('Imágenes')
@@ -290,7 +232,7 @@ class NegocioResource extends Resource
                                     ->image()
                                     ->imageEditor()
                                     ->maxSize(1024)
-                                    ->helperText('Logo del negocio. Se muestra en la tarjeta de detalle. Máx 1MB.')
+                                    ->helperText('Logo del negocio. Máx 1MB.')
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('portada')
                                     ->label('Imagen de portada')
@@ -298,7 +240,7 @@ class NegocioResource extends Resource
                                     ->image()
                                     ->imageEditor()
                                     ->maxSize(2048)
-                                    ->helperText('Imagen principal del negocio. Máx 2MB.')
+                                    ->helperText('Imagen principal. Máx 2MB.')
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('galeria')
                                     ->label('Galería')
@@ -324,16 +266,16 @@ class NegocioResource extends Resource
                     ->label('')
                     ->collection('portada')
                     ->circular()
-                    ->defaultImageUrl(fn () => 'https://ui-avatars.com/api/?name=N&background=f59e0b&color=fff&size=64'),
-                Tables\Columns\TextColumn::make('nombre')
-                    ->label('Negocio')
+                    ->defaultImageUrl(fn () => 'https://ui-avatars.com/api/?name=F&background=f59e0b&color=fff&size=64'),
+                Tables\Columns\TextColumn::make('lugar.nombre')
+                    ->label('Lugar')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('categoria.nombre')
+                Tables\Columns\TextColumn::make('lugar.categoria.nombre')
                     ->label('Categoría')
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('zona.nombre')
+                Tables\Columns\TextColumn::make('lugar.zona.nombre')
                     ->label('Zona')
                     ->badge()
                     ->color('info')
@@ -362,6 +304,17 @@ class NegocioResource extends Resource
                         $state >= 20 => 'success',
                         default      => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('estado')
+                    ->label('Estado')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'activa'     => 'success',
+                        'pendiente'  => 'warning',
+                        'rechazada'  => 'danger',
+                        'suspendida' => 'gray',
+                        default      => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => Ficha::ESTADOS[$state] ?? $state),
                 Tables\Columns\IconColumn::make('activo')
                     ->label('Activo')
                     ->boolean()
@@ -374,12 +327,9 @@ class NegocioResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('categoria_id')
-                    ->label('Categoría')
-                    ->options(Categoria::orderBy('nombre')->pluck('nombre', 'id')),
-                Tables\Filters\SelectFilter::make('zona_id')
-                    ->label('Zona')
-                    ->options(Zona::orderBy('nombre')->pluck('nombre', 'id')),
+                Tables\Filters\SelectFilter::make('estado')
+                    ->label('Estado')
+                    ->options(Ficha::ESTADOS),
                 Tables\Filters\SelectFilter::make('plan')
                     ->label('Plan')
                     ->options([
@@ -401,37 +351,7 @@ class NegocioResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('nombre');
-    }
-
-    /**
-     * Auto-detecta la zona más cercana a las coordenadas del pin y la asigna al campo zona_id.
-     * Se llama cuando el usuario coloca o arrastra el marcador en el mapa.
-     */
-    private static function actualizarZona(Set $set, Get $get): void
-    {
-        $lat = (float) $get('lat');
-        $lng = (float) $get('lng');
-
-        if (!$lat || !$lng) {
-            return;
-        }
-
-        $zonas = Zona::whereNotNull('lat_centro')
-            ->whereNotNull('lng_centro')
-            ->get();
-
-        if ($zonas->isEmpty()) {
-            return;
-        }
-
-        $nearest = $zonas->sortBy(function (Zona $zona) use ($lat, $lng): float {
-            return ($lat - $zona->lat_centro) ** 2 + ($lng - $zona->lng_centro) ** 2;
-        })->first();
-
-        if ($nearest) {
-            $set('zona_id', $nearest->id);
-        }
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array
@@ -442,9 +362,9 @@ class NegocioResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListNegocios::route('/'),
-            'create' => Pages\CreateNegocio::route('/create'),
-            'edit'   => Pages\EditNegocio::route('/{record}/edit'),
+            'index'  => Pages\ListFichas::route('/'),
+            'create' => Pages\CreateFicha::route('/create'),
+            'edit'   => Pages\EditFicha::route('/{record}/edit'),
         ];
     }
 }

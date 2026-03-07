@@ -29,11 +29,11 @@
         <priority>0.4</priority>
     </url>
 
-    {{-- Negocios activos --}}
-    @foreach($negocios as $negocio)
+    {{-- Lugares activos --}}
+    @foreach($lugares as $lugar)
     <url>
-        <loc>{{ route('negocios.show', $negocio->slug) }}</loc>
-        <lastmod>{{ $negocio->updated_at->toAtomString() }}</lastmod>
+        <loc>{{ route('negocios.show', $lugar->slug) }}</loc>
+        <lastmod>{{ $lugar->updated_at->toAtomString() }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>

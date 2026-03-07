@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class SlugRedirect extends Model
 {
-    protected $fillable = ['old_slug', 'negocio_id'];
+    protected $fillable = ['old_slug', 'lugar_id'];
 
-    public function negocio()
+    public function lugar()
     {
-        return $this->belongsTo(Negocio::class);
+        return $this->belongsTo(Lugar::class);
     }
 }

@@ -70,21 +70,26 @@
     @endif
 
     {{-- Negocio relacionado --}}
-    @if($articulo->negocio)
+    @if($articulo->lugar)
+    @php
+        $fichaRelacionada = $articulo->lugar->fichas()
+            ->where('activo', true)->where('estado', 'activa')->first();
+    @endphp
     <div class="mt-10 p-4 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-4">
-        @if($articulo->negocio->getFirstMediaUrl('portada'))
-            <img src="{{ $articulo->negocio->getFirstMediaUrl('portada') }}"
-                 alt="{{ $articulo->negocio->nombre }}"
+        @php $portadaRelacionada = $fichaRelacionada?->getPortadaUrl() ?? ''; @endphp
+        @if($portadaRelacionada)
+            <img src="{{ $portadaRelacionada }}"
+                 alt="{{ $articulo->lugar->nombre }}"
                  class="w-14 h-14 rounded-lg object-cover shrink-0">
         @endif
         <div class="flex-1 min-w-0">
             <p class="text-xs text-gray-400 mb-0.5">Negocio relacionado</p>
-            <a href="{{ route('negocios.show', $articulo->negocio->slug) }}"
+            <a href="{{ route('negocios.show', $articulo->lugar) }}"
                class="font-semibold text-gray-800 hover:text-amber-600 transition-colors">
-                {{ $articulo->negocio->nombre }}
+                {{ $articulo->lugar->nombre }}
             </a>
         </div>
-        <a href="{{ route('negocios.show', $articulo->negocio->slug) }}"
+        <a href="{{ route('negocios.show', $articulo->lugar) }}"
            class="shrink-0 text-sm bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 transition-colors">
             Ver ficha
         </a>

@@ -60,9 +60,9 @@ class ZonaResource extends Resource
                     ->searchable()
                     ->copyable()
                     ->color('gray'),
-                Tables\Columns\TextColumn::make('negocios_count')
+                Tables\Columns\TextColumn::make('lugares_count')
                     ->label('Negocios')
-                    ->counts('negocios')
+                    ->counts('lugares')
                     ->sortable()
                     ->alignCenter(),
                 Tables\Columns\TextColumn::make('updated_at')

@@ -39,7 +39,7 @@
                     @endif
                     {{-- Badge count negocios --}}
                     <div class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
-                        {{ $guia->negocios_count }} {{ Str::plural('negocio', $guia->negocios_count) }}
+                        {{ $guia->lugares_count }} {{ Str::plural('negocio', $guia->lugares_count) }}
                     </div>
                 </div>
 

@@ -81,9 +81,9 @@ class GuiaResource extends Resource
                     Forms\Components\Tabs\Tab::make('Negocios')
                         ->icon('heroicon-o-building-storefront')
                         ->schema([
-                            Forms\Components\Select::make('negocios')
+                            Forms\Components\Select::make('lugares')
                                 ->label('Negocios incluidos en esta guía')
-                                ->relationship('negocios', 'nombre')
+                                ->relationship('lugares', 'nombre')
                                 ->multiple()
                                 ->searchable()
                                 ->preload()
@@ -137,9 +137,9 @@ class GuiaResource extends Resource
                     ->color('warning')
                     ->placeholder('—'),
 
-                Tables\Columns\TextColumn::make('negocios_count')
+                Tables\Columns\TextColumn::make('lugares_count')
                     ->label('Negocios')
-                    ->counts('negocios')
+                    ->counts('lugares')
                     ->badge()
                     ->color('gray'),
 

@@ -27,10 +27,18 @@ class PromocionResource extends Resource
     {
         return $form->schema([
 
-            Forms\Components\Select::make('negocio_id')
+            Forms\Components\Select::make('ficha_id')
                 ->label('Negocio')
-                ->relationship('negocio', 'nombre')
-                ->searchable()
+                ->relationship('ficha', 'id')
+                ->getOptionLabelFromRecordUsing(fn ($record) => $record->lugar?->nombre ?? "Ficha #{$record->id}")
+                ->searchable(['id'])
+                ->getSearchResultsUsing(function (string $search) {
+                    return \App\Models\Ficha::whereHas('lugar', fn ($q) => $q->where('nombre', 'like', "%{$search}%"))
+                        ->with('lugar')
+                        ->limit(50)
+                        ->get()
+                        ->pluck('lugar.nombre', 'id');
+                })
                 ->preload()
                 ->required()
                 ->columnSpanFull(),
@@ -87,7 +95,7 @@ class PromocionResource extends Resource
                     ->searchable()
                     ->limit(40),
 
-                Tables\Columns\TextColumn::make('negocio.nombre')
+                Tables\Columns\TextColumn::make('ficha.lugar.nombre')
                     ->label('Negocio')
                     ->searchable()
                     ->badge()
@@ -110,7 +118,6 @@ class PromocionResource extends Resource
                     ->boolean()
                     ->sortable(),
 
-                // Columna calculada: ¿está vigente ahora?
                 Tables\Columns\IconColumn::make('vigente')
                     ->label('Vigente')
                     ->state(fn (Promocion $r) => $r->activo
@@ -122,9 +129,6 @@ class PromocionResource extends Resource
             ->defaultSort('fecha_inicio', 'desc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('activo')->label('Activa'),
-                Tables\Filters\SelectFilter::make('negocio')
-                    ->relationship('negocio', 'nombre')
-                    ->label('Negocio'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

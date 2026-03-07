@@ -95,7 +95,7 @@
 (function () {
 
     // ── Datos ────────────────────────────────────────────────────────────────
-    var negocios = @json($negocios);
+    var negocios = @json($lugares);
 
     // ── Mapa ─────────────────────────────────────────────────────────────────
     var zonaInicial = {{ $zonaInicial ?? 'null' }};

@@ -89,10 +89,11 @@ class ArticuloResource extends Resource
                                 ->placeholder('Sin categoría')
                                 ->nullable(),
 
-                            Forms\Components\Select::make('negocio_id')
+                            Forms\Components\Select::make('lugar_id')
                                 ->label('Negocio relacionado')
-                                ->relationship('negocio', 'nombre')
+                                ->relationship('lugar', 'nombre')
                                 ->searchable()
+                                ->preload()
                                 ->placeholder('Sin negocio')
                                 ->nullable(),
                         ])

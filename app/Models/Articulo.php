@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -21,7 +22,7 @@ class Articulo extends Model implements HasMedia
         'publicado',
         'publicado_en',
         'categoria_id',
-        'negocio_id',
+        'lugar_id',
     ];
 
     protected $casts = [
@@ -46,6 +47,14 @@ class Articulo extends Model implements HasMedia
         $this->addMediaCollection('portada')->singleFile();
     }
 
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('webp')
+            ->format('webp')
+            ->quality(82)
+            ->performOnCollections('portada');
+    }
+
     public function scopePublicado(Builder $query): Builder
     {
         return $query->where('publicado', true);
@@ -56,8 +65,8 @@ class Articulo extends Model implements HasMedia
         return $this->belongsTo(Categoria::class);
     }
 
-    public function negocio()
+    public function lugar()
     {
-        return $this->belongsTo(Negocio::class);
+        return $this->belongsTo(Lugar::class);
     }
 }

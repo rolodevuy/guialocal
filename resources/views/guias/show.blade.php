@@ -37,7 +37,7 @@
             <span>{{ $guia->publicado_en->translatedFormat('j \d\e F \d\e Y') }}</span>
         @endif
         <span class="text-gray-300">·</span>
-        <span>{{ $guia->negocios->count() }} {{ Str::plural('negocio', $guia->negocios->count()) }}</span>
+        <span>{{ $guia->lugares->count() }} {{ Str::plural('negocio', $guia->lugares->count()) }}</span>
     </div>
 
     {{-- Título --}}
@@ -72,14 +72,14 @@
     @endif
 
     {{-- Negocios incluidos --}}
-    @if($guia->negocios->isNotEmpty())
+    @if($guia->lugares->isNotEmpty())
     <div class="mt-4">
         <h2 class="text-xl font-bold text-gray-800 mb-4">
             Negocios en esta guía
         </h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            @foreach($guia->negocios as $negocio)
+            @foreach($guia->lugares as $negocio)
             <a href="{{ route('negocios.show', $negocio->slug) }}"
                class="group flex items-center gap-4 bg-white border border-gray-100 rounded-xl p-4 hover:shadow-md hover:border-amber-200 transition-all">
 

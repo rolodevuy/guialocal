@@ -3,36 +3,35 @@
 namespace App\Console\Commands;
 
 use App\Models\Categoria;
-use App\Models\Negocio;
+use App\Models\Ficha;
 use Illuminate\Console\Command;
 
 class RecalcularScores extends Command
 {
     protected $signature   = 'app:recalcular-scores';
-    protected $description = 'Recalcula featured_score de negocios y popularidad_score de categorías';
+    protected $description = 'Recalcula featured_score de fichas y popularidad_score de categorías';
 
     public function handle(): int
     {
-        // ── 1. featured_score por negocio ──────────────────────────────────────
-        $this->info('Calculando featured_score de negocios...');
+        // ── 1. featured_score por ficha ───────────────────────────────────────
+        $this->info('Calculando featured_score de fichas...');
 
-        $negocios = Negocio::all();
-        $bar      = $this->output->createProgressBar($negocios->count());
+        $fichas = Ficha::all();
+        $bar    = $this->output->createProgressBar($fichas->count());
         $bar->start();
 
-        foreach ($negocios as $negocio) {
-            $score = match ($negocio->plan ?? 'gratuito') {
+        foreach ($fichas as $ficha) {
+            $score = match ($ficha->plan ?? 'gratuito') {
                 'premium' => 50,
                 'basico'  => 20,
                 default   => 0,
             };
-            if ($negocio->featured) {
+            if ($ficha->featured) {
                 $score += 30;
             }
 
-            // Actualizar directo en BD sin disparar eventos
-            Negocio::withoutEvents(
-                fn () => $negocio->update(['featured_score' => $score])
+            Ficha::withoutEvents(
+                fn () => $ficha->update(['featured_score' => $score])
             );
 
             $bar->advance();
@@ -44,13 +43,21 @@ class RecalcularScores extends Command
         // ── 2. popularidad_score por categoría ────────────────────────────────
         $this->info('Calculando popularidad_score de categorías...');
 
-        $categorias = Categoria::withCount([
-            'negocios as activos_count'  => fn ($q) => $q->where('activo', true),
-            'negocios as premium_count'  => fn ($q) => $q->where('activo', true)->where('plan', 'premium'),
-        ])->get();
+        $categorias = Categoria::all();
 
         foreach ($categorias as $cat) {
-            $score = ($cat->activos_count * 5) + ($cat->premium_count * 10);
+            $activos = Ficha::whereHas('lugar', fn ($q) => $q
+                ->where('categoria_id', $cat->id)
+                ->where('activo', true)
+            )->where('activo', true)->count();
+
+            $premium = Ficha::whereHas('lugar', fn ($q) => $q
+                ->where('categoria_id', $cat->id)
+                ->where('activo', true)
+            )->where('activo', true)->where('plan', 'premium')->count();
+
+            $score = ($activos * 5) + ($premium * 10);
+
             Categoria::withoutEvents(
                 fn () => $cat->update(['popularidad_score' => $score])
             );

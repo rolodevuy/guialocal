@@ -14,7 +14,7 @@ class Promocion extends Model implements HasMedia
     protected $table = 'promociones';
 
     protected $fillable = [
-        'negocio_id',
+        'ficha_id',
         'titulo',
         'descripcion',
         'fecha_inicio',
@@ -33,12 +33,11 @@ class Promocion extends Model implements HasMedia
         $this->addMediaCollection('imagen')->singleFile();
     }
 
-    public function negocio(): BelongsTo
+    public function ficha(): BelongsTo
     {
-        return $this->belongsTo(Negocio::class);
+        return $this->belongsTo(Ficha::class);
     }
 
-    // Scope: activa y dentro del período de vigencia
     public function scopeVigente($query)
     {
         $hoy = now()->toDateString();

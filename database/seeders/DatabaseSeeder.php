@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategoriaSeeder::class,
             ZonaSeeder::class,
-            NegocioSeeder::class,
+            LugarFichaSeeder::class,
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1');

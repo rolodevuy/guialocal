@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
-use App\Models\Negocio;
+use App\Models\Ficha;
 use App\Models\Zona;
 
 class ZonaController extends Controller
@@ -12,20 +12,25 @@ class ZonaController extends Controller
     {
         $categoriaId = request()->integer('categoria') ?: null;
 
-        $negocios = Negocio::activo()
-            ->where('zona_id', $zona->id)
-            ->when($categoriaId, fn ($q) => $q->where('categoria_id', $categoriaId))
-            ->with(['categoria', 'zona'])
-            ->orderByDesc('featured')
-            ->orderBy('nombre')
+        $fichas = Ficha::activo()
+            ->whereHas('lugar', fn ($q) => $q
+                ->where('zona_id', $zona->id)
+                ->where('activo', true)
+                ->when($categoriaId, fn ($q) => $q->where('categoria_id', $categoriaId))
+            )
+            ->with(['lugar.categoria', 'lugar.zona'])
+            ->orderByDesc('featured_score')
             ->paginate(12)
             ->withQueryString();
 
         $categorias = Categoria::activo()
             ->orderBy('nombre')
-            ->whereHas('negocios', fn ($q) => $q->activo()->where('zona_id', $zona->id))
+            ->whereHas('lugares', fn ($q) => $q
+                ->where('zona_id', $zona->id)
+                ->where('activo', true)
+            )
             ->get();
 
-        return view('zonas.show', compact('zona', 'negocios', 'categorias', 'categoriaId'));
+        return view('zonas.show', compact('zona', 'fichas', 'categorias', 'categoriaId'));
     }
 }

@@ -28,10 +28,10 @@
             <p class="text-gray-500 mt-2 text-base">{{ $categoria->descripcion }}</p>
         @endif
         <p class="text-sm text-gray-400 mt-1">
-            {{ $negocios->total() }} {{ $negocios->total() === 1 ? 'negocio' : 'negocios' }} encontrados
+            {{ $fichas->total() }} {{ $fichas->total() === 1 ? 'negocio' : 'negocios' }} encontrados
         </p>
-        </div>{{-- /texto --}}
-    </div>{{-- /header --}}
+        </div>
+    </div>
 
     {{-- Filtro por zona --}}
     <div class="mb-6 flex flex-wrap items-center gap-2">
@@ -49,18 +49,19 @@
         @endforeach
     </div>
 
-    {{-- Grid de negocios --}}
-    @if($negocios->isNotEmpty())
+    {{-- Grid de fichas --}}
+    @if($fichas->isNotEmpty())
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($negocios as $negocio)
-            <a href="{{ route('negocios.show', $negocio) }}"
+            @foreach($fichas as $ficha)
+            <a href="{{ route('negocios.show', $ficha->lugar) }}"
                class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
 
                 {{-- Imagen --}}
                 <div class="h-40 bg-amber-50 overflow-hidden relative">
-                    @if($negocio->getFirstMediaUrl('portada'))
-                        <img src="{{ $negocio->getFirstMediaUrl('portada') }}"
-                             alt="{{ $negocio->nombre }}"
+                    @php $portadaUrl = $ficha->getPortadaUrl(); @endphp
+                    @if($portadaUrl)
+                        <img src="{{ $portadaUrl }}"
+                             alt="{{ $ficha->lugar->nombre }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     @else
                         <div class="w-full h-full flex items-center justify-center">
@@ -69,7 +70,7 @@
                             </svg>
                         </div>
                     @endif
-                    @if($negocio->featured)
+                    @if($ficha->featured)
                         <span class="absolute top-2 right-2 bg-amber-400 text-white text-xs font-semibold px-2 py-0.5 rounded-full">★ Destacado</span>
                     @endif
                 </div>
@@ -77,17 +78,19 @@
                 {{-- Info --}}
                 <div class="p-4 flex flex-col flex-1">
                     <h2 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors leading-snug">
-                        {{ $negocio->nombre }}
+                        {{ $ficha->lugar->nombre }}
                     </h2>
-                    @if($negocio->descripcion)
-                        <p class="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">{{ $negocio->descripcion }}</p>
+                    @if($ficha->descripcion)
+                        <p class="text-sm text-gray-500 mt-1 leading-relaxed line-clamp-2">{{ $ficha->descripcion }}</p>
                     @endif
                     <div class="mt-auto pt-3 flex items-center gap-2 flex-wrap">
-                        <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-                            {{ $negocio->zona->nombre }}
-                        </span>
-                        @if($negocio->telefono)
-                            <span class="text-xs text-gray-400">{{ $negocio->telefono }}</span>
+                        @if($ficha->lugar->zona)
+                            <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                                {{ $ficha->lugar->zona->nombre }}
+                            </span>
+                        @endif
+                        @if($ficha->telefono)
+                            <span class="text-xs text-gray-400">{{ $ficha->telefono }}</span>
                         @endif
                     </div>
                 </div>
@@ -96,9 +99,9 @@
         </div>
 
         {{-- Paginación --}}
-        @if($negocios->hasPages())
+        @if($fichas->hasPages())
             <div class="mt-10">
-                {{ $negocios->links() }}
+                {{ $fichas->links() }}
             </div>
         @endif
 

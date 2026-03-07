@@ -34,8 +34,8 @@ class Zona extends Model
         return 'slug';
     }
 
-    public function negocios()
+    public function lugares()
     {
-        return $this->hasMany(Negocio::class);
+        return $this->hasMany(Lugar::class);
     }
 }

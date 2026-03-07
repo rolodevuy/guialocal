@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
-use App\Models\Negocio;
+use App\Models\Lugar;
 use App\Models\Zona;
 
 class MapaController extends Controller
@@ -14,15 +14,15 @@ class MapaController extends Controller
 
         $categorias = Categoria::activo()->orderBy('nombre')->get();
 
-        $negocios = Negocio::activo()
+        $lugares = Lugar::activo()
             ->whereNotNull('lat')
             ->whereNotNull('lng')
             ->with(['categoria', 'zona'])
-            ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'descripcion', 'categoria_id', 'zona_id'])
+            ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'categoria_id', 'zona_id'])
             ->get();
 
         $zonaInicial = request()->integer('zona') ?: null;
 
-        return view('mapa', compact('zonas', 'categorias', 'negocios', 'zonaInicial'));
+        return view('mapa', compact('zonas', 'categorias', 'lugares', 'zonaInicial'));
     }
 }

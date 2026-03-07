@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
-use App\Models\Negocio;
+use App\Models\Ficha;
 use App\Models\Zona;
 
 class CategoriaController extends Controller
@@ -11,7 +11,7 @@ class CategoriaController extends Controller
     public function index()
     {
         $categorias = Categoria::activo()
-            ->withCount(['negocios' => fn ($q) => $q->where('activo', true)])
+            ->withCount(['lugares as negocios_count' => fn ($q) => $q->where('activo', true)])
             ->orderBy('nombre')
             ->get();
 
@@ -24,19 +24,24 @@ class CategoriaController extends Controller
 
         $zonaId = request()->integer('zona') ?: null;
 
-        $negocios = Negocio::activo()
-            ->where('categoria_id', $categoria->id)
-            ->when($zonaId, fn ($q) => $q->where('zona_id', $zonaId))
-            ->with(['categoria', 'zona'])
+        $fichas = Ficha::activo()
+            ->whereHas('lugar', fn ($q) => $q
+                ->where('categoria_id', $categoria->id)
+                ->where('activo', true)
+                ->when($zonaId, fn ($q) => $q->where('zona_id', $zonaId))
+            )
+            ->with(['lugar.zona'])
             ->orderByDesc('featured_score')
-            ->orderBy('nombre')
             ->paginate(12)
             ->withQueryString();
 
         $zonas = Zona::orderBy('nombre')
-            ->whereHas('negocios', fn ($q) => $q->activo()->where('categoria_id', $categoria->id))
+            ->whereHas('lugares', fn ($q) => $q
+                ->where('categoria_id', $categoria->id)
+                ->where('activo', true)
+            )
             ->get();
 
-        return view('categorias.show', compact('categoria', 'negocios', 'zonas', 'zonaId'));
+        return view('categorias.show', compact('categoria', 'fichas', 'zonas', 'zonaId'));
     }
 }

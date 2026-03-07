@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Categoria;
-use App\Models\Negocio;
+use App\Models\Ficha;
 use App\Models\Zona;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -24,7 +24,6 @@ class NegociosIndex extends Component
 
     public function mount(): void
     {
-        // Si no vino zona por URL, leer la cookie
         if (empty($this->zona)) {
             $this->zona = request()->cookie('zona_preferida', '');
         }
@@ -62,21 +61,27 @@ class NegociosIndex extends Component
         $categorias = Categoria::activo()->orderBy('nombre')->get();
         $zonas      = Zona::orderBy('nombre')->get();
 
-        $negocios = Negocio::activo()
-            ->with(['categoria', 'zona'])
+        $fichas = Ficha::activo()
+            ->whereHas('lugar', fn ($q) => $q->where('activo', true))
+            ->with(['lugar.categoria', 'lugar.zona'])
             ->when(trim($this->q), function ($query, $q) {
                 $query->where(function ($sub) use ($q) {
-                    $sub->where('nombre', 'like', "%{$q}%")
-                        ->orWhere('descripcion', 'like', "%{$q}%")
-                        ->orWhere('direccion', 'like', "%{$q}%");
+                    $sub->where('descripcion', 'like', "%{$q}%")
+                        ->orWhereHas('lugar', fn ($l) => $l
+                            ->where('nombre', 'like', "%{$q}%")
+                            ->orWhere('direccion', 'like', "%{$q}%")
+                        );
                 });
             })
-            ->when($this->categoria, fn ($q) => $q->whereHas('categoria', fn ($c) => $c->where('slug', $this->categoria)))
-            ->when($this->zona, fn ($q) => $q->whereHas('zona', fn ($z) => $z->where('slug', $this->zona)))
+            ->when($this->categoria, fn ($q) => $q->whereHas('lugar', fn ($l) => $l
+                ->whereHas('categoria', fn ($c) => $c->where('slug', $this->categoria))
+            ))
+            ->when($this->zona, fn ($q) => $q->whereHas('lugar', fn ($l) => $l
+                ->whereHas('zona', fn ($z) => $z->where('slug', $this->zona))
+            ))
             ->orderByDesc('featured_score')
-            ->orderBy('nombre')
             ->paginate(12);
 
-        return view('livewire.negocios-index', compact('negocios', 'categorias', 'zonas'));
+        return view('livewire.negocios-index', compact('fichas', 'categorias', 'zonas'));
     }
 }

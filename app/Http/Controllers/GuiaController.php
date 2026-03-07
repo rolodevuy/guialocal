@@ -10,7 +10,7 @@ class GuiaController extends Controller
     {
         $guias = Guia::publicado()
             ->with('categoria')
-            ->withCount('negocios')
+            ->withCount('lugares')
             ->orderByDesc('publicado_en')
             ->orderByDesc('created_at')
             ->paginate(12);
@@ -22,7 +22,7 @@ class GuiaController extends Controller
     {
         abort_unless($guia->publicado, 404);
 
-        $guia->load(['categoria', 'negocios.categoria', 'negocios.zona']);
+        $guia->load(['categoria', 'lugares.categoria', 'lugares.zona']);
 
         return view('guias.show', compact('guia'));
     }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -47,6 +48,14 @@ class Guia extends Model implements HasMedia
         $this->addMediaCollection('portada')->singleFile();
     }
 
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('webp')
+            ->format('webp')
+            ->quality(82)
+            ->performOnCollections('portada');
+    }
+
     // Scopes
     public function scopePublicado($query)
     {
@@ -59,9 +68,9 @@ class Guia extends Model implements HasMedia
         return $this->belongsTo(Categoria::class);
     }
 
-    public function negocios(): BelongsToMany
+    public function lugares(): BelongsToMany
     {
-        return $this->belongsToMany(Negocio::class, 'guia_negocio')
+        return $this->belongsToMany(Lugar::class, 'guia_negocio', 'guia_id', 'negocio_id')
             ->withPivot('orden')
             ->orderByPivot('orden');
     }

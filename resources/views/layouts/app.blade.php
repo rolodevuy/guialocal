@@ -19,6 +19,8 @@
     @stack('meta')
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Config de Livewire (CSRF, URLs): requerido con inject_assets=false + ESM bundle --}}
+    @livewireScriptConfig
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
 
