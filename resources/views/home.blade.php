@@ -148,6 +148,66 @@
 @endif
 
 {{-- ============================================================
+     SECCIÓN: editorial (artículos/guías destacados — solo si hay slots)
+     ============================================================ --}}
+@if($slotsEditoriales->isNotEmpty())
+<section id="editorial" class="bg-white border-t border-gray-100 py-12 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Del barrio</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($slotsEditoriales as $item)
+            @php
+                $esGuia     = $item instanceof \App\Models\Guia;
+                $ruta       = $esGuia ? route('guias.show', $item) : route('articulos.show', $item);
+                $titulo     = $item->titulo;
+                $intro      = $esGuia ? $item->intro : ($item->extracto ?? null);
+                $portada    = $item->getFirstMediaUrl('portada');
+                $etiqueta   = $esGuia ? 'Guía' : 'Artículo';
+                $color      = $esGuia ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
+                $fecha      = $item->publicado_en?->format('d/m/Y');
+            @endphp
+            <a href="{{ $ruta }}"
+               class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+
+                <div class="h-44 bg-amber-50 overflow-hidden">
+                    @if($portada)
+                        <img src="{{ $portada }}" alt="{{ $titulo }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center text-amber-200">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="p-4">
+                    <div class="flex items-center gap-2 text-xs mb-2">
+                        <span class="{{ $color }} px-2 py-0.5 rounded font-medium">{{ $etiqueta }}</span>
+                        @if($fecha)<span class="text-gray-400">{{ $fecha }}</span>@endif
+                    </div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors text-sm leading-snug mb-1">
+                        {{ $titulo }}
+                    </h3>
+                    @if($intro)
+                        <p class="text-xs text-gray-400 line-clamp-2">{{ $intro }}</p>
+                    @endif
+                </div>
+            </a>
+            @endforeach
+        </div>
+
+    </div>
+</section>
+@endif
+
+{{-- ============================================================
      SECCIÓN: mapa
      Placeholder de mapa interactivo (Etapa 2)
      Izquierda: card amber con zonas como pills + CTA

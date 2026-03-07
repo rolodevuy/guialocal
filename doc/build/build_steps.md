@@ -1052,6 +1052,33 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 43 — Secciones destacadas (featured_slots) ✅
+
+**Objetivo:** Permitir al admin curar exactamente qué negocios, artículos o guías aparecen en la home, en qué posición y con qué vigencia.
+
+**Resultado esperado:**
+- Tabla `featured_slots`: posicion, morph (slotable_type + slotable_id), orden, activo, valido_hasta
+- Modelo `FeaturedSlot` con morph y scope `activo(posicion)`
+- `FeaturedSlotResource` en Filament: select de posición, select de tipo (reactivo), select de elemento, orden, activo, vencimiento
+- `HomeController` usa slots `home_negocios` para la sección destacados (fallback al boolean `featured` si no hay slots)
+- `HomeController` pasa `$slotsEditoriales` (slots `home_editorial`) — artículos o guías
+- `home.blade.php` muestra sección "Del barrio" solo si hay slots editoriales activos
+
+**Criterio de terminado:**
+- `GET /` responde 200 ✅
+- `GET /admin/featured-slots` accesible ✅
+- Sin slots: home muestra el fallback `featured` igual que antes ✅
+
+**Notas:**
+- Posiciones predefinidas en `FeaturedSlot::POSICIONES`: `home_negocios`, `home_editorial`
+- Scope `activo(posicion)`: filtra por posicion + activo=true + (valido_hasta null O >= hoy)
+- Form reactivo: al cambiar el tipo se resetea el elemento y se cargan las opciones correspondientes
+- Tabla con `->reorderable('orden')` para drag-and-drop de prioridad
+- Sección editorial en home: badge diferenciado (Guía=azul, Artículo=amber), muestra portada si existe
+- NavigationSort: 7
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
