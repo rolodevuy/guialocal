@@ -4,12 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Categoria;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class CategoriaSeeder extends Seeder
 {
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Categoria::truncate();
+        Schema::enableForeignKeyConstraints();
 
         $categorias = [
             ['nombre' => 'Restaurantes',             'descripcion' => 'Lugares para comer, desde parrillas hasta cocina internacional.', 'icono' => 'utensils'],
