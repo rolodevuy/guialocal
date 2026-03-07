@@ -22,7 +22,7 @@ Ruta `/negocios/{slug}`. Muestra toda la información del negocio: nombre, descr
 Cada negocio puede tener logo (singleFile), portada (singleFile) y múltiples imágenes en galería. Gestionadas con Spatie Media Library. El logo aparece en el sidebar de la ficha; la portada en el encabezado de la card.
 
 ### Categorías
-Ruta `/categorias/{slug}`. Lista los negocios pertenecientes a una categoría, con pills de zona para filtrar. Solo aparecen las zonas que tienen negocios en esa categoría.
+Ruta `/categorias/{slug}`. Lista los negocios pertenecientes a una categoría, con pills de zona para filtrar. Solo aparecen las zonas que tienen negocios en esa categoría. Sistema jerárquico de hasta 3 niveles (familia → tipo → especialización) con `parent_id` self-referential. Ver [CATEGORIAS.md](product/CATEGORIAS.md).
 
 ### Zonas
 Ruta `/zonas/{slug}`. Lista los negocios de una zona o barrio, con pills de categoría para filtrar. Solo aparecen las categorías que tienen negocios en esa zona.

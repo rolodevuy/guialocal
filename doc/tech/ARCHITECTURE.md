@@ -37,7 +37,7 @@ Directorio comercial local — Guía Local
 ├─────────────────────────────────────────────────┤
 │                  PANEL ADMIN                     │
 │        Filament v3 (ruta /admin)                │
-│   Resources: Negocio · Categoría · Zona         │
+│   Resources: Lugar · Ficha · Categoría · Zona   │
 │   Widgets, Filtros, Media, Acciones             │
 ├─────────────────────────────────────────────────┤
 │               LÓGICA DE NEGOCIO                  │
@@ -60,8 +60,9 @@ Directorio comercial local — Guía Local
 app/
 ├── Filament/
 │   └── Resources/
-│       ├── NegocioResource.php
-│       ├── CategoriaResource.php
+│       ├── LugarResource.php         ← lugar físico (nombre, ubicación, categoría)
+│       ├── FichaResource.php         ← perfil gestionado (contacto, horarios, plan)
+│       ├── CategoriaResource.php     ← jerarquía 3 niveles
 │       ├── ZonaResource.php
 │       └── ConsultaResource.php      ← solo lectura, badge no-leídos
 ├── Http/
@@ -77,8 +78,9 @@ app/
 ├── Mail/
 │   └── NuevaConsulta.php             ← notificación email al recibir consulta
 ├── Models/
-│   ├── Negocio.php
-│   ├── Categoria.php
+│   ├── Lugar.php              ← lugar físico
+│   ├── Ficha.php              ← perfil gestionado (1:1 con Lugar)
+│   ├── Categoria.php          ← jerarquía 3 niveles (parent_id)
 │   ├── Zona.php
 │   └── Consulta.php
 
@@ -117,22 +119,36 @@ database/
 ## Modelo de datos (entidades principales)
 
 ```
-negocios
-├── id, slug, nombre, descripcion
-├── direccion, telefono, email, sitio_web
-├── lat, lng
-├── horarios (JSON)
-├── featured (bool), activo (bool), plan (enum)
-├── categoria_id, zona_id
+lugares
+├── id, nombre, slug, rut (unique, nullable)
+├── direccion, lat, lng
+├── categoria_id → FK categorias
+├── zona_id → FK zonas (nullable)
+├── activo (bool)
+└── timestamps
+
+fichas
+├── id, lugar_id → FK lugares (cascadeOnDelete)
+├── descripcion, telefono, email, sitio_web
+├── horarios (JSON), horarios_especiales (JSON), redes_sociales (JSON)
+├── plan (enum: gratuito, basico, premium)
+├── featured (bool), featured_score (smallint)
+├── estado (enum: pendiente, activa, rechazada, suspendida)
+├── activo (bool)
 └── timestamps
    ↳ media: colecciones 'logo' (singleFile), 'portada' (singleFile), 'galeria' (múltiple)
 
 categorias
-├── id, slug, nombre, descripcion, icono
+├── id, nombre, slug, descripcion, icono, activo
+├── parent_id → FK nullable a categorias (jerarquía hasta 3 niveles)
+├── nivel (1=familia, 2=tipo, 3=especialización)
+├── popularidad_score
 └── timestamps
+   ↳ media: colección 'imagen_generica' (singleFile)
 
 zonas
 ├── id, slug, nombre
+├── lat_centro, lng_centro (centroides para auto-detección)
 └── timestamps
 
 (media) → Spatie Media Library (tabla polymórfica)
@@ -141,6 +157,8 @@ consultas
 ├── id, nombre, email, mensaje, leido
 └── timestamps
 ```
+
+Diseño de clasificación: ver [CATEGORIAS.md](../product/CATEGORIAS.md)
 
 ---
 

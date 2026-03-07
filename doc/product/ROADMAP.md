@@ -10,8 +10,8 @@ Evolución planificada por etapas. Cada etapa es funcional y desplegable de form
 
 | Feature | Estado | Detalle técnico |
 |---|---|---|
-| Modelo de datos base | ✅ | Migraciones: `negocios`, `categorias`, `zonas`, `consultas` |
-| Panel admin | ✅ | Filament v3: Negocio, Categoría, Zona, Consulta |
+| Modelo de datos base | ✅ | Migraciones: `lugares`, `fichas`, `categorias` (jerárquica, 3 niveles), `zonas`, `consultas` |
+| Panel admin | ✅ | Filament v3: Lugar, Ficha, Categoría (jerarquía), Zona, Consulta |
 | Carga de imágenes | ✅ | Spatie Media Library: logo, portada, galería |
 | Página home | ✅ | Hero + quick-actions overlap + destacados + mapa + categorías |
 | Listado de negocios | ✅ | Paginación, filtro por categoría y zona |

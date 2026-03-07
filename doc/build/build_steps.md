@@ -1227,6 +1227,105 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 49b — Refactor Lugar + Ficha (schema, modelos, seeders) ✅
+
+**Objetivo:** Separar el concepto de "lugar físico" (`Lugar`) del "perfil gestionado" (`Ficha`) para evitar duplicados y permitir lugares no gestionados.
+
+**Decisiones arquitectónicas:**
+- `lugares`: datos físicos canónicos (nombre, slug, RUT, dirección, lat/lng, categoría, zona)
+- `fichas`: perfil gestionado ligado a un lugar (descripción, horarios, contacto, plan, media)
+- RUT (12 dígitos) en `lugares` como identificador para reclamo del negocio
+- `estado` en `fichas`: `pendiente | activa | rechazada | suspendida` — flujo de aprobación admin
+- `scopeActivo` en `Ficha` filtra `activo = true AND estado = 'activa'` para visibilidad pública
+- Migración de datos `negocios → lugares + fichas` con actualización de FKs en tablas relacionadas
+
+**Resultado:**
+- Tabla `negocios` eliminada, reemplazada por `lugares` + `fichas`
+- FKs actualizadas: `slug_redirects.lugar_id`, `promociones.ficha_id`, `articulos.lugar_id`
+- `isAbiertoAhora()` en Ficha: lógica de horarios con soporte de medianoche y fechas especiales
+- `LugarFichaSeeder`: 20 negocios de ejemplo repartidos en 7 zonas y 8 categorías
+
+**Archivos creados/modificados:**
+- `database/migrations/2026_03_07_120000_create_lugares_table.php`
+- `database/migrations/2026_03_07_120001_create_fichas_table.php`
+- `database/migrations/2026_03_07_120002_migrate_negocios_to_lugares_fichas.php`
+- `app/Models/Lugar.php` (nuevo), `app/Models/Ficha.php` (nuevo)
+- `app/Models/Categoria.php`, `Zona.php`, `Promocion.php`, `SlugRedirect.php`, `Articulo.php` (actualizados)
+- `app/Models/Negocio.php` (eliminado)
+- `database/seeders/LugarFichaSeeder.php` (nuevo)
+- `app/Console/Commands/RecalcularScores.php` (actualizado)
+
+---
+
+### Paso 49c — LugarResource + FichaResource en Filament ✅
+
+**Resultado:**
+- `LugarResource`: tabs Info básica (nombre, slug, RUT con regex /^\d{12}$/, categoria, activo) + Ubicación (mapa, lat/lng, dirección, zona)
+- `FichaResource`: tabs Lugar+descripción, Contacto, Horarios (franjas + fechas especiales), Configuración (plan, estado badge, featured, activo), Imágenes
+- Columna `estado` con badge coloreado en tabla de fichas + filtro por estado
+- `NegocioResource` eliminado
+
+**Archivos:**
+- `app/Filament/Resources/LugarResource.php` (nuevo con pages)
+- `app/Filament/Resources/FichaResource.php` (nuevo con pages)
+- `app/Filament/Resources/NegocioResource.php` (eliminado)
+
+---
+
+### Paso 49d — Controllers, Livewire y vistas públicas ✅
+
+**Resultado:**
+- `NegocioController`, `HomeController`, `MapaController`, `SitemapController`, `CategoriaController` actualizados a Lugar/Ficha
+- `NegociosIndex` Livewire: filtra por `Ficha::activo()` con relaciones anidadas
+- Vistas actualizadas: `home.blade.php`, `mapa.blade.php`, `negocios/show.blade.php`, `negocios/index.blade.php`, `categorias/show.blade.php`, `articulos/show.blade.php`, `sitemap.blade.php`
+- Badge "Abierto ahora" con animate-pulse en la página de cada negocio
+- `Lugar.$table = 'lugares'` para evitar pluralización incorrecta de Laravel
+
+**Archivos modificados:**
+- `app/Http/Controllers/{NegocioController,HomeController,MapaController,SitemapController,CategoriaController}.php`
+- `app/Livewire/NegociosIndex.php`
+- `resources/views/{home,mapa,sitemap,negocios/show,negocios/index,categorias/show,articulos/show}.blade.php`
+
+---
+
+## Bloque 13 — Sistema de clasificación
+
+---
+
+### Paso 50 — Jerarquía de categorías (3 niveles) ✅
+
+**Objetivo:** Convertir la tabla plana de categorías en una jerarquía de hasta 3 niveles (familia → tipo → especialización) para clasificación más precisa.
+
+**Diseño:** Documentado en [CATEGORIAS.md](../product/CATEGORIAS.md)
+
+**Resultado esperado:**
+- Columnas `parent_id` (FK self-referential, nullable) y `nivel` (tinyint, 1-3) en `categorias`
+- Modelo `Categoria` con relaciones `parent()`, `children()`, accessors `raiz`, `nombre_completo`
+- Scope `conDescendientes()` para obtener IDs de categoría + subcategorías
+- `CategoriaResource`: selector de padre, nivel auto-calculado, columna/filtro de nivel, indent visual
+- Seeder con 14 familias (nivel 1) + 17 subcategorías (nivel 2) = 31 categorías
+
+**Criterio de terminado:**
+- Migración corrida sin errores ✅
+- Seeder crea jerarquía correcta (14 nivel 1, 17 nivel 2) ✅
+- Admin muestra selector de padre con nombre completo ✅
+- Nivel se calcula automáticamente al elegir padre ✅
+- Lugares existentes siguen con FK válida ✅
+
+**Archivos creados/modificados:**
+- `database/migrations/2026_03_07_130000_add_hierarchy_to_categorias_table.php` (nuevo)
+- `app/Models/Categoria.php` (parent/children, accessors, scope)
+- `app/Filament/Resources/CategoriaResource.php` (selector padre, nivel, filtro)
+- `database/seeders/CategoriaSeeder.php` (jerarquía completa)
+- `doc/product/CATEGORIAS.md` (nuevo — spec del sistema de clasificación)
+
+**Pendiente para etapas futuras:**
+- Atributos (tags de características: wifi, delivery, pet friendly)
+- Contextos (tags de experiencia: turismo, nocturno, gastronómico)
+- Ver spec completa en `doc/product/CATEGORIAS.md`
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
