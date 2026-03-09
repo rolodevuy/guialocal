@@ -25,3 +25,5 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /nbproject/private/
+nul
+start-dev.bat

@@ -97,7 +97,7 @@
                         placeholder="Contanos en qué podemos ayudarte o describí tu negocio..."
                         class="w-full px-4 py-3 rounded-xl border text-sm text-gray-800 placeholder-gray-400 outline-none transition-colors resize-none
                                {{ $errors->has('mensaje') ? 'border-red-300 bg-red-50 focus:border-red-400' : 'border-gray-200 bg-white focus:border-amber-400' }}"
-                    >{{ old('mensaje') }}</textarea>
+                    >{{ old('mensaje', request('asunto') === 'upgrade-premium' ? 'Hola, me interesa conocer más sobre el plan Premium para mi negocio.' : '') }}</textarea>
                     @error('mensaje')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror

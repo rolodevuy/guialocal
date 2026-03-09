@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
+use App\Models\Evento;
 use App\Models\Ficha;
 use App\Models\FeaturedSlot;
 use App\Models\Lugar;
+use App\Models\Sector;
 use App\Models\Zona;
 
 class HomeController extends Controller
@@ -21,9 +23,17 @@ class HomeController extends Controller
         //   3. Fallback: fichas con flag "featured = true"
 
         $slotsNegocios = FeaturedSlot::activo('home_negocios')
-            ->with('slotable.lugar.categoria', 'slotable.lugar.zona')
+            ->with('slotable')
             ->get()
             ->pluck('slotable')
+            ->filter()
+            ->map(function ($item) {
+                // Normalizar: si el slot apunta a un Lugar, devolver su Ficha
+                if ($item instanceof \App\Models\Lugar) {
+                    return $item->fichas()->with(['lugar.categoria', 'lugar.zona'])->first();
+                }
+                return $item->load(['lugar.categoria', 'lugar.zona']);
+            })
             ->filter()
             ->take(6);
 
@@ -76,13 +86,39 @@ class HomeController extends Controller
             ->filter()
             ->take(3);
 
-        // ── Categorías para la grilla "Explorar" ──────────────────────────────
-        $categorias = Categoria::activo()
-            ->withCount(['lugares as negocios_count' => fn ($q) => $q->where('activo', true)])
-            ->orderBy('nombre')
+        // ── Sectores con categorías para la grilla "Explorar" ──────────────
+        $sectores = Sector::activo()
+            ->orderBy('orden')
+            ->with(['categorias' => fn ($q) => $q
+                ->activo()
+                ->whereNull('parent_id')
+                ->orderBy('nombre')
+                ->with('children:id,parent_id')
+            ])
             ->get();
 
-        $zonas = Zona::orderBy('nombre')->get();
+        $allCatIds = $sectores->flatMap(fn ($s) =>
+            $s->categorias->flatMap(fn ($cat) =>
+                collect([$cat->id])->merge($cat->children->pluck('id'))
+            )
+        );
+
+        $counts = Lugar::where('activo', true)
+            ->whereIn('categoria_id', $allCatIds)
+            ->selectRaw('categoria_id, COUNT(*) as total')
+            ->groupBy('categoria_id')
+            ->pluck('total', 'categoria_id');
+
+        $sectores->each(fn ($sector) =>
+            $sector->categorias->each(function ($cat) use ($counts) {
+                $ids = collect([$cat->id])->merge($cat->children->pluck('id'));
+                $cat->negocios_count = $ids->sum(fn ($id) => $counts->get($id, 0));
+            })
+        );
+
+        $zonas = Zona::withCount(['lugares as negocios_count' => fn ($q) => $q->where('activo', true)])
+            ->orderBy('nombre')
+            ->get();
 
         // ── Zona preferida del usuario (cookie) ───────────────────────────────
         $zonaPreferida = null;
@@ -90,21 +126,21 @@ class HomeController extends Controller
             $zonaPreferida = Zona::where('slug', $cookieSlug)->first();
         }
 
-        // ── Lugares con coordenadas para el mapa ──────────────────────────────
-        $negocios_mapa = Lugar::activo()
-            ->whereNotNull('lat')
-            ->whereNotNull('lng')
-            ->with('categoria')
-            ->select(['id', 'nombre', 'slug', 'lat', 'lng', 'categoria_id', 'zona_id'])
+        // ── Eventos próximos para el home (máx. 3) ────────────────────────────
+        $eventosDestacados = Evento::publicado()
+            ->proximo()
+            ->with('lugar')
+            ->orderBy('fecha_inicio')
+            ->limit(3)
             ->get();
 
         return view('home', compact(
             'destacados',
             'slotsEditoriales',
-            'categorias',
+            'sectores',
             'zonas',
             'zonaPreferida',
-            'negocios_mapa',
+            'eventosDestacados',
         ));
     }
 }

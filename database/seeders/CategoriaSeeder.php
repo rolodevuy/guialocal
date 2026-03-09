@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Categoria;
+use App\Models\Sector;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -69,6 +70,61 @@ class CategoriaSeeder extends Seeder
                 ['nombre' => 'Estudio Jurídico',      'icono' => 'scale'],
                 ['nombre' => 'Consultoría',           'icono' => 'chart-line'],
             ],
+            'Automotor' => [
+                ['nombre' => 'Taller Mecánico',       'icono' => 'wrench'],
+                ['nombre' => 'Gomería',               'icono' => 'circle-dot'],
+                ['nombre' => 'Lavadero',              'icono' => 'droplets'],
+                ['nombre' => 'Repuestos',             'icono' => 'cog'],
+                ['nombre' => 'Chapa y Pintura',       'icono' => 'paint-roller'],
+            ],
+            'Educación' => [
+                ['nombre' => 'Academia de Idiomas',   'icono' => 'languages'],
+                ['nombre' => 'Informática',           'icono' => 'monitor'],
+                ['nombre' => 'Música y Arte',         'icono' => 'music'],
+                ['nombre' => 'Apoyo Escolar',         'icono' => 'book-open'],
+                ['nombre' => 'Autoescuela',           'icono' => 'id-card'],
+            ],
+            'Entretenimiento' => [
+                ['nombre' => 'Cine y Teatro',         'icono' => 'clapperboard'],
+                ['nombre' => 'Salón de Fiestas',      'icono' => 'party-popper'],
+                ['nombre' => 'Escape Room',           'icono' => 'key-round'],
+                ['nombre' => 'Arcade y Juegos',       'icono' => 'joystick'],
+            ],
+            'Farmacias' => [
+                ['nombre' => 'Farmacia',              'icono' => 'pill'],
+                ['nombre' => 'Perfumería',            'icono' => 'spray-can'],
+                ['nombre' => 'Óptica',                'icono' => 'glasses'],
+                ['nombre' => 'Veterinaria',           'icono' => 'paw-print'],
+            ],
+            'Hogar y Construcción' => [
+                ['nombre' => 'Ferretería',            'icono' => 'hammer'],
+                ['nombre' => 'Pinturería',            'icono' => 'paintbrush'],
+                ['nombre' => 'Mueblería',             'icono' => 'armchair'],
+                ['nombre' => 'Barraca',               'icono' => 'warehouse'],
+                ['nombre' => 'Electricidad',          'icono' => 'zap'],
+                ['nombre' => 'Vivero y Jardín',       'icono' => 'flower-2'],
+            ],
+            'Indumentaria y Calzado' => [
+                ['nombre' => 'Ropa Mujer',            'icono' => 'shirt'],
+                ['nombre' => 'Ropa Hombre',           'icono' => 'shirt'],
+                ['nombre' => 'Calzado',               'icono' => 'footprints'],
+                ['nombre' => 'Deportiva',             'icono' => 'trophy'],
+                ['nombre' => 'Ropa Infantil',         'icono' => 'baby'],
+            ],
+            'Supermercados' => [
+                ['nombre' => 'Supermercado',          'icono' => 'shopping-cart'],
+                ['nombre' => 'Almacén',               'icono' => 'store'],
+                ['nombre' => 'Verdulería',            'icono' => 'apple'],
+                ['nombre' => 'Carnicería',            'icono' => 'beef'],
+                ['nombre' => 'Dietética',             'icono' => 'leaf'],
+            ],
+            'Turismo y Alojamiento' => [
+                ['nombre' => 'Hotel',                 'icono' => 'building'],
+                ['nombre' => 'Hostel',                'icono' => 'bed-single'],
+                ['nombre' => 'Apart Hotel',           'icono' => 'building-2'],
+                ['nombre' => 'Cabañas',               'icono' => 'tree-pine'],
+                ['nombre' => 'Camping',               'icono' => 'tent'],
+            ],
         ];
 
         foreach ($tipos as $familia => $subCats) {
@@ -80,6 +136,33 @@ class CategoriaSeeder extends Seeder
                     'nivel'     => 2,
                     'parent_id' => $padre->id,
                 ]);
+            }
+        }
+
+        // ── Asignar sector a cada familia Nivel 1 ───────────────────────
+        $sectorMap = [
+            'Comercial' => [
+                'Farmacias', 'Supermercados', 'Salud y Bienestar',
+                'Servicios Profesionales', 'Indumentaria y Calzado',
+                'Hogar y Construcción', 'Automotor', 'Educación',
+            ],
+            'Gastronomía y Ocio' => [
+                'Restaurantes', 'Cafés y Bares', 'Panaderías y Pastelerías',
+                'Heladerías', 'Entretenimiento',
+            ],
+            'Turismo y Alojamiento' => [
+                'Turismo y Alojamiento',
+            ],
+        ];
+
+        foreach ($sectorMap as $sectorNombre => $categoriaNombres) {
+            $sector = Sector::where('nombre', $sectorNombre)->first();
+            if ($sector) {
+                foreach ($categoriaNombres as $catNombre) {
+                    if (isset($padres[$catNombre])) {
+                        $padres[$catNombre]->update(['sector_id' => $sector->id]);
+                    }
+                }
             }
         }
     }

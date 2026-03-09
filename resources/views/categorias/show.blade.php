@@ -13,6 +13,10 @@
         <a href="{{ route('home') }}" class="hover:text-amber-600 transition-colors">Inicio</a>
         <span>›</span>
         <a href="{{ route('categorias.index') }}" class="hover:text-amber-600 transition-colors">Categorías</a>
+        @if($categoria->sector)
+        <span>›</span>
+        <a href="{{ route('sectores.show', $categoria->sector) }}" class="hover:text-amber-600 transition-colors">{{ $categoria->sector->nombre }}</a>
+        @endif
         <span>›</span>
         <span class="text-gray-600">{{ $categoria->nombre }}</span>
     </nav>

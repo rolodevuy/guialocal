@@ -23,6 +23,7 @@ class Categoria extends Model implements HasMedia
         'popularidad_score',
         'parent_id',
         'nivel',
+        'sector_id',
     ];
 
     protected $casts = [
@@ -59,6 +60,23 @@ class Categoria extends Model implements HasMedia
     public function scopeActivo(Builder $query): Builder
     {
         return $query->where('activo', true);
+    }
+
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
+    }
+
+    /**
+     * Sector efectivo: propio o heredado del padre nivel 1.
+     */
+    public function getSectorEfectivoAttribute(): ?Sector
+    {
+        if ($this->sector_id) {
+            return $this->sector;
+        }
+
+        return $this->parent?->sector;
     }
 
     public function parent()

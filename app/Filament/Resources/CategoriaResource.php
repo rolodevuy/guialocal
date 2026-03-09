@@ -33,6 +33,15 @@ class CategoriaResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('sector_id')
+                    ->label('Sector')
+                    ->relationship('sector', 'nombre')
+                    ->searchable()
+                    ->preload()
+                    ->placeholder('Sin sector')
+                    ->helperText('Agrupar esta categoría en un sector (solo para nivel 1).')
+                    ->visible(fn (Get $get): bool => ! $get('parent_id')),
+
                 Forms\Components\Select::make('parent_id')
                     ->label('Categoría padre')
                     ->relationship('parent', 'nombre')
@@ -131,6 +140,11 @@ class CategoriaResource extends Resource
                         $indent = str_repeat('— ', $record->nivel - 1);
                         return $indent . $record->nombre;
                     }),
+                Tables\Columns\TextColumn::make('sector.nombre')
+                    ->label('Sector')
+                    ->placeholder('—')
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('parent.nombre')
                     ->label('Padre')
                     ->placeholder('—')
@@ -194,6 +208,9 @@ class CategoriaResource extends Resource
                         2 => 'Nivel 2 — Tipo',
                         3 => 'Nivel 3 — Especialización',
                     ]),
+                Tables\Filters\SelectFilter::make('sector_id')
+                    ->label('Sector')
+                    ->relationship('sector', 'nombre'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

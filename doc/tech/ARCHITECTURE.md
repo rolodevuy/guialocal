@@ -14,13 +14,10 @@ Directorio comercial local — Guía Local
 | Base de datos | MariaDB | 10.x (XAMPP) | Persistencia principal |
 | Frontend público | Blade + Alpine.js | — | Renderizado SSR, interacciones livianas |
 | CSS | Tailwind CSS | 4.x | Estilos y diseño responsive |
-| Componentes reactivos | Livewire | 3.x | Filtros y búsqueda sin reload (Etapa 2+) |
-| Imágenes/media | Spatie Media Library | 11.x | Upload, conversiones, storage |
-| Búsqueda | Laravel Scout | — | Abstracción de motores de búsqueda |
-| Driver búsqueda MVP | MySQL fulltext | — | Sin infraestructura extra |
-| Driver búsqueda futuro | Meilisearch | — | Búsqueda avanzada cuando el volumen lo requiera |
-| SEO | Spatie Laravel SEO | — | Sitemap, Open Graph, JSON-LD, meta tags |
-| Servidor local | XAMPP (Apache + MySQL) | — | Entorno de desarrollo |
+| Componentes reactivos | Livewire | 3.x | Filtros y búsqueda sin reload (NegociosIndex) |
+| Imágenes/media | Spatie Media Library | 11.x | Upload, conversiones WebP, storage |
+| Búsqueda | Laravel Scout + MySQL fulltext | — | Sin infra extra en MVP; migratable a Meilisearch |
+| Servidor local | XAMPP (Apache + MariaDB) | — | Entorno de desarrollo |
 
 ---
 
@@ -33,18 +30,24 @@ Directorio comercial local — Guía Local
 ├─────────────────────────────────────────────────┤
 │              FRONTEND PÚBLICO (SSR)              │
 │   routes/web.php → Controllers → Blade Views    │
-│   SEO: meta tags, sitemap, Open Graph           │
+│   SEO: meta tags, sitemap, JSON-LD, Open Graph  │
+├─────────────────────────────────────────────────┤
+│           PANEL DUEÑOS (/panel)                  │
+│   PanelController · PanelAuthenticate middleware │
+│   Vistas: panel/login · dashboard · edit        │
 ├─────────────────────────────────────────────────┤
 │                  PANEL ADMIN                     │
 │        Filament v3 (ruta /admin)                │
-│   Resources: Lugar · Ficha · Categoría · Zona   │
-│   Widgets, Filtros, Media, Acciones             │
+│   Resources: Lugar · Ficha · Categoria · Zona   │
+│              Articulo · Guia · Promocion        │
+│              FeaturedSlot · Consulta            │
+│              Resena · User (propietarios)       │
 ├─────────────────────────────────────────────────┤
 │               LÓGICA DE NEGOCIO                  │
-│     Models · Services · Actions · Policies      │
+│     Models · Observers · Middleware             │
 │     Laravel Scout (búsqueda)                    │
 │     Spatie Media Library (imágenes)             │
-│     Jobs / Queues (mails, analytics)            │
+│     config/features.php (feature flags)         │
 ├─────────────────────────────────────────────────┤
 │                BASE DE DATOS                     │
 │        MariaDB 10 · Eloquent ORM                │
@@ -54,80 +57,97 @@ Directorio comercial local — Guía Local
 
 ---
 
-## Estructura de directorios Laravel
+## Estructura de directorios
 
 ```
 app/
 ├── Filament/
 │   └── Resources/
-│       ├── LugarResource.php         ← lugar físico (nombre, ubicación, categoría)
-│       ├── FichaResource.php         ← perfil gestionado (contacto, horarios, plan)
-│       ├── CategoriaResource.php     ← jerarquía 3 niveles
+│       ├── LugarResource.php          ← lugar físico (nombre, ubicación, categoría)
+│       ├── FichaResource.php          ← perfil gestionado (contacto, horarios, plan, propietario)
+│       ├── CategoriaResource.php      ← jerarquía 3 niveles
 │       ├── ZonaResource.php
 │       ├── ArticuloResource.php
 │       ├── GuiaResource.php
 │       ├── PromocionResource.php
 │       ├── FeaturedSlotResource.php   ← slots destacados editoriales
-│       └── ConsultaResource.php      ← solo lectura, badge no-leídos
+│       ├── ConsultaResource.php       ← solo lectura, badge no-leídos
+│       ├── ResenaResource.php         ← moderación: aprobar/rechazar/bulk, badge pendientes
+│       ├── UserResource.php           ← gestión de propietarios (acceso a /panel)
+│       └── SuscriptorResource.php     ← newsletter: lista, baja individual/bulk, badge activos
+├── Filament/
+│   └── Widgets/
+│       ├── StatsOverviewWidget.php    ← KPIs: fichas por plan, visitas, pendientes
+│       ├── TopFichasWidget.php        ← top 10 fichas más visitadas (table widget)
+│       └── ActividadPorZonaWidget.php ← fichas y visitas por zona con barra de distribución
+├── Console/
+│   └── Commands/
+│       └── NewsletterEnviar.php       ← newsletter:enviar [--zona=ID] [--dry-run]
 ├── Http/
-│   └── Controllers/
-│       ├── HomeController.php
-│       ├── NegocioController.php
-│       ├── CategoriaController.php
-│       ├── ZonaController.php
-│       ├── GuiaController.php
-│       ├── ArticuloController.php
-│       ├── MapaController.php        ← página /mapa
-│       ├── ContactoController.php
-│       ├── PageController.php
-│       └── SitemapController.php
+│   ├── Controllers/
+│   │   ├── HomeController.php
+│   │   ├── NegocioController.php      ← visitas, cerca (Haversine), similares (fallback), reseñas
+│   │   ├── CategoriaController.php
+│   │   ├── ZonaController.php
+│   │   ├── GuiaController.php
+│   │   ├── ArticuloController.php
+│   │   ├── MapaController.php
+│   │   ├── ContactoController.php
+│   │   ├── PageController.php
+│   │   ├── SitemapController.php
+│   │   ├── FeedController.php
+│   │   ├── ResenaController.php       ← store() con feature flag + throttle 5/min
+│   │   ├── NewsletterController.php   ← subscribe() + baja() por token
+│   │   └── PanelController.php        ← login/logout + dashboard + edit/update ficha
+│   └── Middleware/
+│       └── PanelAuthenticate.php      ← redirige a panel.login si no autenticado
+├── Livewire/
+│   └── NegociosIndex.php              ← filtros reactivos: zona, categoría, búsqueda, abiertos
 ├── Mail/
-│   └── NuevaConsulta.php             ← notificación email al recibir consulta
+│   ├── NuevaConsulta.php
+│   ├── NewsletterMail.php             ← markdown; contenido por zona; link de baja
+│   └── BienvenidaNewsletterMail.php   ← se envía al suscribirse; incluye zona y link de baja
 ├── Models/
-│   ├── Lugar.php              ← lugar físico
-│   ├── Ficha.php              ← perfil gestionado (1:1 con Lugar)
-│   ├── Categoria.php          ← jerarquía 3 niveles (parent_id)
+│   ├── User.php                       ← implements FilamentUser; is_admin controla acceso a /admin
+│   ├── Lugar.php                      ← lugar físico (slug, lat/lng, categoría, zona)
+│   ├── Ficha.php                      ← PLAN_LIMITS, planIncluye(), isAbiertoAhora(), visitas
+│   ├── Categoria.php                  ← jerarquía hasta 3 niveles (parent_id)
 │   ├── Zona.php
-│   ├── Articulo.php           ← blog/artículos editoriales
-│   ├── Guia.php               ← guías temáticas (M:N con Lugar)
-│   ├── Promocion.php          ← promos de fichas (ficha_id)
-│   ├── FeaturedSlot.php       ← slots destacados editoriales
-│   ├── SlugRedirect.php       ← redirects 301 para slugs antiguos
+│   ├── Articulo.php
+│   ├── Guia.php
+│   ├── Promocion.php
+│   ├── FeaturedSlot.php
+│   ├── SlugRedirect.php               ← redirects 301 para slugs cambiados
+│   ├── Resena.php                     ← scopes aprobada()/pendiente(), accessor $stars
+│   ├── Suscriptor.php                 ← token_baja autogenerado, scope activo()
 │   └── Consulta.php
+├── Observers/
+│   └── LugarObserver.php              ← guarda slug anterior en slug_redirects al cambiar
+└── Providers/
+    └── AppServiceProvider.php         ← registra LugarObserver
 
-resources/
-├── views/
-│   ├── layouts/
-│   │   └── app.blade.php
-│   ├── components/
-│   │   └── cat-icon.blade.php        ← íconos de categoría (SVG inline)
-│   ├── filament/forms/components/
-│   │   └── map-picker.blade.php      ← mapa Leaflet para picker de lat/lng en admin
-│   ├── emails/
-│   │   └── nueva-consulta.blade.php  ← template email Markdown
-│   ├── home.blade.php
-│   ├── mapa.blade.php                ← página /mapa con filtros en cascada
-│   ├── negocios/
-│   │   ├── index.blade.php
-│   │   └── show.blade.php
-│   ├── categorias/
-│   │   ├── index.blade.php
-│   │   └── show.blade.php
-│   ├── zonas/
-│   │   └── show.blade.php
-│   ├── guias/
-│   │   ├── index.blade.php
-│   │   └── show.blade.php
-│   ├── articulos/
-│   │   └── show.blade.php
-│   ├── errors/
-│   │   ├── 404.blade.php
-│   │   └── 500.blade.php
-│   └── contacto.blade.php
+config/
+└── features.php                       ← feature flags: FEATURE_RESENAS
 
-database/
-├── migrations/
-└── seeders/
+resources/views/
+├── layouts/
+│   ├── app.blade.php                  ← layout público principal
+│   └── panel.blade.php                ← layout del panel de dueños (navbar propio)
+├── livewire/
+│   └── negocios-index.blade.php       ← barra pills + cards + sidebar categorías
+├── emails/
+│   ├── newsletter.blade.php           ← template markdown del newsletter periódico
+│   └── newsletter-bienvenida.blade.php ← template markdown del mail de bienvenida
+├── newsletter/
+│   └── baja.blade.php                 ← confirmación de baja exitosa
+├── filament/widgets/
+│   └── actividad-por-zona.blade.php   ← tabla custom con barra de distribución
+├── panel/
+│   ├── login.blade.php                ← login standalone
+│   ├── dashboard.blade.php            ← stats + plan gating + upgrade banner
+│   └── edit.blade.php                 ← edición de descripción, contacto, redes
+└── negocios/
+    └── show.blade.php                 ← JSON-LD, promos, reseñas (flag), WhatsApp (plan), cerca/similares
 ```
 
 ---
@@ -135,114 +155,141 @@ database/
 ## Modelo de datos (entidades principales)
 
 ```
+users
+├── id, name, email, password, remember_token
+├── is_admin (bool) — true: acceso a /admin, false: solo /panel
+└── timestamps
+
 lugares
-├── id, nombre, slug, rut (unique, nullable)
+├── id, nombre, slug (unique), rut (nullable)
 ├── direccion, lat, lng
 ├── categoria_id → FK categorias
 ├── zona_id → FK zonas (nullable)
 ├── activo (bool)
 └── timestamps
 
-fichas
+fichas  (1:1 con lugares)
 ├── id, lugar_id → FK lugares (cascadeOnDelete)
+├── user_id → FK users nullable (propietario con acceso al panel)
 ├── descripcion, telefono, email, sitio_web
-├── horarios (JSON), horarios_especiales (JSON), redes_sociales (JSON)
-├── plan (enum: gratuito, basico, premium)
-├── featured (bool), featured_score (smallint)
-├── estado (enum: pendiente, activa, rechazada, suspendida)
+├── redes_sociales (JSON), horarios (JSON), horarios_especiales (JSON)
+├── plan (enum: gratuito | basico | premium)
+├── featured (bool), featured_score (int, calculado automáticamente al guardar)
+├── estado (enum: pendiente | activa | rechazada | suspendida)
 ├── activo (bool)
+├── visitas (int unsigned, se incrementa por NegocioController@show)
 └── timestamps
-   ↳ media: colecciones 'logo' (singleFile), 'portada' (singleFile), 'galeria' (múltiple)
+   ↳ media: 'logo' (singleFile), 'portada' (singleFile), 'galeria' (múltiple, WebP)
+
+resenas
+├── id, ficha_id → FK fichas
+├── nombre, email (nullable, privado)
+├── rating (tinyint 1-5)
+├── cuerpo (text, min 10 chars)
+├── aprobada (bool, default false — require moderación)
+└── timestamps
 
 categorias
 ├── id, nombre, slug, descripcion, icono, activo
-├── parent_id → FK nullable a categorias (jerarquía hasta 3 niveles)
+├── parent_id → FK nullable (jerarquía hasta 3 niveles)
 ├── nivel (1=familia, 2=tipo, 3=especialización)
-├── popularidad_score
+├── popularidad_score (int, calculado al guardar fichas)
 └── timestamps
-   ↳ media: colección 'imagen_generica' (singleFile)
+   ↳ media: 'imagen_generica' (singleFile)
 
 zonas
 ├── id, slug, nombre
-├── lat_centro, lng_centro (centroides para auto-detección)
+├── lat_centro, lng_centro (centroides para auto-detección GPS)
 └── timestamps
-
-articulos
-├── id, titulo, slug, extracto, cuerpo
-├── publicado (bool), publicado_en (datetime)
-├── categoria_id → FK categorias (nullable)
-├── lugar_id → FK lugares (nullable)
-└── timestamps
-   ↳ media: colección 'portada' (singleFile)
-
-guias
-├── id, titulo, slug, intro, cuerpo
-├── publicado (bool), publicado_en (datetime)
-├── categoria_id → FK categorias (nullable)
-└── timestamps
-   ↳ media: colección 'portada' (singleFile)
-   ↳ pivot: guia_negocio (guia_id, negocio_id → lugar_id, orden)
 
 promociones
 ├── id, ficha_id → FK fichas
-├── titulo, descripcion
-├── fecha_inicio, fecha_fin, activo (bool)
+├── titulo, descripcion, fecha_inicio, fecha_fin, activo
 └── timestamps
-   ↳ media: colección 'imagen' (singleFile)
-
-featured_slots
-├── id, posicion (enum), slotable_type, slotable_id (polymorphic)
-├── orden, activo (bool), valido_hasta (date nullable)
-└── timestamps
+   ↳ media: 'imagen' (singleFile)
 
 slug_redirects
 ├── old_slug, new_slug, model_type
 └── timestamps
 
-(media) → Spatie Media Library (tabla polymórfica)
-
-consultas
-├── id, nombre, email, mensaje, leido
-└── timestamps
+articulos, guias, featured_slots, consultas, media → ver DATABASE.md
 ```
-
-Diseño de clasificación: ver [CATEGORIAS.md](../product/CATEGORIAS.md)
 
 ---
 
 ## Rutas principales
 
 ```
-GET  /                          → HomeController@index
-GET  /negocios                  → NegocioController@index
-GET  /negocios/{slug}           → NegocioController@show
-GET  /categorias                → CategoriaController@index
-GET  /categorias/{slug}         → CategoriaController@show   (?zona=ID)
-GET  /zonas/{slug}              → ZonaController@show        (?categoria=ID)
-GET  /guias                     → GuiaController@index
-GET  /guias/{guia}               → GuiaController@show
-GET  /articulos/{slug}           → ArticuloController@show
-GET  /mapa                      → MapaController@index       (?zona=ID)
-GET  /contacto                  → ContactoController@show
-POST /contacto                  → ContactoController@store
-GET  /quienes-somos             → PageController@about
-GET  /sitemap.xml               → SitemapController@index
+GET  /                              → HomeController@index
+GET  /negocios                      → NegocioController@index (Livewire)
+GET  /negocios/{slug}               → NegocioController@show  (incrementa visitas)
+POST /negocios/{slug}/resenas       → ResenaController@store  [throttle:5,1]
+GET  /categorias / /{slug}          → CategoriaController
+GET  /zonas/{slug}                  → ZonaController@show
+GET  /articulos/{slug}              → ArticuloController@show
+GET  /guias / /{guia}               → GuiaController
+GET  /mapa                          → MapaController@index
+GET  /contacto                      → ContactoController@show
+POST /contacto                      → ContactoController@store
+GET  /quienes-somos                 → PageController@about
+GET  /sitemap.xml                   → SitemapController@index
+GET  /feed                          → FeedController@index
 
-GET  /admin/*                   → Filament (panel admin)
+# Newsletter
+POST /newsletter/suscribir          → NewsletterController@subscribe  [throttle:3,1]
+GET  /newsletter/baja/{token}       → NewsletterController@baja
+
+# Panel de dueños
+GET  /panel/login                   → PanelController@showLogin  [guest]
+POST /panel/login                   → PanelController@login      [guest]
+POST /panel/logout                  → PanelController@logout
+GET  /panel                         → PanelController@index      [PanelAuthenticate]
+GET  /panel/editar                  → PanelController@edit       [PanelAuthenticate]
+PUT  /panel/editar                  → PanelController@update     [PanelAuthenticate]
+
+GET  /admin/*                       → Filament (solo users con is_admin = true)
 ```
+
+---
+
+## Autenticación — dos accesos, un modelo
+
+| | `/admin` (Filament) | `/panel` (dueños) |
+|---|---|---|
+| Guard | `web` | `web` |
+| Modelo | `User` | `User` |
+| Control de acceso | `canAccessPanel()` → `is_admin = true` | `PanelAuthenticate` + `user->ficha` existe |
+| Login | Filament built-in | `panel/login.blade.php` custom |
+| Crear usuarios | `UserResource` en Filament | — |
+
+---
+
+## Feature flags
+
+`config/features.php` (vars de `.env`):
+
+| Flag | Variable | Default | Efecto cuando `false` |
+|---|---|---|---|
+| `features.resenas` | `FEATURE_RESENAS` | `false` | Oculta formulario y sección de reseñas en la ficha pública. La tabla e infraestructura Filament existen siempre. |
 
 ---
 
 ## Decisiones de diseño
 
 **¿Por qué monolito?**
-El tráfico inicial no justifica microservicios. Laravel como monolito SSR entrega HTML directamente, lo cual es óptimo para SEO. Una API REST puede agregarse en etapas posteriores sin rehacer la base.
+El tráfico inicial no justifica microservicios. Laravel SSR entrega HTML directamente, óptimo para SEO. API REST puede agregarse en etapas posteriores sin rehacer la base.
 
 **¿Por qué Filament y no Nova/Backpack?**
-Filament v3 es gratuito, open source, moderno y cubre el 100% de las necesidades admin de este proyecto sin costo de licencia.
+Filament v3 es gratuito, open source, moderno y cubre el 100% de las necesidades admin sin costo de licencia.
 
 **¿Por qué Blade + Alpine en lugar de React/Vue?**
-Las páginas son mayormente contenido estático con interacciones mínimas (filtros, dropdowns). Blade SSR es ideal para SEO. Alpine.js agrega interactividad sin compilación. Livewire se suma en Etapa 2 para filtros reactivos.
+Las páginas son mayormente contenido estático. Blade SSR es ideal para SEO. Alpine.js agrega interactividad sin compilación. Livewire se usa solo donde hay reactividad real (filtros de `/negocios`).
 
 **¿Por qué Scout + MySQL al inicio?**
-Evita infraestructura adicional (Elasticsearch, Meilisearch) en fase MVP. La interfaz Scout permite migrar el driver más adelante sin cambiar el código de la aplicación.
+Evita infraestructura adicional en fase MVP. La interfaz Scout permite migrar a Meilisearch sin cambiar el código de la aplicación.
+
+**¿Por qué dos accesos con el mismo modelo User?**
+Simplifica el modelo de datos — una sola tabla `users`. La separación se hace con `is_admin` + `canAccessPanel()`. Los propietarios no pueden acceder a `/admin` aunque estén en la misma tabla.
+
+**¿Por qué soft gating de planes en lugar de hard?**
+En esta fase el admin controla los planes manualmente. El soft gating informa al dueño sin bloquear técnicamente, lo que facilita excepciones y casos especiales sin código extra. Ver `TIERS.md`.

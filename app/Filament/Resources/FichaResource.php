@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FichaResource\Pages;
 use App\Models\Ficha;
 use App\Models\Lugar;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -221,6 +222,15 @@ class FichaResource extends Resource
                                     ->label('Activo')
                                     ->default(true)
                                     ->helperText('Solo las fichas activas son visibles en el sitio.'),
+
+                                Forms\Components\Select::make('user_id')
+                                    ->label('Propietario (acceso al panel)')
+                                    ->options(User::orderBy('name')->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->nullable()
+                                    ->placeholder('Sin propietario asignado')
+                                    ->helperText('Usuario que puede gestionar esta ficha desde /panel')
+                                    ->columnSpanFull(),
                             ]),
 
                         Forms\Components\Tabs\Tab::make('Imágenes')
@@ -320,6 +330,24 @@ class FichaResource extends Resource
                     ->boolean()
                     ->alignCenter()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('visitas')
+                    ->label('Visitas')
+                    ->alignCenter()
+                    ->sortable()
+                    ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state >= 500 => 'success',
+                        $state >= 100 => 'info',
+                        $state >= 10  => 'gray',
+                        default       => 'gray',
+                    })
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('propietario.name')
+                    ->label('Propietario')
+                    ->placeholder('—')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Actualizado')
                     ->dateTime('d/m/Y')

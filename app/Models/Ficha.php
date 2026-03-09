@@ -21,8 +21,48 @@ class Ficha extends Model implements HasMedia
         'suspendida' => 'Suspendida',
     ];
 
+    /**
+     * Qué incluye cada plan (soft gating).
+     * false        = no incluido
+     * true         = incluido sin límite
+     * int > 0      = límite numérico (máx fotos, máx promociones)
+     */
+    const PLAN_LIMITS = [
+        'gratuito' => [
+            'visitas'     => false,
+            'whatsapp'    => false,
+            'promociones' => 0,
+            'fotos'       => 0,
+            'logo'        => false,
+            'destacado'   => false,
+        ],
+        'basico' => [
+            'visitas'     => true,
+            'whatsapp'    => true,
+            'promociones' => 1,
+            'fotos'       => 3,
+            'logo'        => true,
+            'destacado'   => false,
+        ],
+        'premium' => [
+            'visitas'     => true,
+            'whatsapp'    => true,
+            'promociones' => PHP_INT_MAX,
+            'fotos'       => 10,
+            'logo'        => true,
+            'destacado'   => true,
+        ],
+    ];
+
+    /** Devuelve el límite de una feature para el plan actual (false = no incluido) */
+    public function planIncluye(string $feature): bool|int
+    {
+        return self::PLAN_LIMITS[$this->plan ?? 'gratuito'][$feature] ?? false;
+    }
+
     protected $fillable = [
         'lugar_id',
+        'user_id',
         'estado',
         'descripcion',
         'telefono',
@@ -34,6 +74,7 @@ class Ficha extends Model implements HasMedia
         'plan',
         'featured',
         'featured_score',
+        'visitas',
         'activo',
     ];
 
@@ -44,6 +85,7 @@ class Ficha extends Model implements HasMedia
         'featured'            => 'boolean',
         'activo'              => 'boolean',
         'featured_score'      => 'integer',
+        'visitas'             => 'integer',
     ];
 
     public function registerMediaCollections(): void
@@ -104,9 +146,19 @@ class Ficha extends Model implements HasMedia
         return $this->belongsTo(Lugar::class);
     }
 
+    public function propietario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function promociones()
     {
         return $this->hasMany(Promocion::class);
+    }
+
+    public function resenas()
+    {
+        return $this->hasMany(Resena::class);
     }
 
     // ── ¿Abierto ahora? ───────────────────────────────────────────────────────

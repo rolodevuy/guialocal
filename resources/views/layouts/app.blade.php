@@ -19,8 +19,7 @@
     @stack('meta')
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Config de Livewire (CSRF, URLs): requerido con inject_assets=false + ESM bundle --}}
-    @livewireScriptConfig
+    @livewireStyles
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
 
@@ -140,7 +139,7 @@
     </main>
 
     {{-- FOOTER --}}
-    <footer class="bg-gray-800 text-gray-300 mt-16">
+    <footer class="bg-gray-800 text-gray-300">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -162,8 +161,10 @@
                     <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Explorar</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="{{ route('negocios.index') }}" class="hover:text-amber-400 transition-colors">Todos los negocios</a></li>
-                        <li><a href="{{ route('categorias.index') }}" class="hover:text-amber-400 transition-colors">Categorías</a></li>
-                        <li><a href="{{ route('quienes-somos') }}" class="hover:text-amber-400 transition-colors">Quiénes somos</a></li>
+                        @foreach($sectoresNav as $sectorNav)
+                        <li><a href="{{ route('sectores.show', $sectorNav) }}" class="hover:text-amber-400 transition-colors">{{ $sectorNav->nombre }}</a></li>
+                        @endforeach
+                        <li><a href="{{ route('categorias.index') }}" class="hover:text-amber-400 transition-colors">Todas las categorías</a></li>
                         <li><a href="{{ route('contacto.show') }}" class="hover:text-amber-400 transition-colors">Contacto</a></li>
                     </ul>
                 </div>
@@ -185,6 +186,7 @@
         </div>
     </footer>
 
+    @livewireScripts
     @stack('scripts')
 </body>
 </html>
