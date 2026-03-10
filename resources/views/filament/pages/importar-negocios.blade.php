@@ -168,7 +168,7 @@
                             <td class="px-4 py-3 text-center">
                                 @if(! $r['existe'])
                                     <input type="checkbox"
-                                           wire:model="seleccionados"
+                                           wire:model.live="seleccionados"
                                            value="{{ $r['osm_id'] }}"
                                            class="rounded border-gray-300 text-amber-500 focus:ring-amber-500">
                                 @endif
