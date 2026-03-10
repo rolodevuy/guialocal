@@ -6,10 +6,23 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
-    --color-marca: #f59e0b;
-    --color-marca-oscuro: #d97706;
-    --color-marca-claro: #fef3c7;
+    --color-marca:        #f97316;
+    --color-marca-oscuro: #ea580c;
+    --color-marca-claro:  #fff7ed;
+
+    /* Redirigir la paleta amber al orange de la marca */
+    --color-amber-50:  #fff7ed;
+    --color-amber-100: #ffedd5;
+    --color-amber-200: #fed7aa;
+    --color-amber-300: #fdba74;
+    --color-amber-400: #fb923c;
+    --color-amber-500: #f97316;
+    --color-amber-600: #ea580c;
+    --color-amber-700: #c2410c;
+    --color-amber-800: #9a3412;
+    --color-amber-900: #7c2d12;
+    --color-amber-950: #431407;
 }

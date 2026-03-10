@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <title>@yield('title', 'Guía Local — Tu barrio en un solo lugar')</title>
     <meta name="description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -38,11 +38,11 @@
             <div class="flex items-center justify-between h-16">
 
                 {{-- Logo --}}
-                <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-xl text-amber-500 hover:text-amber-600 transition-colors">
-                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('home') }}" class="flex items-center gap-1.5 font-extrabold text-xl hover:opacity-90 transition-opacity">
+                    <svg class="w-7 h-7 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                     </svg>
-                    Guía Local
+                    <span class="text-amber-500">GUÍA</span><span class="text-gray-900 ml-1">LOCAL</span>
                 </a>
 
                 {{-- Nav desktop --}}
@@ -153,11 +153,11 @@
 
                 {{-- Brand --}}
                 <div>
-                    <div class="flex items-center gap-2 text-amber-400 font-bold text-lg mb-3">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-1.5 font-extrabold text-lg mb-3">
+                        <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                         </svg>
-                        Guía Local
+                        <span class="text-amber-400">GUÍA</span><span class="text-white ml-1">LOCAL</span>
                     </div>
                     <p class="text-sm text-gray-400 leading-relaxed">
                         Tu guía de negocios y servicios del barrio. Encontrá lo que necesitás cerca tuyo.
