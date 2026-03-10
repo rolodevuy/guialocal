@@ -162,7 +162,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @foreach($resultados as $r)
-                        <tr class="{{ $r['existe'] ? 'opacity-50 bg-gray-50 dark:bg-gray-800/50' : (in_array($r['osm_id'], $seleccionados) ? 'bg-amber-50 dark:bg-amber-950/30' : 'hover:bg-gray-50 dark:hover:bg-gray-800/30') }} transition-colors">
+                        <tr class="{{ $r['existe'] ? 'opacity-40 pointer-events-none' : (in_array($r['osm_id'], $seleccionados) ? 'bg-amber-50 dark:bg-amber-950/30' : 'hover:bg-gray-50 dark:hover:bg-gray-800/30') }} transition-colors">
 
                             {{-- Checkbox --}}
                             <td class="px-4 py-3 text-center">

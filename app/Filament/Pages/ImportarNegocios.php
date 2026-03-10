@@ -178,7 +178,9 @@ class ImportarNegocios extends Page
 
     private function marcarDuplicados(array $resultados): array
     {
-        $existentes = Lugar::select('id', 'nombre', 'lat', 'lng')->get();
+        $existentes = Lugar::select('lugares.id', 'lugares.nombre', 'lugares.lat', 'lugares.lng')
+            ->join('fichas', 'fichas.lugar_id', '=', 'lugares.id')
+            ->get();
         $zonas      = Zona::select('id', 'nombre')->get();
 
         return collect($resultados)
