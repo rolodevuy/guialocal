@@ -1,0 +1,265 @@
+<x-filament-panels::page>
+
+    {{-- ══════════════════════════════════════════════════════════════
+         FORMULARIO DE BÚSQUEDA
+    ══════════════════════════════════════════════════════════════ --}}
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Parámetros de búsqueda</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            {{-- Tipo de negocio --}}
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Tipo de negocio <span class="text-red-500">*</span>
+                </label>
+                <select wire:model="tipo"
+                        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    <option value="">— Elegí un tipo —</option>
+                    @foreach($this->getTipos() as $key => $label)
+                        <option value="{{ $key }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('tipo') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Categoría --}}
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Categoría en la guía <span class="text-red-500">*</span>
+                </label>
+                <select wire:model="categoriaId"
+                        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    <option value="">— Elegí una categoría —</option>
+                    @foreach($this->getCategorias() as $id => $nombre)
+                        <option value="{{ $id }}">{{ $nombre }}</option>
+                    @endforeach
+                </select>
+                @error('categoriaId') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Zona --}}
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Zona <span class="text-red-500">*</span>
+                </label>
+                <select wire:model="zonaId"
+                        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    <option value="">— Elegí una zona —</option>
+                    @foreach($this->getZonas() as $id => $nombre)
+                        <option value="{{ $id }}">{{ $nombre }}</option>
+                    @endforeach
+                </select>
+                @error('zonaId') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Radio --}}
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Radio de búsqueda
+                </label>
+                <select wire:model="radio"
+                        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    <option value="1000">1 km</option>
+                    <option value="2000">2 km</option>
+                    <option value="3000">3 km</option>
+                    <option value="5000">5 km</option>
+                    <option value="10000">10 km</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-5 flex items-center gap-3">
+            <button wire:click="buscar"
+                    wire:loading.attr="disabled"
+                    class="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 disabled:opacity-60 transition-colors">
+                <svg wire:loading wire:target="buscar" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                <svg wire:loading.remove wire:target="buscar" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/>
+                </svg>
+                <span wire:loading.remove wire:target="buscar">Buscar en OpenStreetMap</span>
+                <span wire:loading wire:target="buscar">Buscando...</span>
+            </button>
+
+            <p class="text-xs text-gray-400">Los datos provienen de OpenStreetMap (licencia ODbL)</p>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════════════════════════════
+         ERROR
+    ══════════════════════════════════════════════════════════════ --}}
+    @if($error)
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                {{ $error }}
+            </div>
+        </div>
+    @endif
+
+    {{-- ══════════════════════════════════════════════════════════════
+         RESULTADOS
+    ══════════════════════════════════════════════════════════════ --}}
+    @if(count($resultados) > 0)
+
+        {{-- Barra de stats --}}
+        @php
+            $totalNuevos    = collect($resultados)->where('existe', false)->count();
+            $totalExistentes = collect($resultados)->where('existe', true)->count();
+        @endphp
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-4 text-sm">
+                <span class="font-medium text-gray-700 dark:text-gray-300">
+                    {{ count($resultados) }} resultados
+                </span>
+                <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    {{ $totalNuevos }} nuevos
+                </span>
+                <span class="inline-flex items-center gap-1 text-gray-400">
+                    <span class="h-2 w-2 rounded-full bg-gray-300"></span>
+                    {{ $totalExistentes }} ya existen
+                </span>
+                @if(count($seleccionados) > 0)
+                    <span class="inline-flex items-center gap-1 font-semibold text-amber-600">
+                        {{ count($seleccionados) }} seleccionados
+                    </span>
+                @endif
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button wire:click="seleccionarTodos"
+                        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                    Seleccionar todos los nuevos
+                </button>
+                <button wire:click="deseleccionarTodos"
+                        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                    Deseleccionar todos
+                </button>
+            </div>
+        </div>
+
+        {{-- Tabla de resultados --}}
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <th class="w-10 px-4 py-3"></th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Nombre</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Dirección</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Teléfono</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Web</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @foreach($resultados as $r)
+                        <tr class="{{ $r['existe'] ? 'opacity-50 bg-gray-50 dark:bg-gray-800/50' : (in_array($r['osm_id'], $seleccionados) ? 'bg-amber-50 dark:bg-amber-950/30' : 'hover:bg-gray-50 dark:hover:bg-gray-800/30') }} transition-colors">
+
+                            {{-- Checkbox --}}
+                            <td class="px-4 py-3 text-center">
+                                @if(! $r['existe'])
+                                    <input type="checkbox"
+                                           wire:model="seleccionados"
+                                           value="{{ $r['osm_id'] }}"
+                                           class="rounded border-gray-300 text-amber-500 focus:ring-amber-500">
+                                @endif
+                            </td>
+
+                            {{-- Nombre --}}
+                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                                {{ $r['nombre'] }}
+                                <div class="text-xs text-gray-400 font-normal">
+                                    {{ $r['lat'] }}, {{ $r['lng'] }}
+                                </div>
+                            </td>
+
+                            {{-- Dirección --}}
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                                {{ $r['direccion'] ?? '—' }}
+                            </td>
+
+                            {{-- Teléfono --}}
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                                {{ $r['telefono'] ?? '—' }}
+                            </td>
+
+                            {{-- Web --}}
+                            <td class="px-4 py-3">
+                                @if($r['sitio_web'])
+                                    <a href="{{ $r['sitio_web'] }}" target="_blank" rel="noopener"
+                                       class="truncate text-amber-600 hover:underline max-w-[160px] block">
+                                        {{ parse_url($r['sitio_web'], PHP_URL_HOST) ?? $r['sitio_web'] }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
+
+                            {{-- Estado --}}
+                            <td class="px-4 py-3">
+                                @if($r['existe'])
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Ya existe
+                                        @if($r['lugar_id'])
+                                            <a href="{{ route('filament.admin.resources.lugars.edit', $r['lugar_id']) }}"
+                                               class="text-amber-600 hover:underline">#{{ $r['lugar_id'] }}</a>
+                                        @endif
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                        Nuevo
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Botón importar --}}
+        @if($totalNuevos > 0)
+            <div class="flex items-center gap-4">
+                <button wire:click="importar"
+                        wire:loading.attr="disabled"
+                        wire:confirm="¿Importar {{ count($seleccionados) }} negocio(s)? Se crearán en estado pendiente."
+                        @disabled(empty($seleccionados))
+                        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <svg wire:loading wire:target="importar" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                    </svg>
+                    <svg wire:loading.remove wire:target="importar" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    Importar {{ count($seleccionados) }} negocio(s) seleccionado(s)
+                </button>
+
+                <p class="text-xs text-gray-400">
+                    Se crean en estado <strong>pendiente</strong> e inactivos — los revisás en Fichas antes de publicar.
+                </p>
+            </div>
+        @endif
+
+    @elseif(! $buscando && ! $error && count($resultados) === 0 && $tipo)
+        <div class="rounded-xl border border-gray-200 bg-white p-12 text-center text-gray-400 dark:border-gray-700 dark:bg-gray-900">
+            <svg class="mx-auto w-10 h-10 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-sm">No se encontraron resultados en esa zona y radio. Probá aumentar el radio.</p>
+        </div>
+    @endif
+
+</x-filament-panels::page>
