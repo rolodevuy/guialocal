@@ -104,7 +104,7 @@ class CategoriaResource extends Resource
                 Forms\Components\TextInput::make('icono')
                     ->label('Ícono')
                     ->maxLength(255)
-                    ->helperText('Nombre del ícono Lucide (ej: utensils, coffee, pill).'),
+                    ->helperText('Íconos disponibles — Gastronomía: utensils · coffee · cake · wine | Salud: pill · heart-pulse · eye · face-smile | Comercio: shopping-cart · shirt · sparkles · scissors · paint-brush | Servicios: briefcase · home · key · wrench · banknotes · device-phone-mobile | Turismo: building-office · globe-alt · map-pin · sun · truck | Educación/Cultura: academic-cap · building-library | Ocio: bolt · trophy · musical-note · camera'),
                 Forms\Components\Toggle::make('activo')
                     ->label('Activa')
                     ->default(true),

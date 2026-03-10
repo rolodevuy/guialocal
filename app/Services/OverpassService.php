@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\Http;
 
 class OverpassService
 {
-    const ENDPOINT = 'https://overpass-api.de/api/interpreter';
+    const ENDPOINTS = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter',
+    ];
 
     /**
      * Tipos de negocio disponibles, mapeados a tags de OpenStreetMap.
@@ -61,17 +64,28 @@ class OverpassService
             . ");\n"
             . "out center;";
 
-        $response = Http::timeout(35)
-            ->asForm()
-            ->post(self::ENDPOINT, ['data' => $query]);
+        $lastError = null;
 
-        if (! $response->ok()) {
-            throw new \RuntimeException(
-                'Error al consultar OpenStreetMap (HTTP ' . $response->status() . ')'
-            );
+        foreach (self::ENDPOINTS as $endpoint) {
+            try {
+                $response = Http::timeout(35)
+                    ->asForm()
+                    ->post($endpoint, ['data' => $query]);
+
+                if ($response->ok()) {
+                    return $this->parsear($response->json('elements', []));
+                }
+
+                $lastError = 'HTTP ' . $response->status() . ' desde ' . parse_url($endpoint, PHP_URL_HOST);
+
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                $lastError = 'Sin respuesta desde ' . parse_url($endpoint, PHP_URL_HOST);
+            }
         }
 
-        return $this->parsear($response->json('elements', []));
+        throw new \RuntimeException(
+            'OpenStreetMap no respondió en ningún servidor (' . $lastError . '). Intentá de nuevo en unos minutos.'
+        );
     }
 
     // ─────────────────────────────────────────────────────────────────────────

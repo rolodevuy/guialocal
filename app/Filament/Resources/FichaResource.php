@@ -377,11 +377,12 @@ class FichaResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('activar')
-                        ->label('Activar seleccionadas')
+                        ->label('Activar y publicar')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->action(fn ($records) => $records->each->update(['activo' => true]))
+                        ->modalDescription('Se pondrán en estado "activa" y visibles al público.')
+                        ->action(fn ($records) => $records->each->update(['activo' => true, 'estado' => 'activa']))
                         ->deselectRecordsAfterCompletion(),
                     Tables\Actions\BulkAction::make('desactivar')
                         ->label('Desactivar seleccionadas')
