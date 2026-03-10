@@ -153,9 +153,10 @@
                     <tr>
                         <th class="w-10 px-4 py-3"></th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Nombre</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Dirección</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Tipo OSM</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Localidad</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Zona a asignar</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Teléfono</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Web</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Estado</th>
                     </tr>
                 </thead>
@@ -176,31 +177,50 @@
                             {{-- Nombre --}}
                             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
                                 {{ $r['nombre'] }}
-                                <div class="text-xs text-gray-400 font-normal">
-                                    {{ $r['lat'] }}, {{ $r['lng'] }}
+                                @if($r['direccion'])
+                                    <div class="text-xs text-gray-400 font-normal">{{ $r['direccion'] }}</div>
+                                @endif
+                            </td>
+
+                            {{-- Tipo OSM --}}
+                            <td class="px-4 py-3">
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($r['tags_relevantes'] ?? [] as $key => $val)
+                                        <span class="inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                              title="{{ $key }}={{ $val }}">
+                                            {{ $val }}
+                                        </span>
+                                    @endforeach
+                                    @if(empty($r['tags_relevantes']))
+                                        <span class="text-gray-400 text-xs">—</span>
+                                    @endif
                                 </div>
                             </td>
 
-                            {{-- Dirección --}}
-                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                                {{ $r['direccion'] ?? '—' }}
+                            {{-- Localidad --}}
+                            <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                                {{ $r['localidad'] ?? '—' }}
+                            </td>
+
+                            {{-- Zona sugerida --}}
+                            <td class="px-4 py-3 text-sm">
+                                @if($r['zona_auto'] ?? false)
+                                    <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ $r['zona_nombre_sugerida'] }}
+                                    </span>
+                                    <div class="text-xs text-gray-400">detectada automáticamente</div>
+                                @else
+                                    <span class="text-gray-500">{{ $r['zona_nombre_sugerida'] }}</span>
+                                    <div class="text-xs text-gray-400">zona de búsqueda</div>
+                                @endif
                             </td>
 
                             {{-- Teléfono --}}
-                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-sm">
                                 {{ $r['telefono'] ?? '—' }}
-                            </td>
-
-                            {{-- Web --}}
-                            <td class="px-4 py-3">
-                                @if($r['sitio_web'])
-                                    <a href="{{ $r['sitio_web'] }}" target="_blank" rel="noopener"
-                                       class="truncate text-amber-600 hover:underline max-w-[160px] block">
-                                        {{ parse_url($r['sitio_web'], PHP_URL_HOST) ?? $r['sitio_web'] }}
-                                    </a>
-                                @else
-                                    <span class="text-gray-400">—</span>
-                                @endif
                             </td>
 
                             {{-- Estado --}}

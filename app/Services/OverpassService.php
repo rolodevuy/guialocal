@@ -96,20 +96,47 @@ class OverpassService
             }
 
             $resultados[] = [
-                'osm_id'    => (string) $el['id'],
-                'osm_type'  => $el['type'],
-                'nombre'    => $nombre,
-                'direccion' => $this->parsearDireccion($tags),
-                'telefono'  => $this->limpiarTelefono(
+                'osm_id'         => (string) $el['id'],
+                'osm_type'       => $el['type'],
+                'nombre'         => $nombre,
+                'direccion'      => $this->parsearDireccion($tags),
+                'localidad'      => $this->parsearLocalidad($tags),
+                'tags_relevantes'=> $this->parsearTagsRelevantes($tags),
+                'telefono'       => $this->limpiarTelefono(
                     $tags['phone'] ?? $tags['contact:phone'] ?? null
                 ),
-                'sitio_web' => $tags['website'] ?? $tags['contact:website'] ?? $tags['url'] ?? null,
-                'lat'       => round((float) $lat, 7),
-                'lng'       => round((float) $lng, 7),
+                'sitio_web'      => $tags['website'] ?? $tags['contact:website'] ?? $tags['url'] ?? null,
+                'lat'            => round((float) $lat, 7),
+                'lng'            => round((float) $lng, 7),
             ];
         }
 
         return $resultados;
+    }
+
+    private function parsearLocalidad(array $tags): ?string
+    {
+        // OSM usa distintos campos según el tipo de lugar
+        return $tags['addr:city']
+            ?? $tags['addr:suburb']
+            ?? $tags['addr:hamlet']
+            ?? $tags['addr:village']
+            ?? $tags['addr:town']
+            ?? null;
+    }
+
+    private function parsearTagsRelevantes(array $tags): array
+    {
+        $relevantes = [];
+        $claves = ['amenity', 'shop', 'tourism', 'leisure', 'office', 'craft', 'healthcare'];
+
+        foreach ($claves as $clave) {
+            if (isset($tags[$clave])) {
+                $relevantes[$clave] = $tags[$clave];
+            }
+        }
+
+        return $relevantes;
     }
 
     private function parsearDireccion(array $tags): ?string

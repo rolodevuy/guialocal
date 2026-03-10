@@ -138,7 +138,7 @@ class ImportarNegocios extends Page
                 'lat'          => $r['lat'],
                 'lng'          => $r['lng'],
                 'categoria_id' => $this->categoriaId,
-                'zona_id'      => $this->zonaId,
+                'zona_id'      => $r['zona_id_sugerida'] ?? $this->zonaId,
                 'activo'       => false,
             ]);
 
@@ -179,15 +179,15 @@ class ImportarNegocios extends Page
     private function marcarDuplicados(array $resultados): array
     {
         $existentes = Lugar::select('id', 'nombre', 'lat', 'lng')->get();
+        $zonas      = Zona::select('id', 'nombre')->get();
 
         return collect($resultados)
-            ->map(function ($r) use ($existentes) {
+            ->map(function ($r) use ($existentes, $zonas) {
+                // ── Duplicado ─────────────────────────────────────────────────
                 $match = $existentes->first(function ($l) use ($r) {
-                    // Coincidencia exacta por nombre (insensible a mayúsculas)
                     if (strtolower(trim($l->nombre)) === strtolower(trim($r['nombre']))) {
                         return true;
                     }
-                    // Coincidencia por proximidad de coordenadas (~100 m)
                     if ($l->lat && $l->lng) {
                         return abs($l->lat - $r['lat']) < 0.001
                             && abs($l->lng - $r['lng']) < 0.001;
@@ -197,6 +197,19 @@ class ImportarNegocios extends Page
 
                 $r['existe']   = (bool) $match;
                 $r['lugar_id'] = $match?->id;
+
+                // ── Auto-asignar zona por localidad de OSM ────────────────────
+                $zonaMatch = null;
+                if (! empty($r['localidad'])) {
+                    $zonaMatch = $zonas->first(fn ($z) =>
+                        strtolower(trim($z->nombre)) === strtolower(trim($r['localidad']))
+                    );
+                }
+                $r['zona_id_sugerida']     = $zonaMatch?->id ?? $this->zonaId;
+                $r['zona_nombre_sugerida'] = $zonaMatch?->nombre
+                    ?? ($zonas->find($this->zonaId)?->nombre ?? '');
+                $r['zona_auto']            = (bool) $zonaMatch;
+
                 return $r;
             })
             ->toArray();
