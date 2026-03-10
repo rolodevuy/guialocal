@@ -1434,6 +1434,79 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+## Bloque 14 — SEO social + herramientas de carga de datos
+
+---
+
+### Paso 53 — Open Graph y Twitter Cards ✅
+
+**Objetivo:** Mejorar el preview de URLs compartidas en WhatsApp, Facebook, Twitter y otras redes.
+
+**Resultado:**
+- Meta tags `og:title`, `og:description`, `og:image`, `og:type` en todas las páginas
+- Twitter Cards: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`
+- Imagen por defecto `public/images/og-default.jpg` (1200×630)
+- Páginas de negocio usan la portada del negocio si está disponible, sino la imagen por defecto
+- Patrón `@yield('og_image')` / `@section('og_image', ...)` para sobreescribir por página
+
+**Archivos creados/modificados:**
+- `resources/views/layouts/app.blade.php` (meta og:* y twitter:* en `<head>`)
+- `resources/views/negocios/show.blade.php` (`@section('og_image', $ogImage)`)
+- `resources/views/sectores/show.blade.php` (`@section('og_image', ...)`)
+- `resources/views/home.blade.php` (`@section('og_image', ...)`)
+- `public/images/og-default.jpg` (imagen por defecto 1200×630)
+
+---
+
+### Paso 54 — ZonaResource: mapa picker para centroides ✅
+
+**Objetivo:** Permitir al admin fijar las coordenadas de centro de cada zona de forma visual, sin saber las coordenadas de memoria.
+
+**Contexto:** Los centroides (`lat_centro`, `lng_centro`) ya existían en la BD desde el Paso 48, pero solo se podían ingresar manualmente escribiendo los números. Ahora hay un mapa interactivo.
+
+**Resultado:**
+- Sección "Centro de la zona" en ZonaResource con mapa Leaflet interactivo
+- Click en el mapa fija el marcador y actualiza `lat_centro`/`lng_centro` via Livewire
+- Marcador draggable para ajuste fino
+- Columna `lat_centro` en la tabla de zonas: pin verde (tiene coords) / X roja (sin coords) con tooltip de las coordenadas
+- Aviso en el importador si se elige una zona sin coordenadas
+
+**Archivos creados/modificados:**
+- `resources/views/filament/forms/components/map-picker-zona.blade.php` (nuevo — variante para `lat_centro`/`lng_centro`)
+- `app/Filament/Resources/ZonaResource.php` (sección Centro + columna con icono)
+
+---
+
+### Paso 55 — Importador de negocios desde OpenStreetMap ✅
+
+**Objetivo:** Poblar el directorio con negocios reales importando datos de OpenStreetMap via Overpass API, sin costo y sin API key.
+
+**Flujo:**
+1. Admin elige tipo de negocio, categoría interna, zona y radio de búsqueda
+2. Se consulta la API Overpass con una query OverpassQL
+3. Se muestran los resultados con detección de duplicados y sugerencia de zona
+4. Admin selecciona cuáles importar → se crean `Lugar` + `Ficha` en estado `pendiente`
+
+**Resultado:**
+- `OverpassService`: 22 tipos de negocio (restaurantes, farmacias, hoteles, gimnasios, etc.)
+- Parseo de tags OSM: nombre, dirección, teléfono, sitio web, localidad, tipos OSM
+- Detección de duplicados: por nombre (case-insensitive) O coordenadas cercanas (~100m)
+- Auto-detección de zona: compara `addr:city`/`addr:suburb`/etc. con `zonas.nombre`
+- Vista de resultados: tabla con badges de tipo OSM, localidad, zona sugerida, estado
+- Selección masiva: "Seleccionar todos los nuevos" / "Deseleccionar todos"
+- Filas "ya existe": `opacity-40 pointer-events-none` (tenues, no clickeables)
+
+**Fixes post-deploy:**
+- Detección de duplicados corregida: JOIN con `fichas` — si se borra la Ficha de un lugar, ese lugar vuelve a ser importable (v1 solo chequeaba `Lugar`)
+- Estilo "ya existe": cambiado de `opacity-50 bg-gray-50` a `opacity-40 pointer-events-none`
+
+**Archivos creados/modificados:**
+- `app/Services/OverpassService.php` (nuevo)
+- `app/Filament/Pages/ImportarNegocios.php` (nuevo — Filament custom Page, grupo "Herramientas")
+- `resources/views/filament/pages/importar-negocios.blade.php` (nuevo)
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

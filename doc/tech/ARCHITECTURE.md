@@ -42,6 +42,7 @@ Directorio comercial local — Guía Local
 │              Articulo · Guia · Promocion        │
 │              FeaturedSlot · Consulta            │
 │              Resena · User (propietarios)       │
+│   Pages: ImportarNegocios (Overpass/OSM)        │
 ├─────────────────────────────────────────────────┤
 │               LÓGICA DE NEGOCIO                  │
 │     Models · Observers · Middleware             │
@@ -75,6 +76,9 @@ app/
 │       ├── ResenaResource.php         ← moderación: aprobar/rechazar/bulk, badge pendientes
 │       ├── UserResource.php           ← gestión de propietarios (acceso a /panel)
 │       └── SuscriptorResource.php     ← newsletter: lista, baja individual/bulk, badge activos
+├── Filament/
+│   └── Pages/
+│       └── ImportarNegocios.php       ← herramienta de carga masiva desde OpenStreetMap (Overpass API)
 ├── Filament/
 │   └── Widgets/
 │       ├── StatsOverviewWidget.php    ← KPIs: fichas por plan, visitas, pendientes
@@ -123,6 +127,8 @@ app/
 │   └── Consulta.php
 ├── Observers/
 │   └── LugarObserver.php              ← guarda slug anterior en slug_redirects al cambiar
+├── Services/
+│   └── OverpassService.php            ← consulta Overpass API (OSM); parsea elementos a array normalizado
 └── Providers/
     └── AppServiceProvider.php         ← registra LugarObserver
 
@@ -140,6 +146,10 @@ resources/views/
 │   └── newsletter-bienvenida.blade.php ← template markdown del mail de bienvenida
 ├── newsletter/
 │   └── baja.blade.php                 ← confirmación de baja exitosa
+├── filament/pages/
+│   └── importar-negocios.blade.php    ← formulario + tabla de resultados OSM + importación
+├── filament/forms/components/
+│   └── map-picker-zona.blade.php      ← mapa Leaflet para fijar lat_centro/lng_centro de Zona
 ├── filament/widgets/
 │   └── actividad-por-zona.blade.php   ← tabla custom con barra de distribución
 ├── panel/
