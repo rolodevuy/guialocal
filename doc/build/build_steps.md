@@ -1507,6 +1507,96 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 56 — Admin UX: bulk actions + edición inline en Lugares + iconos de categoría ✅
+
+**Objetivo:** Agilizar las tareas administrativas más frecuentes sin entrar a editar cada registro individualmente.
+
+**Bulk actions:**
+- `FichaResource`: "Activar y publicar" (sets `activo=true, estado='activa'` en Ficha + `activo=true` en Lugar asociado), "Desactivar seleccionadas", DeleteBulkAction
+- `LugarResource`: "Activar seleccionadas", "Desactivar seleccionadas", DeleteBulkAction
+- Fix: el bulk "Activar" de fichas también activa el `Lugar` relacionado (si el Lugar queda inactivo, la ficha no aparece en el sitio aunque esté activa)
+
+**Edición inline en tabla de Lugares:**
+- `SelectColumn::make('categoria_id')` con opciones + búsqueda custom (`whereHas('categoria', ...)`)
+- `SelectColumn::make('zona_id')` con opciones + búsqueda custom (`whereHas('zona', ...)`)
+- `ToggleColumn::make('activo')` para activar/desactivar desde la fila
+- `TextColumn::make('direccion')->searchable()->toggleable(isToggledHiddenByDefault: true)`
+
+**Iconos de categoría:**
+- `cat-icon.blade.php` ampliado de 8 a ~25 Heroicons v2 outline, organizados por sección
+- `CategoriaResource`: `TextInput::make('icono')` → `Select::make('icono')->searchable()` con options agrupadas (Gastronomía, Salud, Comercio, Servicios, Turismo, Educación, Ocio)
+
+**Archivos modificados:**
+- `app/Filament/Resources/FichaResource.php`
+- `app/Filament/Resources/LugarResource.php`
+- `app/Filament/Resources/CategoriaResource.php`
+- `resources/views/components/cat-icon.blade.php`
+
+---
+
+### Paso 57 — Design system: Plus Jakarta Sans + color naranja + logo bicolor ✅
+
+**Objetivo:** Actualizar la identidad visual del sitio público para darle más personalidad y modernidad.
+
+**Cambios:**
+- **Fuente:** Instrument Sans → Plus Jakarta Sans (Google Fonts)
+- **Color marca:** Amber → Naranja puro (`#f97316`, `orange-500`). Se sobreescribió toda la paleta `--color-amber-*` en `@theme` para que todos los usos de `amber-*` en templates mapeen automáticamente a naranja sin tocar los templates.
+- **Logo bicolor:** `GUÍA` en naranja, `LOCAL` en gris-900 (navbar) / blanco (footer)
+
+**Archivos modificados:**
+- `resources/css/app.css` (fuente, variables `--color-marca-*`, override paleta amber)
+- `resources/views/layouts/app.blade.php` (Google Fonts link, logo navbar y footer)
+
+---
+
+### Paso 58 — Fixes importador: wire:model.live + jerarquía de categorías ✅
+
+**Objetivo:** Corregir dos bugs que impedían el flujo normal post-importación.
+
+**Bug 1 — Checkboxes del importador no actualizaban el contador:**
+- Causa: Livewire 3 usa `wire:model` diferido por defecto → `$seleccionados` no se actualizaba hasta el submit
+- Fix: `wire:model` → `wire:model.live` en los checkboxes de la tabla de resultados
+- Efecto: el botón "Importar N negocio(s)" se habilita inmediatamente al hacer check
+
+**Bug 2 — Fichas de categoría nivel 2 no aparecían al visitar nivel 1:**
+- Causa: `CategoriaController@show` solo buscaba fichas donde `categoria_id = $categoria->id`, pero las fichas importadas se asignan a la subcategoría (nivel 2, ej. "Farmacia" id=46), y la página pública era la categoría nivel 1 (ej. "Farmacias" id=5)
+- Fix: colectar IDs de hijos con `Categoria::where('parent_id', $categoria->id)->pluck('id')->prepend($categoria->id)` y usar `whereIn` en fichas y zonas
+
+**Archivos modificados:**
+- `resources/views/filament/pages/importar-negocios.blade.php` (wire:model.live)
+- `app/Http/Controllers/CategoriaController.php` (whereIn categoriaIds)
+
+---
+
+### Paso 59 — Importador: modo búsqueda por límites de localidad OSM ✅
+
+**Objetivo:** Permitir buscar negocios dentro de los límites geográficos exactos de una localidad (ej. Atlántida), en lugar de un radio circular desde el centro de la zona.
+
+**Contexto:** El modo radio busca dentro de un círculo de N km desde el centroide de la zona. El nuevo modo "Por localidad" usa `area["name"="..."]` en OverpassQL, que aplica el polígono oficial de la localidad tal como está mapeado en OSM — más preciso y sin necesidad de coordenadas de centro.
+
+**Cambios en `OverpassService`:**
+- `const ENDPOINT` → `const ENDPOINTS` (array): endpoint principal (`overpass-api.de`) + fallback (`overpass.kumi.systems`) para manejar errores 504 por sobrecarga
+- Loop de retry extraído a método privado `ejecutar(string $query): array`, reutilizable por ambos métodos de búsqueda
+- Nuevo método público `buscarEnLocalidad(string $tipoKey, string $nombreLocalidad): array` que genera query con `area["name"="..."]->.searchArea` y llama `ejecutar()`
+
+**Cambios en `ImportarNegocios`:**
+- Nueva propiedad `public string $modo = 'localidad'` ('localidad' | 'radio')
+- Validación condicional: `radio` solo se valida cuando `$modo === 'radio'`
+- `buscar()` bifurca: modo `localidad` → `buscarEnLocalidad($tipo, $zona->nombre)` (no requiere lat/lng), modo `radio` → `buscar($tipo, $lat, $lng, $radio)` (verifica coords de la zona)
+
+**Cambios en blade:**
+- Toggle tipo pill: "Por localidad (límites OSM)" | "Por radio"
+- Grid de 3 columnas en modo localidad, 4 en modo radio (selector de radio aparece/desaparece)
+- Texto de ayuda en modo localidad
+- Mensaje "sin resultados" diferente según el modo
+
+**Archivos modificados:**
+- `app/Services/OverpassService.php`
+- `app/Filament/Pages/ImportarNegocios.php`
+- `resources/views/filament/pages/importar-negocios.blade.php`
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

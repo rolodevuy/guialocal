@@ -6,7 +6,49 @@
     <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
         <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Parámetros de búsqueda</h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Modo de búsqueda --}}
+        <div class="mb-4 flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 p-1 w-fit dark:border-gray-700 dark:bg-gray-800">
+            <button wire:click="$set('modo', 'localidad')"
+                    type="button"
+                    class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors
+                        {{ $modo === 'localidad'
+                            ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }}">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Por localidad (límites OSM)
+                </span>
+            </button>
+            <button wire:click="$set('modo', 'radio')"
+                    type="button"
+                    class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors
+                        {{ $modo === 'radio'
+                            ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }}">
+                <span class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    </svg>
+                    Por radio
+                </span>
+            </button>
+        </div>
+
+        @if($modo === 'localidad')
+            <p class="mb-3 text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                Busca dentro de los límites exactos de la localidad en OpenStreetMap, usando el nombre de la zona como referencia.
+            </p>
+        @endif
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 {{ $modo === 'radio' ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }} gap-4">
 
             {{-- Tipo de negocio --}}
             <div class="flex flex-col gap-1">
@@ -53,7 +95,8 @@
                 @error('zonaId') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Radio --}}
+            {{-- Radio (solo en modo radio) --}}
+            @if($modo === 'radio')
             <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Radio de búsqueda
@@ -67,6 +110,7 @@
                     <option value="10000">10 km</option>
                 </select>
             </div>
+            @endif
         </div>
 
         <div class="mt-5 flex items-center gap-3">
@@ -278,7 +322,11 @@
             <svg class="mx-auto w-10 h-10 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <p class="text-sm">No se encontraron resultados en esa zona y radio. Probá aumentar el radio.</p>
+            @if($modo === 'localidad')
+                <p class="text-sm">No se encontraron resultados dentro de los límites de "{{ $this->getZonas()[$zonaId] ?? 'la zona seleccionada' }}" en OSM. Verificá que el nombre de la zona coincida exactamente con el área en OpenStreetMap, o probá el modo Por radio.</p>
+            @else
+                <p class="text-sm">No se encontraron resultados en esa zona y radio. Probá aumentar el radio.</p>
+            @endif
         </div>
     @endif
 

@@ -43,6 +43,34 @@ class OverpassService
     }
 
     /**
+     * Busca negocios de un tipo dentro de los límites de una localidad OSM.
+     * Usa area["name"="..."] — no requiere radio ni coordenadas.
+     *
+     * @throws \RuntimeException
+     */
+    public function buscarEnLocalidad(string $tipoKey, string $nombreLocalidad): array
+    {
+        $tipos = self::tipos();
+
+        if (! isset($tipos[$tipoKey])) {
+            throw new \InvalidArgumentException("Tipo desconocido: {$tipoKey}");
+        }
+
+        $t    = $tipos[$tipoKey];
+        $name = addslashes($nombreLocalidad);
+
+        $query = "[out:json][timeout:30];\n"
+            . "area[\"name\"=\"{$name}\"]->.searchArea;\n"
+            . "(\n"
+            . "  node[\"{$t['key']}\"=\"{$t['value']}\"](area.searchArea);\n"
+            . "  way[\"{$t['key']}\"=\"{$t['value']}\"](area.searchArea);\n"
+            . ");\n"
+            . "out center;";
+
+        return $this->ejecutar($query);
+    }
+
+    /**
      * Busca negocios de un tipo en un radio alrededor de unas coordenadas.
      *
      * @throws \RuntimeException
@@ -64,6 +92,13 @@ class OverpassService
             . ");\n"
             . "out center;";
 
+        return $this->ejecutar($query);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private function ejecutar(string $query): array
+    {
         $lastError = null;
 
         foreach (self::ENDPOINTS as $endpoint) {
@@ -87,8 +122,6 @@ class OverpassService
             'OpenStreetMap no respondió en ningún servidor (' . $lastError . '). Intentá de nuevo en unos minutos.'
         );
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
 
     private function parsear(array $elements): array
     {

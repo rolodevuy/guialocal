@@ -22,6 +22,7 @@ class ImportarNegocios extends Page
     // ── Formulario ────────────────────────────────────────────────────────────
 
     public string $tipo        = '';
+    public string $modo        = 'localidad'; // 'localidad' | 'radio'
     public ?int   $categoriaId = null;
     public ?int   $zonaId      = null;
     public int    $radio       = 2000;
@@ -65,34 +66,43 @@ class ImportarNegocios extends Page
 
     public function buscar(): void
     {
-        $this->validate([
+        $rules = [
             'tipo'        => 'required',
             'categoriaId' => 'required|exists:categorias,id',
             'zonaId'      => 'required|exists:zonas,id',
-            'radio'       => 'integer|min:500|max:10000',
-        ], [
+        ];
+
+        if ($this->modo === 'radio') {
+            $rules['radio'] = 'integer|min:500|max:10000';
+        }
+
+        $this->validate($rules, [
             'tipo.required'        => 'Elegí un tipo de negocio.',
             'categoriaId.required' => 'Elegí una categoría.',
             'zonaId.required'      => 'Elegí una zona.',
         ]);
 
-        $this->error        = '';
-        $this->resultados   = [];
+        $this->error         = '';
+        $this->resultados    = [];
         $this->seleccionados = [];
-        $this->importados   = 0;
-        $this->buscando     = true;
+        $this->importados    = 0;
+        $this->buscando      = true;
 
-        $zona = Zona::find($this->zonaId);
-
-        if (! $zona->lat_centro || ! $zona->lng_centro) {
-            $this->error    = "La zona \"{$zona->nombre}\" no tiene coordenadas de centro. Configurala en Zonas.";
-            $this->buscando = false;
-            return;
-        }
+        $zona    = Zona::find($this->zonaId);
+        $service = new OverpassService();
 
         try {
-            $service          = new OverpassService();
-            $raw              = $service->buscar($this->tipo, $zona->lat_centro, $zona->lng_centro, $this->radio);
+            if ($this->modo === 'localidad') {
+                $raw = $service->buscarEnLocalidad($this->tipo, $zona->nombre);
+            } else {
+                if (! $zona->lat_centro || ! $zona->lng_centro) {
+                    $this->error    = "La zona \"{$zona->nombre}\" no tiene coordenadas de centro. Configurala en Zonas.";
+                    $this->buscando = false;
+                    return;
+                }
+                $raw = $service->buscar($this->tipo, $zona->lat_centro, $zona->lng_centro, $this->radio);
+            }
+
             $this->resultados = $this->marcarDuplicados($raw);
         } catch (\Throwable $e) {
             $this->error = 'Error al consultar OpenStreetMap: ' . $e->getMessage();
