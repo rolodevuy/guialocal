@@ -13,6 +13,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class LugarResource extends Resource
@@ -124,16 +125,26 @@ class LugarResource extends Resource
                 Tables\Columns\TextColumn::make('nombre')
                     ->label('Lugar')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('categoria.nombre')
+                    ->sortable()
+                    ->weight('medium'),
+                Tables\Columns\TextColumn::make('direccion')
+                    ->label('Dirección')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\SelectColumn::make('categoria_id')
                     ->label('Categoría')
-                    ->badge()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('zona.nombre')
+                    ->options(fn () => Categoria::orderBy('nombre')->pluck('nombre', 'id'))
+                    ->sortable()
+                    ->searchable(query: fn (Builder $q, string $s) =>
+                        $q->whereHas('categoria', fn ($q) => $q->where('nombre', 'like', "%{$s}%"))
+                    ),
+                Tables\Columns\SelectColumn::make('zona_id')
                     ->label('Zona')
-                    ->badge()
-                    ->color('info')
-                    ->sortable(),
+                    ->options(fn () => Zona::orderBy('nombre')->pluck('nombre', 'id'))
+                    ->sortable()
+                    ->searchable(query: fn (Builder $q, string $s) =>
+                        $q->whereHas('zona', fn ($q) => $q->where('nombre', 'like', "%{$s}%"))
+                    ),
                 Tables\Columns\TextColumn::make('rut')
                     ->label('RUT')
                     ->searchable()
@@ -145,11 +156,9 @@ class LugarResource extends Resource
                     ->alignCenter()
                     ->badge()
                     ->color('gray'),
-                Tables\Columns\IconColumn::make('activo')
+                Tables\Columns\ToggleColumn::make('activo')
                     ->label('Activo')
-                    ->boolean()
-                    ->alignCenter()
-                    ->toggleable(),
+                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Actualizado')
                     ->dateTime('d/m/Y')
