@@ -4,6 +4,74 @@ Notas técnicas para pasar de entorno local (XAMPP/dev) a producción.
 
 ---
 
+## Infraestructura de producción
+
+| Componente | Detalle |
+|---|---|
+| **Proveedor** | Hetzner Cloud (hetzner.com/cloud) |
+| **Servidor** | CX23 — 2 vCPU, 4 GB RAM, 40 GB SSD |
+| **Región** | Ashburn, VA (USA) |
+| **IP** | `178.156.241.157` |
+| **OS** | Ubuntu 24.04 LTS |
+| **Panel** | Ploi.io (ploi.io) |
+| **Web server** | NGINX |
+| **PHP** | 8.3 |
+| **Base de datos** | MySQL 8.4 |
+| **Cache** | Redis (instalado por Ploi) |
+| **Dominio principal** | `guialocal.uy` |
+| **Dominio secundario** | `guialocal.com.uy` |
+| **Costo aprox.** | ~EUR 5/mes Hetzner + USD 8/mes Ploi |
+
+---
+
+## DNS (NIC.uy)
+
+Para ambos dominios (`guialocal.uy` y `guialocal.com.uy`), configurar en NIC.uy → Configuración avanzada:
+
+| Tipo | Nombre | Valor |
+|---|---|---|
+| A | `@` | `178.156.241.157` |
+| A | `www` | `178.156.241.157` |
+
+---
+
+## Deploy script (Ploi)
+
+Script configurado en Ploi → Sites → guialocal.uy → Deployment:
+
+```bash
+cd /home/ploi/guialocal.uy
+git pull origin main
+composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+npm install
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan storage:link
+echo "" | sudo -S service php8.4-fpm reload
+echo "🚀 Application deployed!"
+```
+
+> Para deployar: `git push origin main` y luego click en **Deploy now** en Ploi, o activar auto-deploy.
+
+---
+
+## Queue worker (Ploi Daemons)
+
+En Ploi → Servers → guialocal-prod → **Daemons**, crear:
+
+```
+php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+```
+
+- Directorio: `/home/ploi/guialocal.uy`
+- Procesos: 1
+- User: `ploi`
+
+---
+
 ## Variables de entorno críticas
 
 ### Queue (colas de trabajo)
