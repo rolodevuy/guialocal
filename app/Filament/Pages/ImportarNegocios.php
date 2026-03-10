@@ -67,9 +67,8 @@ class ImportarNegocios extends Page
     public function buscar(): void
     {
         $rules = [
-            'tipo'        => 'required',
-            'categoriaId' => 'required|exists:categorias,id',
-            'zonaId'      => 'required|exists:zonas,id',
+            'tipo'   => 'required',
+            'zonaId' => 'required|exists:zonas,id',
         ];
 
         if ($this->modo === 'radio') {
@@ -77,9 +76,8 @@ class ImportarNegocios extends Page
         }
 
         $this->validate($rules, [
-            'tipo.required'        => 'Elegí un tipo de negocio.',
-            'categoriaId.required' => 'Elegí una categoría.',
-            'zonaId.required'      => 'Elegí una zona.',
+            'tipo.required'   => 'Elegí un tipo de negocio.',
+            'zonaId.required' => 'Elegí una zona.',
         ]);
 
         $this->error         = '';
@@ -130,6 +128,14 @@ class ImportarNegocios extends Page
         if (empty($this->seleccionados)) {
             Notification::make()
                 ->title('Seleccioná al menos un negocio')
+                ->warning()
+                ->send();
+            return;
+        }
+
+        if (! $this->categoriaId) {
+            Notification::make()
+                ->title('Elegí una categoría en la guía antes de importar')
                 ->warning()
                 ->send();
             return;

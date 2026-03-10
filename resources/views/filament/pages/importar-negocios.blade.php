@@ -48,7 +48,7 @@
             </p>
         @endif
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 {{ $modo === 'radio' ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }} gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 {{ $modo === 'radio' ? 'lg:grid-cols-3' : 'lg:grid-cols-2' }} gap-4">
 
             {{-- Tipo de negocio --}}
             <div class="flex flex-col gap-1">
@@ -63,21 +63,6 @@
                     @endforeach
                 </select>
                 @error('tipo') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
-            </div>
-
-            {{-- Categoría --}}
-            <div class="flex flex-col gap-1">
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Categoría en la guía <span class="text-red-500">*</span>
-                </label>
-                <select wire:model="categoriaId"
-                        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                    <option value="">— Elegí una categoría —</option>
-                    @foreach($this->getCategorias() as $id => $nombre)
-                        <option value="{{ $id }}">{{ $nombre }}</option>
-                    @endforeach
-                </select>
-                @error('categoriaId') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
             </div>
 
             {{-- Zona --}}
@@ -293,28 +278,49 @@
             </table>
         </div>
 
-        {{-- Botón importar --}}
+        {{-- Categoría + botón importar --}}
         @if($totalNuevos > 0)
-            <div class="flex items-center gap-4">
-                <button wire:click="importar"
-                        wire:loading.attr="disabled"
-                        wire:confirm="¿Importar {{ count($seleccionados) }} negocio(s)? Se crearán en estado pendiente."
-                        @disabled(empty($seleccionados))
-                        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                    <svg wire:loading wire:target="importar" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                    </svg>
-                    <svg wire:loading.remove wire:target="importar" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                    </svg>
-                    Importar {{ count($seleccionados) }} negocio(s) seleccionado(s)
-                </button>
+            <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+                <div class="flex flex-wrap items-end gap-4">
 
-                <p class="text-xs text-gray-400">
-                    Se crean en estado <strong>pendiente</strong> e inactivos — los revisás en Fichas antes de publicar.
-                </p>
-            </div>
+                    {{-- Selector de categoría --}}
+                    <div class="flex flex-col gap-1 min-w-[260px]">
+                        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            Categoría en la guía <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">¿En qué categoría querés publicar estos negocios?</p>
+                        <select wire:model="categoriaId"
+                                class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                            <option value="">— Elegí una categoría —</option>
+                            @foreach($this->getCategorias() as $id => $nombre)
+                                <option value="{{ $id }}">{{ $nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Botón --}}
+                    <div class="flex flex-col gap-1">
+                        <button wire:click="importar"
+                                wire:loading.attr="disabled"
+                                wire:confirm="¿Importar {{ count($seleccionados) }} negocio(s)? Se crearán en estado pendiente."
+                                @disabled(empty($seleccionados))
+                                class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <svg wire:loading wire:target="importar" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                            </svg>
+                            <svg wire:loading.remove wire:target="importar" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                            </svg>
+                            Importar {{ count($seleccionados) }} negocio(s) seleccionado(s)
+                        </button>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Se crean <strong>pendientes</strong> e inactivos — revisalos en Fichas antes de publicar.
+                        </p>
+                    </div>
+
+                </div>{{-- /flex --}}
+            </div>{{-- /panel ámbar --}}
         @endif
 
     @elseif(! $buscando && ! $error && count($resultados) === 0 && $tipo)
