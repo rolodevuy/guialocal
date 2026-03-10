@@ -2,6 +2,7 @@
 
 @section('title', 'Guía Local — Tu barrio en un solo lugar')
 @section('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')
+@section('og_image', asset('images/og-default.jpg'))
 
 @section('content')
 

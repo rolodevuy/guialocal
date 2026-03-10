@@ -15,6 +15,15 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('title', 'Guía Local — Tu barrio en un solo lugar')">
     <meta property="og:description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="@yield('title', 'Guía Local')">
+    {{-- Twitter / X --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'Guía Local — Tu barrio en un solo lugar')">
+    <meta name="twitter:description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.jpg'))">
     <link rel="alternate" type="application/rss+xml" title="{{ config('app.name') }} — Artículos" href="{{ route('feed') }}">
     @stack('meta')
     @stack('styles')

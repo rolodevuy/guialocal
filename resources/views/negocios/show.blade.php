@@ -5,11 +5,14 @@
 
 @section('og_type', 'article')
 
-@push('meta')
-    @if($ficha?->hasMedia('portada'))
-        <meta property="og:image" content="{{ $ficha->getFirstMediaUrl('portada') }}">
-    @endif
+@php
+    $ogImage = $ficha?->hasMedia('portada')
+        ? $ficha->getFirstMediaUrl('portada')
+        : asset('images/og-default.jpg');
+@endphp
+@section('og_image', $ogImage)
 
+@push('meta')
     {{-- JSON-LD: schema.org LocalBusiness --}}
     @php
         $schemaTypes = [

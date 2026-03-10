@@ -2,6 +2,7 @@
 
 @section('title', $sector->nombre . ' — Guía Local')
 @section('description', $sector->descripcion ?: 'Negocios de ' . $sector->nombre)
+@section('og_image', asset('images/og-default.jpg'))
 
 @section('content')
 
