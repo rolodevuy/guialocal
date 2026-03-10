@@ -30,20 +30,46 @@ class ZonaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->label('Nombre')
-                    ->required()
-                    ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) =>
-                        $set('slug', Str::slug($state ?? ''))
-                    ),
-                Forms\Components\TextInput::make('slug')
-                    ->label('Slug')
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true)
-                    ->helperText('Se genera automáticamente desde el nombre.'),
+                Forms\Components\Section::make('Datos básicos')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->label('Nombre')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, ?string $state) =>
+                                $set('slug', Str::slug($state ?? ''))
+                            ),
+                        Forms\Components\TextInput::make('slug')
+                            ->label('Slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->helperText('Se genera automáticamente desde el nombre.'),
+                    ]),
+
+                Forms\Components\Section::make('Centro de la zona')
+                    ->description('Usamos estas coordenadas para buscar negocios cercanos en OpenStreetMap. Hacé click en el mapa para fijarlas.')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\View::make('filament.forms.components.map-picker-zona'),
+
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('lat_centro')
+                                ->label('Latitud centro')
+                                ->numeric()
+                                ->step(0.0000001)
+                                ->placeholder('-34.7667')
+                                ->helperText('Se actualiza al hacer click en el mapa.'),
+                            Forms\Components\TextInput::make('lng_centro')
+                                ->label('Longitud centro')
+                                ->numeric()
+                                ->step(0.0000001)
+                                ->placeholder('-55.7621')
+                                ->helperText('Se actualiza al hacer click en el mapa.'),
+                        ]),
+                    ]),
             ]);
     }
 
@@ -60,6 +86,17 @@ class ZonaResource extends Resource
                     ->searchable()
                     ->copyable()
                     ->color('gray'),
+                Tables\Columns\IconColumn::make('lat_centro')
+                    ->label('Centro')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-map-pin')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->tooltip(fn ($record) => $record->lat_centro
+                        ? "{$record->lat_centro}, {$record->lng_centro}"
+                        : 'Sin coordenadas — el importador no puede usarla')
+                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('lugares_count')
                     ->label('Negocios')
                     ->counts('lugares')
