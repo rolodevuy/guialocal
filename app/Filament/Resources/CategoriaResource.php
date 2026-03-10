@@ -101,10 +101,56 @@ class CategoriaResource extends Resource
                     ->label('Descripción')
                     ->rows(3)
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('icono')
+                Forms\Components\Select::make('icono')
                     ->label('Ícono')
-                    ->maxLength(255)
-                    ->helperText('Íconos disponibles — Gastronomía: utensils · coffee · cake · wine | Salud: pill · heart-pulse · eye · face-smile | Comercio: shopping-cart · shirt · sparkles · scissors · paint-brush | Servicios: briefcase · home · key · wrench · banknotes · device-phone-mobile | Turismo: building-office · globe-alt · map-pin · sun · truck | Educación/Cultura: academic-cap · building-library | Ocio: bolt · trophy · musical-note · camera'),
+                    ->searchable()
+                    ->placeholder('Buscá un ícono...')
+                    ->options([
+                        'Gastronomía' => [
+                            'utensils'      => 'utensils — Restaurantes',
+                            'coffee'        => 'coffee — Cafés y Bares',
+                            'cake'          => 'cake — Panaderías / Confiterías',
+                            'wine'          => 'wine — Vinotecas / Bares',
+                        ],
+                        'Salud' => [
+                            'pill'          => 'pill — Farmacias',
+                            'heart-pulse'   => 'heart-pulse — Salud y Bienestar',
+                            'eye'           => 'eye — Óptica',
+                            'face-smile'    => 'face-smile — Odontología / Dental',
+                        ],
+                        'Comercio' => [
+                            'shopping-cart' => 'shopping-cart — Supermercados',
+                            'shirt'         => 'shirt — Indumentaria / Ropa',
+                            'sparkles'      => 'sparkles — Estética / Belleza',
+                            'scissors'      => 'scissors — Peluquería / Barbería',
+                            'paint-brush'   => 'paint-brush — Arte / Decoración',
+                        ],
+                        'Servicios' => [
+                            'briefcase'           => 'briefcase — Servicios Profesionales',
+                            'home'                => 'home — Inmobiliaria / Hogar',
+                            'key'                 => 'key — Cerrajería',
+                            'wrench'              => 'wrench — Reparaciones / Talleres',
+                            'banknotes'           => 'banknotes — Bancos / Financiero',
+                            'device-phone-mobile' => 'device-phone-mobile — Telefonía',
+                        ],
+                        'Turismo / Transporte' => [
+                            'building-office' => 'building-office — Hotel / Alojamiento',
+                            'globe-alt'       => 'globe-alt — Turismo / Agencias de viaje',
+                            'map-pin'         => 'map-pin — Puntos turísticos',
+                            'sun'             => 'sun — Playa',
+                            'truck'           => 'truck — Transporte / Logística',
+                        ],
+                        'Educación / Cultura' => [
+                            'academic-cap'    => 'academic-cap — Educación / Institutos',
+                            'building-library'=> 'building-library — Cultura / Museos',
+                        ],
+                        'Ocio / Entretenimiento' => [
+                            'bolt'         => 'bolt — Deporte / Gimnasio',
+                            'trophy'       => 'trophy — Deportes / Clubes',
+                            'musical-note' => 'musical-note — Música / Espectáculos',
+                            'camera'       => 'camera — Fotografía',
+                        ],
+                    ]),
                 Forms\Components\Toggle::make('activo')
                     ->label('Activa')
                     ->default(true),

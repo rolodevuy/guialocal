@@ -382,7 +382,11 @@ class FichaResource extends Resource
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalDescription('Se pondrán en estado "activa" y visibles al público.')
-                        ->action(fn ($records) => $records->each->update(['activo' => true, 'estado' => 'activa']))
+                        ->action(function ($records) {
+                            $lugarIds = $records->pluck('lugar_id')->filter()->unique();
+                            $records->each->update(['activo' => true, 'estado' => 'activa']);
+                            Lugar::whereIn('id', $lugarIds)->update(['activo' => true]);
+                        })
                         ->deselectRecordsAfterCompletion(),
                     Tables\Actions\BulkAction::make('desactivar')
                         ->label('Desactivar seleccionadas')

@@ -40,9 +40,14 @@ class CategoriaController extends Controller
 
         $zonaId = request()->integer('zona') ?: null;
 
+        // Incluir hijos: si la categoría tiene nivel 1, también mostramos fichas de sus subcategorías
+        $categoriaIds = Categoria::where('parent_id', $categoria->id)
+            ->pluck('id')
+            ->prepend($categoria->id);
+
         $fichas = Ficha::activo()
             ->whereHas('lugar', fn ($q) => $q
-                ->where('categoria_id', $categoria->id)
+                ->whereIn('categoria_id', $categoriaIds)
                 ->where('activo', true)
                 ->when($zonaId, fn ($q) => $q->where('zona_id', $zonaId))
             )
@@ -53,7 +58,7 @@ class CategoriaController extends Controller
 
         $zonas = Zona::orderBy('nombre')
             ->whereHas('lugares', fn ($q) => $q
-                ->where('categoria_id', $categoria->id)
+                ->whereIn('categoria_id', $categoriaIds)
                 ->where('activo', true)
             )
             ->get();
