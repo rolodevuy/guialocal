@@ -126,6 +126,25 @@ class HomeController extends Controller
             $zonaPreferida = Zona::where('slug', $cookieSlug)->first();
         }
 
+        // ── Destacados por sector (para tabs) ───────────────────────────────
+        $destacadosPorSector = [];
+        foreach ($sectores as $sector) {
+            $sectorCatIds = $sector->categorias->flatMap(
+                fn ($cat) => collect([$cat->id])->merge($cat->children->pluck('id'))
+            );
+            if ($sectorCatIds->isEmpty()) continue;
+
+            $destacadosPorSector[$sector->id] = Ficha::activo()
+                ->whereHas('lugar', fn ($q) => $q
+                    ->where('activo', true)
+                    ->whereIn('categoria_id', $sectorCatIds)
+                )
+                ->with(['lugar.categoria', 'lugar.zona'])
+                ->orderByDesc('featured_score')
+                ->limit(6)
+                ->get();
+        }
+
         // ── Eventos próximos para el home (máx. 3) ────────────────────────────
         $eventosDestacados = Evento::publicado()
             ->proximo()
@@ -136,6 +155,7 @@ class HomeController extends Controller
 
         return view('home', compact(
             'destacados',
+            'destacadosPorSector',
             'slotsEditoriales',
             'sectores',
             'zonas',

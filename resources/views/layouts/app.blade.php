@@ -39,26 +39,24 @@
                 {{-- Nav desktop --}}
                 <nav class="hidden md:flex items-center gap-1">
                     <a href="{{ route('home') }}"
-                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('home') ? 'text-amber-600 bg-amber-50' : '' }}">
+                       class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('home') ? 'text-amber-600 bg-amber-50' : '' }}">
                         Inicio
                     </a>
-                    <a href="{{ route('negocios.index') }}"
-                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('negocios.*') ? 'text-amber-600 bg-amber-50' : '' }}">
-                        Negocios
+                    @foreach($sectoresNav as $sectorNav)
+                    <a href="{{ route('sectores.show', $sectorNav) }}"
+                       class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:{{ $sectorNav->color('text', 'text-amber-600') }} hover:bg-gray-50 transition-colors {{ request()->is('sectores/' . $sectorNav->slug) ? $sectorNav->color('text', 'text-amber-600') . ' bg-gray-50' : '' }}">
+                        {{ $sectorNav->nombre_corto ?? $sectorNav->nombre }}
                     </a>
-                    <a href="{{ route('categorias.index') }}"
-                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('categorias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
-                        Categorías
-                    </a>
+                    @endforeach
                     @if($hayArticulos)
                     <a href="{{ route('articulos.index') }}"
-                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('articulos.*') ? 'text-amber-600 bg-amber-50' : '' }}">
+                       class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('articulos.*') ? 'text-amber-600 bg-amber-50' : '' }}">
                         Artículos
                     </a>
                     @endif
                     @if($hayGuias)
                     <a href="{{ route('guias.index') }}"
-                       class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('guias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
+                       class="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 transition-colors {{ request()->routeIs('guias.*') ? 'text-amber-600 bg-amber-50' : '' }}">
                         Guías
                     </a>
                     @endif
@@ -68,7 +66,7 @@
                     </a>
                     <a href="{{ route('negocios.index') }}"
                        class="ml-1 p-2 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
-                       title="Buscar negocios">
+                       title="Buscar">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                   d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/>
@@ -105,14 +103,15 @@
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
                     Inicio
                 </a>
-                <a href="{{ route('negocios.index') }}" @click="open = false"
-                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
-                    Negocios
+                @foreach($sectoresNav as $sectorNav)
+                <a href="{{ route('sectores.show', $sectorNav) }}" @click="open = false"
+                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:{{ $sectorNav->color('text', 'text-amber-600') }} hover:bg-gray-50 transition-colors flex items-center gap-2">
+                    <span class="w-5 h-5 {{ $sectorNav->color('bg', 'bg-gray-100') }} rounded flex items-center justify-center {{ $sectorNav->color('icon', 'text-gray-500') }}">
+                        <x-cat-icon :name="$sectorNav->icono ?? 'default'" class="w-3.5 h-3.5" />
+                    </span>
+                    {{ $sectorNav->nombre }}
                 </a>
-                <a href="{{ route('categorias.index') }}" @click="open = false"
-                   class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">
-                    Categorías
-                </a>
+                @endforeach
                 @if($hayArticulos)
                 <a href="{{ route('articulos.index') }}" @click="open = false"
                    class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors">

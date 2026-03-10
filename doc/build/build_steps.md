@@ -1350,6 +1350,90 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 51 — Sectores (3 verticales) ✅
+
+**Objetivo:** Agrupar las categorías nivel 1 en 3 sectores temáticos que estructuran toda la guía como micrositios.
+
+**Resultado esperado:**
+- Tabla `sectores` con nombre, slug, descripcion, icono, `color_classes` (JSON con clases Tailwind literales)
+- FK `sector_id` en `categorias` (solo nivel 1, nivel 2 hereda del padre)
+- Modelo `Sector` con helper `color($key, $default)` para acceder a clases desde el JSON
+- Admin: `/admin/sectors`, selector de sector en CategoriaResource
+- Público: `/sectores/{slug}` con categorías agrupadas
+- Home agrupada por sector, footer con links a sectores
+
+**Sectores creados:**
+- **Comercial** (amber): tiendas, servicios profesionales, salud
+- **Gastronomía y Ocio** (rose): restaurantes, cafés, entretenimiento
+- **Turismo y Alojamiento** (sky): hoteles, cabañas, servicios turísticos
+
+**Criterio de terminado:**
+- Migration + seeder crean 3 sectores con color_classes ✅
+- Admin permite asignar sector a categorías nivel 1 ✅
+- `/sectores/comercial` muestra categorías filtradas ✅
+- Home agrupa por sector ✅
+- Footer muestra links a sectores via view composer `$sectoresNav` ✅
+
+**Archivos creados/modificados:**
+- `database/migrations/..._create_sectores_table.php`, `..._add_sector_id_to_categorias_table.php`
+- `app/Models/Sector.php` (nuevo)
+- `app/Models/Categoria.php` (relación `sector()`)
+- `database/seeders/SectorSeeder.php` (nuevo)
+- `app/Filament/Resources/SectorResource.php` (nuevo)
+- `app/Filament/Resources/CategoriaResource.php` (selector sector)
+- `app/Http/Controllers/SectorController.php` (nuevo)
+- `resources/views/sectores/show.blade.php` (nuevo)
+- `app/Providers/AppServiceProvider.php` (view composer `$sectoresNav`)
+
+---
+
+### Paso 52 — UX redesign: micrositios + tabs + navbar sectores ✅
+
+**Objetivo:** Rediseñar la home y las páginas de sector para que los 3 sectores se perciban como micrositios con identidad visual propia.
+
+**Cambios implementados:**
+
+1. **Navbar con sectores directos:** Reemplazados "Negocios" y "Categorías" por los 3 sectores como items directos del nav (Comercial, Gastronomía, Turismo), con active state y color por sector.
+
+2. **"Explorar la guía" en home:** 3 tarjetas grandes entre hero y destacados, cada una con color de sector, icono, descripción, stats (negocios + categorías) y flecha.
+
+3. **Destacados con tabs:** Reemplazado el carrusel por tabs Alpine.js (Todos / Comercial / Gastronomía / Turismo). Cada tab filtra fichas por sector. Partial `_ficha_card.blade.php` reutilizable.
+
+4. **Micrositios de sector:** Cada `/sectores/{slug}` tiene hero con tint del sector, stats, grid de categorías y sección de destacados por sector (top 6 fichas por `featured_score`).
+
+5. **Nombres cortos:** Migración `nombre_corto` en `sectores` (Gastronomía y Ocio → "Gastronomía", Turismo y Alojamiento → "Turismo"). Usado en navbar y tabs.
+
+6. **Eliminada sección categorías del home:** La sección "Explorar por categoría" fue reemplazada por las tarjetas de sector.
+
+**Fix importante — Tailwind v4 + npm run build:**
+- Las clases CSS nuevas (como `bg-gray-200/80`) NO se aplican hasta ejecutar `npm run build`
+- Las tabs se veían "rotas" (fondo transparente) porque la clase no estaba en el CSS compilado
+- Siempre correr `npm run build` después de agregar clases Tailwind nuevas
+
+**Fix — Tabs responsive:**
+- En mobile los 4 tabs no entraban con `px-4` fijo → scroll horizontal
+- Solución: `flex-1` + `px-2` + `text-xs` en mobile, `sm:flex-none sm:px-4 sm:text-sm` en desktop
+
+**Criterio de terminado:**
+- Navbar muestra Inicio | Comercial | Gastronomía | Turismo | Contacto ✅
+- "Explorar la guía" con 3 tarjetas de sector ✅
+- Tabs de destacados filtran por sector correctamente ✅
+- `/sectores/{slug}` con hero coloreado y destacados ✅
+- Nombres cortos en navbar y tabs ✅
+- Tabs responsive en mobile (sin scroll horizontal) ✅
+
+**Archivos creados/modificados:**
+- `resources/views/layouts/app.blade.php` (navbar con sectores)
+- `resources/views/home.blade.php` (explorar la guía, tabs destacados, sin sección categorías)
+- `resources/views/sectores/show.blade.php` (rediseño micrositio)
+- `resources/views/partials/_ficha_card.blade.php` (nuevo partial)
+- `app/Http/Controllers/HomeController.php` (`$destacadosPorSector`)
+- `app/Http/Controllers/SectorController.php` (`$destacados`, `$totalNegocios`)
+- `app/Models/Sector.php` (`nombre_corto` en fillable)
+- `database/migrations/2026_03_09_203713_add_nombre_corto_to_sectores_table.php` (nuevo)
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ficha;
 use App\Models\Lugar;
 use App\Models\Sector;
 
@@ -34,6 +35,19 @@ class SectorController extends Controller
             $cat->negocios_count = $ids->sum(fn ($id) => $counts->get($id, 0));
         });
 
-        return view('sectores.show', compact('sector', 'categorias'));
+        // Fichas destacadas del sector (top 6 por featured_score)
+        $destacados = Ficha::activo()
+            ->whereHas('lugar', fn ($q) => $q
+                ->where('activo', true)
+                ->whereIn('categoria_id', $allCatIds)
+            )
+            ->with(['lugar.categoria', 'lugar.zona'])
+            ->orderByDesc('featured_score')
+            ->limit(6)
+            ->get();
+
+        $totalNegocios = $counts->sum();
+
+        return view('sectores.show', compact('sector', 'categorias', 'destacados', 'totalNegocios'));
     }
 }

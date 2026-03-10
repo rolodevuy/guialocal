@@ -244,166 +244,111 @@
     </div>
 </section>
 
-@if($destacados->isNotEmpty())
-<section id="destacados" class="relative z-10 bg-gray-50 pt-20 sm:pt-28 pb-10 sm:pb-16">
+{{-- ============================================================
+     SECCIÓN: explorar la guía (3 cards de sectores)
+     ============================================================ --}}
+<section class="relative z-10 bg-gray-50 pt-20 sm:pt-28 pb-10 sm:pb-14">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="flex items-center justify-between mb-6 sm:mb-8">
-            <h2 class="text-lg sm:text-2xl font-bold text-gray-900">Negocios destacados</h2>
-            <a href="{{ route('negocios.index') }}"
-               class="text-sm text-amber-600 hover:text-amber-700 font-medium transition-colors">
-                Ver todos →
-            </a>
-        </div>
+        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 mb-2">Explorar la guía</h2>
+        <p class="text-sm text-gray-500 mb-6 sm:mb-8">Tres universos, una sola guía.</p>
 
-        {{-- ── Carousel ───────────────────────────────────────────────────── --}}
-        <div
-            x-data="{
-                idx: 0,
-                n: {{ $destacados->count() }},
-                gap: 16,
-                cardWidth: 0,
-                offset: 0,
-                touchStartX: 0,
-                get pp()  {
-                    if (window.innerWidth >= 1024) return 3;
-                    if (window.innerWidth >= 640)  return 2;
-                    return 1;
-                },
-                get max() { return Math.max(0, this.n - this.pp); },
-                prev() {
-                    this.idx = this.idx <= 0 ? this.max : this.idx - 1;
-                    this.update();
-                },
-                next() {
-                    this.idx = this.idx >= this.max ? 0 : this.idx + 1;
-                    this.update();
-                },
-                goto(i) { this.idx = i; this.update(); },
-                update() {
-                    const pp = this.pp;
-                    const W  = this.$refs.wrap.offsetWidth;
-                    if (!W) return;
-                    this.gap = window.innerWidth >= 640 ? 24 : 16;
-                    this.cardWidth = (W - this.gap * (pp - 1)) / pp;
-                    this.offset    = -this.idx * (this.cardWidth + this.gap);
-                },
-                onTouchStart(e) { this.touchStartX = e.touches[0].clientX; },
-                onTouchEnd(e) {
-                    const dx = this.touchStartX - e.changedTouches[0].clientX;
-                    if (Math.abs(dx) > 40) { dx > 0 ? this.next() : this.prev(); }
-                },
-                init() {
-                    this.$nextTick(() => this.update());
-                    window.addEventListener('resize', () => {
-                        this.idx = Math.min(this.idx, this.max);
-                        this.update();
-                    });
-                }
-            }"
-        >
-            {{-- Fila: [◀] [track] [▶] --}}
-            <div class="flex items-center gap-2 sm:gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+            @foreach($sectores as $sector)
+            <a href="{{ route('sectores.show', $sector) }}"
+               class="group relative overflow-hidden rounded-2xl {{ $sector->color('bg_light', 'bg-gray-50') }} border border-transparent hover:{{ $sector->color('border', 'border-amber-200') }} hover:shadow-lg transition-all duration-200 p-6 sm:p-7 flex flex-col">
 
-                {{-- Botón anterior --}}
-                <button
-                    @click="prev()"
-                    class="shrink-0 w-8 h-8 sm:w-9 sm:h-9 bg-white rounded-full shadow border border-gray-200 flex items-center justify-center text-gray-500 hover:text-amber-600 hover:border-amber-300 transition cursor-pointer"
-                    aria-label="Anterior"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-
-                {{-- Track --}}
-                <div class="overflow-hidden flex-1" x-ref="wrap"
-                     @touchstart="onTouchStart($event)"
-                     @touchend="onTouchEnd($event)">
-                    <div
-                        class="flex"
-                        :style="`gap:${gap}px; transform:translateX(${offset}px); transition:transform .45s cubic-bezier(.25,.46,.45,.94)`"
-                    >
-                        @foreach($destacados as $ficha)
-                        <div class="shrink-0" :style="`width:${cardWidth}px`">
-                            <a href="{{ route('negocios.show', $ficha->lugar) }}"
-                               class="group flex flex-col bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200 h-full">
-
-                                {{-- Imagen --}}
-                                <div class="relative h-36 sm:h-[7.5rem] lg:h-40 bg-amber-50 overflow-hidden shrink-0">
-                                    @php $portadaUrl = $ficha->getPortadaUrl(); @endphp
-                                    @if($portadaUrl)
-                                        <img src="{{ $portadaUrl }}"
-                                             alt="{{ $ficha->lugar->nombre }}"
-                                             loading="lazy"
-                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <svg class="w-14 h-14 text-amber-200" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
-                                            </svg>
-                                        </div>
-                                    @endif
-                                    @if($ficha->plan === 'premium')
-                                        <span class="absolute top-2 right-2 sm:top-3 sm:right-3 text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wide shadow-sm">
-                                            Premium
-                                        </span>
-                                    @endif
-                                </div>
-
-                                {{-- Info --}}
-                                <div class="p-3 sm:p-4 flex flex-col flex-1">
-                                    <h3 class="font-bold text-gray-900 text-sm sm:text-base group-hover:text-amber-600 transition-colors leading-snug">
-                                        {{ $ficha->lugar->nombre }}
-                                    </h3>
-                                    <p class="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed flex-1">
-                                        {{ $ficha->descripcion }}
-                                    </p>
-                                    <div class="flex items-center justify-between mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-50">
-                                        <span class="text-xs text-gray-400 truncate mr-2">
-                                            {{ $ficha->lugar->categoria->nombre }} · {{ $ficha->lugar->zona?->nombre }}
-                                        </span>
-                                        <span class="text-xs text-amber-600 font-medium shrink-0">Ver →</span>
-                                    </div>
-                                </div>
-
-                            </a>
-                        </div>
-                        @endforeach
-                    </div>
+                {{-- Icono --}}
+                <div class="w-12 h-12 {{ $sector->color('bg', 'bg-amber-100') }} rounded-xl flex items-center justify-center {{ $sector->color('icon', 'text-amber-500') }} mb-4 group-hover:scale-105 transition-transform">
+                    <x-cat-icon :name="$sector->icono ?? 'default'" class="w-7 h-7" />
                 </div>
 
-                {{-- Botón siguiente --}}
-                <button
-                    @click="next()"
-                    class="shrink-0 w-8 h-8 sm:w-9 sm:h-9 bg-white rounded-full shadow border border-gray-200 flex items-center justify-center text-gray-500 hover:text-amber-600 hover:border-amber-300 transition cursor-pointer"
-                    aria-label="Siguiente"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
+                {{-- Texto --}}
+                <h3 class="text-lg font-bold text-gray-900 group-hover:{{ $sector->color('text', 'text-amber-600') }} transition-colors mb-1">
+                    {{ $sector->nombre }}
+                </h3>
+                @if($sector->descripcion)
+                <p class="text-sm text-gray-500 leading-relaxed mb-4 flex-1">{{ $sector->descripcion }}</p>
+                @endif
 
-            </div>
+                {{-- Stats + arrow --}}
+                <div class="flex items-center justify-between mt-auto">
+                    <span class="text-xs {{ $sector->color('text', 'text-amber-600') }} font-medium">
+                        {{ $sector->categorias->sum('negocios_count') }} negocios · {{ $sector->categorias->count() }} categorías
+                    </span>
+                    <span class="w-8 h-8 rounded-full {{ $sector->color('bg', 'bg-amber-100') }} {{ $sector->color('icon', 'text-amber-500') }} flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
 
-            {{-- Dots --}}
-            <div class="flex items-center justify-center gap-2 mt-5">
-                <template x-for="i in (max + 1)" :key="i">
-                    <button
-                        @click="goto(i - 1)"
-                        :class="idx === i - 1 ? 'bg-amber-500 w-5' : 'bg-gray-300 w-2'"
-                        class="h-2 rounded-full transition-all duration-300"
-                        :aria-label="`Ir a posición ${i}`"
-                    ></button>
-                </template>
-            </div>
-
+            </a>
+            @endforeach
         </div>
-        {{-- ── /Carousel ───────────────────────────────────────────────────── --}}
 
     </div>
 </section>
-@endif
+
+{{-- ============================================================
+     SECCIÓN: destacados con tabs por sector
+     ============================================================ --}}
+<section id="destacados" class="relative z-10 bg-gray-50 pb-10 sm:pb-16" x-data="{ tab: 'todos' }">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+            <h2 class="text-lg sm:text-2xl font-bold text-gray-900">Destacados</h2>
+
+            {{-- Tabs --}}
+            <div class="flex sm:inline-flex items-center gap-0.5 sm:gap-1 bg-gray-200/80 rounded-xl p-1">
+                <button @click="tab = 'todos'"
+                        :class="tab === 'todos' ? 'bg-white text-gray-900 shadow' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'"
+                        class="flex-1 sm:flex-none px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer">
+                    Todos
+                </button>
+                @foreach($sectores as $sector)
+                <button @click="tab = '{{ $sector->id }}'"
+                        :class="tab === '{{ $sector->id }}' ? 'bg-white {{ $sector->color('text', 'text-amber-600') }} shadow' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'"
+                        class="flex-1 sm:flex-none px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer">
+                    {{ $sector->nombre_corto ?? $sector->nombre }}
+                </button>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Panel: Todos --}}
+        @if($destacados->isNotEmpty())
+        <div x-show="tab === 'todos'" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                @foreach($destacados->take(6) as $ficha)
+                @include('partials._ficha_card', ['ficha' => $ficha, 'accentColor' => 'amber'])
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        {{-- Panels: Por sector --}}
+        @foreach($sectores as $sector)
+        @php $fichasSector = $destacadosPorSector[$sector->id] ?? collect(); @endphp
+        @if($fichasSector->isNotEmpty())
+        <div x-show="tab === '{{ $sector->id }}'" x-cloak x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                @foreach($fichasSector as $ficha)
+                @include('partials._ficha_card', ['ficha' => $ficha, 'sector' => $sector])
+                @endforeach
+            </div>
+            <div class="text-center mt-6">
+                <a href="{{ route('sectores.show', $sector) }}"
+                   class="text-sm {{ $sector->color('text', 'text-amber-600') }} hover:{{ $sector->color('text_hover', 'text-amber-700') }} font-medium transition-colors">
+                    Ver todo en {{ $sector->nombre }} →
+                </a>
+            </div>
+        </div>
+        @endif
+        @endforeach
+
+    </div>
+</section>
 
 {{-- ============================================================
      SECCIÓN: editorial (artículos/guías destacados — solo si hay slots)
@@ -560,59 +505,6 @@
 </section>
 @endif
 
-{{-- ============================================================
-     SECCIÓN: categorias (agrupadas por sector)
-     ============================================================ --}}
-<section id="categorias" class="bg-gray-50 border-t border-gray-100 py-10 sm:py-16">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8">Explorar por categoría</h2>
-
-        <div class="space-y-10">
-            @foreach($sectores as $sector)
-            <div>
-                {{-- Header del sector --}}
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <span class="w-8 h-8 {{ $sector->color('bg', 'bg-gray-100') }} rounded-lg flex items-center justify-center {{ $sector->color('icon', 'text-gray-500') }}">
-                            <x-cat-icon :name="$sector->icono ?? 'default'" class="w-5 h-5" />
-                        </span>
-                        {{ $sector->nombre }}
-                    </h3>
-                    <a href="{{ route('sectores.show', $sector) }}"
-                       class="text-sm {{ $sector->color('text', 'text-amber-600') }} hover:{{ $sector->color('text_hover', 'text-amber-700') }} font-medium transition-colors">
-                        Ver todas &rarr;
-                    </a>
-                </div>
-
-                {{-- Grid de categorías del sector --}}
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                    @foreach($sector->categorias as $categoria)
-                    <a href="{{ route('categorias.show', $categoria) }}"
-                       class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md
-                              hover:{{ $sector->color('border', 'border-amber-200') }} transition-all duration-200 p-3 sm:p-5 flex flex-col items-center text-center">
-
-                        <div class="mb-2 sm:mb-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center {{ $sector->color('icon', 'text-amber-500') }}">
-                            <x-cat-icon :name="$categoria->icono ?? 'default'" class="w-10 h-10 sm:w-12 sm:h-12" />
-                        </div>
-
-                        <p class="font-semibold text-gray-800 text-xs sm:text-sm leading-tight group-hover:{{ $sector->color('text_hover', 'text-amber-700') }} transition-colors">
-                            {{ $categoria->nombre }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 mt-1">
-                            {{ $categoria->negocios_count }} {{ $categoria->negocios_count === 1 ? 'negocio' : 'negocios' }}
-                        </p>
-
-                    </a>
-                    @endforeach
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-    </div>
-</section>
 
 {{-- ============================================================
      SECCIÓN: registro
