@@ -1774,6 +1774,38 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 45 — Mejoras UX reclamo + corrección bugs producción ✅
+
+**Objetivo:** Mejorar la experiencia del formulario de reclamo, corregir bugs en producción y hardening de emails.
+
+**Cambios realizados:**
+- Formulario de reclamo: banner de beneficios (gratis, dashboard, badge, soporte)
+- Emails mejorados: templates con tablas HTML, paneles destacados, mejor copy
+- Fix `about.blade.php`: modelo `Negocio` no existía → cambiado a `Lugar`
+- Fix aprobación reclamo: verificar RUT único antes de guardar (evita constraint violation)
+- Fix badge verificado: requiere `user_id` + `verified_at` (sin propietario = sin badge)
+- Fix panel propietario: manejar usuario sin ficha asignada (evita 404)
+- Fix sitio web: aceptar URLs sin protocolo `https://`
+- Limpieza automática: comando `claim:cleanup` elimina constancias rechazadas >90 días
+- Nginx: `client_max_body_size 10M` para permitir uploads de constancias
+
+**Archivos modificados:**
+- `resources/views/negocios/claim.blade.php` — banner beneficios
+- `resources/views/emails/claim-approved.blade.php` — template mejorado
+- `resources/views/emails/claim-rejected.blade.php` — template mejorado
+- `resources/views/pages/about.blade.php` — fix modelo inexistente
+- `resources/views/components/verified-badge.blade.php` — requiere user_id
+- `app/Filament/Resources/ClaimRequestResource.php` — RUT duplicado
+- `app/Console/Commands/CleanupRejectedClaims.php` — limpieza 90 días
+
+**Criterio de terminado:**
+- Reclamo se envía y admin recibe notificación ✅
+- About page carga sin error ✅
+- Aprobación no falla por RUT duplicado ✅
+- Badge desaparece si no hay propietario ✅
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
