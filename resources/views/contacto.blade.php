@@ -97,7 +97,13 @@
                         placeholder="Contanos en qué podemos ayudarte o describí tu negocio..."
                         class="w-full px-4 py-3 rounded-xl border text-sm text-gray-800 placeholder-gray-400 outline-none transition-colors resize-none
                                {{ $errors->has('mensaje') ? 'border-red-300 bg-red-50 focus:border-red-400' : 'border-gray-200 bg-white focus:border-amber-400' }}"
-                    >{{ old('mensaje', request('asunto') === 'upgrade-premium' ? 'Hola, me interesa conocer más sobre el plan Premium para mi negocio.' : '') }}</textarea>
+                    >{{ old('mensaje', match(request('asunto')) {
+                        'upgrade-premium'  => 'Hola, me interesa conocer más sobre el plan Premium para mi negocio.',
+                        'upgrade-basico'   => 'Hola, me interesa conocer más sobre el plan Básico para mi negocio.',
+                        'consulta-planes'  => 'Hola, me gustaría conocer más sobre los planes disponibles para mi negocio.',
+                        'alta-negocio'     => 'Hola, me gustaría registrar mi negocio en la guía.',
+                        default            => '',
+                    }) }}</textarea>
                     @error('mensaje')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror

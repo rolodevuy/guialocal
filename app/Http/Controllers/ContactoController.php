@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConsultaRecibida;
 use App\Mail\NuevaConsulta;
 use App\Models\Consulta;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class ContactoController extends Controller
         $consulta = Consulta::create($validated);
 
         Mail::to(config('app.admin_email'))->send(new NuevaConsulta($consulta));
+        Mail::to($consulta->email)->send(new ConsultaRecibida($consulta));
 
         return redirect()
             ->route('contacto.show')
