@@ -9,11 +9,11 @@ Recibimos tu consulta y te responderemos en un plazo de **24 a 48 horas hábiles
 {{ $consulta->mensaje }}
 </x-mail::panel>
 
-Si tenés alguna otra consulta, podés responder este correo o visitarnos en:
+Si tenés alguna otra consulta, no dudes en escribirnos nuevamente.
 
 <x-mail::button :url="config('app.url') . '/contacto'">
-Volver a contacto
+Ir a contacto
 </x-mail::button>
 
-{{ config('app.name') }}
+El equipo de **{{ config('app.name') }}**
 </x-mail::message>

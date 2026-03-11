@@ -23,5 +23,5 @@ Llegó un mensaje desde el formulario de contacto de **{{ config('app.name') }}*
 Gestionar consultas
 </x-mail::button>
 
-{{ config('app.name') }}
+El equipo de **{{ config('app.name') }}**
 </x-mail::message>
