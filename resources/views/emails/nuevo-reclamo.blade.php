@@ -1,19 +1,28 @@
 <x-mail::message>
 # Nuevo reclamo de negocio
 
-Se recibió una solicitud de reclamo para **{{ $claim->lugar->nombre }}**.
+Un usuario quiere reclamar la titularidad de un negocio en **{{ config('app.name') }}**.
 
-**Solicitante:** {{ $claim->nombre_completo }}
-**Email:** {{ $claim->email }}
-**Teléfono:** {{ $claim->telefono }}
-**RUT:** {{ $claim->rut_numero }}
+<x-mail::table>
+| Campo | Detalle |
+|:------|:--------|
+| **Negocio** | {{ $claim->lugar->nombre }} |
+| **Solicitante** | {{ $claim->nombre_completo }} |
+| **Email** | {{ $claim->email }} |
+| **Teléfono** | {{ $claim->telefono }} |
+| **RUT** | {{ $claim->rut_numero }} |
+</x-mail::table>
 
 @if($claim->mensaje)
-**Mensaje:** {{ $claim->mensaje }}
+**Mensaje del solicitante:**
+
+> {{ $claim->mensaje }}
 @endif
 
+La constancia de RUT fue adjuntada a la solicitud. Revisala desde el panel de administración.
+
 <x-mail::button :url="config('app.url') . '/admin/claim-requests'">
-Ver en el panel
+Revisar solicitud
 </x-mail::button>
 
 {{ config('app.name') }}
