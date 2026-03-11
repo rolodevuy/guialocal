@@ -313,9 +313,14 @@
                 <li class="flex items-start gap-2">
                     <span class="text-gray-300 mt-0.5 shrink-0">🌐</span>
                     @if($ficha->sitio_web)
-                        <a href="{{ $ficha->sitio_web }}" target="_blank"
+                        @php
+                            $url = $ficha->sitio_web;
+                            $urlNorm = preg_match('/^https?:\/\//i', $url) ? $url : 'https://' . $url;
+                            $host = parse_url($urlNorm, PHP_URL_HOST) ?: $url;
+                        @endphp
+                        <a href="{{ $urlNorm }}" target="_blank"
                            class="text-amber-600 hover:underline truncate">
-                            {{ parse_url($ficha->sitio_web, PHP_URL_HOST) }}
+                            {{ $host }}
                         </a>
                     @else
                         <span class="text-gray-400">—</span>
