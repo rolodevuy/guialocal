@@ -20,6 +20,14 @@
         Para verificar que sos el titular, necesitamos tu constancia de inscripción en DGI.
     </p>
 
+    {{-- Gratuito --}}
+    <div class="mb-6 flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+        <svg class="w-5 h-5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <p class="text-sm text-green-700 font-medium">Este proceso es 100% gratuito. No tiene ningún costo reclamar tu negocio.</p>
+    </div>
+
     {{-- Info box --}}
     <div class="mb-6 flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
         <svg class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
