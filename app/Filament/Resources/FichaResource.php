@@ -65,9 +65,14 @@ class FichaResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('sitio_web')
                                     ->label('Sitio web')
-                                    ->url()
                                     ->maxLength(255)
                                     ->prefix('https://')
+                                    ->placeholder('www.ejemplo.com.uy')
+                                    ->dehydrateStateUsing(function (?string $state): ?string {
+                                        if (! $state) return null;
+                                        $state = preg_replace('#^https?://#i', '', $state);
+                                        return $state;
+                                    })
                                     ->columnSpanFull(),
 
                                 Forms\Components\Repeater::make('redes_sociales')

@@ -66,9 +66,9 @@
 
                 <div class="sm:col-span-2">
                     <label class="block text-xs font-medium text-gray-600 mb-1.5">Sitio web</label>
-                    <input type="url" name="sitio_web"
+                    <input type="text" name="sitio_web"
                            value="{{ old('sitio_web', $ficha->sitio_web) }}"
-                           placeholder="https://minegocio.com"
+                           placeholder="www.minegocio.com"
                            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400
                                   {{ $errors->has('sitio_web') ? 'border-red-300' : '' }}">
                     @error('sitio_web') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror

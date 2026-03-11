@@ -112,13 +112,13 @@ class PanelController extends Controller
             'descripcion' => ['nullable', 'string', 'max:2000'],
             'telefono'    => ['nullable', 'string', 'max:50'],
             'email'       => ['nullable', 'email', 'max:150'],
-            'sitio_web'   => ['nullable', 'url', 'max:255'],
+            'sitio_web'   => ['nullable', 'string', 'max:255'],
             // Redes sociales como campos individuales
             'instagram'   => ['nullable', 'url', 'max:255'],
             'facebook'    => ['nullable', 'url', 'max:255'],
             'whatsapp'    => ['nullable', 'url', 'max:255'],
         ], [
-            'sitio_web.url'  => 'El sitio web debe ser una URL válida (incluí https://).',
+            'sitio_web.max'  => 'El sitio web no puede superar 255 caracteres.',
             'instagram.url'  => 'La URL de Instagram debe ser válida.',
             'facebook.url'   => 'La URL de Facebook debe ser válida.',
             'whatsapp.url'   => 'La URL de WhatsApp debe ser válida.',
@@ -139,6 +139,11 @@ class PanelController extends Controller
         }
 
         $validated['redes_sociales'] = array_values($redesActuales);
+
+        // Normalizar sitio_web: quitar protocolo (se muestra con prefix https://)
+        if (! empty($validated['sitio_web'])) {
+            $validated['sitio_web'] = preg_replace('#^https?://#i', '', $validated['sitio_web']);
+        }
 
         $ficha->update($validated);
 

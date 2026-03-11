@@ -52,7 +52,7 @@
             $schema['email'] = $ficha->email;
 
         $sameAs = array_filter(array_merge(
-            $ficha?->sitio_web ? [$ficha->sitio_web] : [],
+            $ficha?->sitio_web ? [str_starts_with($ficha->sitio_web, 'http') ? $ficha->sitio_web : 'https://' . $ficha->sitio_web] : [],
             collect($ficha?->redes_sociales ?? [])->pluck('url')->all()
         ));
         if ($sameAs) $schema['sameAs'] = count($sameAs) === 1 ? array_values($sameAs)[0] : array_values($sameAs);
@@ -482,9 +482,10 @@
                                           d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
                                 </svg>
                             </span>
-                            <a href="{{ $ficha->sitio_web }}" target="_blank" rel="noopener noreferrer"
+                            @php $sitioUrl = str_starts_with($ficha->sitio_web, 'http') ? $ficha->sitio_web : 'https://' . $ficha->sitio_web; @endphp
+                            <a href="{{ $sitioUrl }}" target="_blank" rel="noopener noreferrer"
                                class="text-sm text-amber-600 hover:underline truncate">
-                                {{ parse_url($ficha->sitio_web, PHP_URL_HOST) ?: $ficha->sitio_web }}
+                                {{ preg_replace('#^https?://#', '', $ficha->sitio_web) }}
                             </a>
                         </li>
                         @endif
