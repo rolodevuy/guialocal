@@ -126,6 +126,14 @@ class OverpassService
         );
     }
 
+    // Bounding box de Uruguay (con margen)
+    // lat: -35.8 a -30.0 | lng: -58.5 a -53.0
+    private function enUruguay(float $lat, float $lng): bool
+    {
+        return $lat >= -35.8 && $lat <= -30.0
+            && $lng >= -58.5 && $lng <= -53.0;
+    }
+
     private function parsear(array $elements): array
     {
         $resultados = [];
@@ -142,6 +150,11 @@ class OverpassService
             $lng = $el['lon'] ?? ($el['center']['lon'] ?? null);
 
             if (! $lat || ! $lng) {
+                continue;
+            }
+
+            // Descartar resultados fuera de Uruguay (localidades homónimas)
+            if (! $this->enUruguay((float) $lat, (float) $lng)) {
                 continue;
             }
 
