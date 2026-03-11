@@ -1692,6 +1692,66 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+## Bloque 7 — Verificación de propietarios
+
+---
+
+### Paso 42 — Reclamar negocio + badge verificado ✅
+
+**Objetivo:** Permitir que el propietario de un negocio lo reclame enviando constancia de RUT, y que el admin apruebe/rechace.
+
+**Resultado esperado:**
+- Formulario público en `/negocios/{slug}/reclamar`
+- Botón "Reclamalo y gestionalo" en la ficha (solo si no tiene propietario)
+- Admin gestiona claims en Filament con acciones Aprobar/Rechazar
+- Al aprobar: crea usuario, vincula ficha, marca `verified_at`, envía email con credenciales
+- Badge ✓ azul (estilo Twitter) en ficha y tarjetas de listado
+- Emails de aprobación (con credenciales) y rechazo (con motivo)
+
+**Criterio de terminado:**
+- Tabla `claim_requests` creada con migración ✅
+- Modelo `ClaimRequest` con media collection `constancia_rut` ✅
+- `Ficha.verified_at` + accessor `is_verified` ✅
+- Formulario público con validación de RUT (12 dígitos) y upload ✅
+- Recurso Filament con badge de pendientes y acciones ✅
+- Componente `<x-verified-badge>` reutilizable ✅
+- Emails markdown `claim-approved` y `claim-rejected` ✅
+
+**Archivos creados:**
+- `database/migrations/2026_03_11_000001_create_claim_requests_table.php`
+- `app/Models/ClaimRequest.php`
+- `app/Http/Controllers/ClaimController.php`
+- `app/Filament/Resources/ClaimRequestResource.php` + Pages
+- `app/Mail/ClaimApproved.php`, `app/Mail/ClaimRejected.php`
+- `resources/views/negocios/claim.blade.php`
+- `resources/views/components/verified-badge.blade.php`
+- `resources/views/emails/claim-approved.blade.php`, `claim-rejected.blade.php`
+
+**Archivos modificados:**
+- `app/Models/Ficha.php` — `verified_at` en fillable/casts + accessor
+- `resources/views/negocios/show.blade.php` — badge + botón reclamar
+- `resources/views/partials/_ficha_card.blade.php` — badge en tarjetas
+- `routes/web.php` — rutas GET/POST reclamar
+
+---
+
+### Paso 43 — Organizar navegación admin Filament ✅
+
+**Objetivo:** Agrupar recursos en 5 grupos lógicos para facilitar la gestión.
+
+**Grupos:**
+- **Directorio:** Sectores, Categorías, Zonas, Lugares, Fichas
+- **Comercial:** Promociones, Destacados
+- **Contenido:** Artículos, Guías, Eventos
+- **Propietarios:** Propietarios (Users), Reclamos
+- **Comunidad:** Reseñas, Consultas, Newsletter
+
+**Archivos modificados:**
+- 15 Resources Filament (`navigationGroup` + `navigationSort`)
+- `app/Providers/Filament/AdminPanelProvider.php` — `navigationGroups()`
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
