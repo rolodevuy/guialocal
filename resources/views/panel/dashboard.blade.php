@@ -42,6 +42,29 @@
     }
     $cantEspeciales = count($ficha->horarios_especiales ?? []);
 
+    // Agrupar días consecutivos con igual horario
+    $grupos = [];
+    $gi = 0;
+    while ($gi < 7) {
+        $gh = $horariosFlat[$diasNombres[$gi]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
+        $gj = $gi + 1;
+        while ($gj < 7) {
+            $ghn = $horariosFlat[$diasNombres[$gj]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
+            if ($gh['cerrado'] == $ghn['cerrado'] && $gh['apertura'] == $ghn['apertura'] && $gh['cierre'] == $ghn['cierre']) {
+                $gj++;
+            } else { break; }
+        }
+        $grupos[] = [
+            'label'    => ($gj - 1 > $gi) ? $diasCortos[$gi] . ' – ' . $diasCortos[$gj - 1] : $diasCortos[$gi],
+            'cerrado'  => $gh['cerrado'],
+            'apertura' => $gh['apertura'],
+            'cierre'   => $gh['cierre'],
+        ];
+        $gi = $gj;
+    }
+    // ¿El horario es compacto? → layout en dos columnas
+    $horariosCompacto = !empty($horariosFlat) && count($grupos) <= 4;
+
     // Abierto ahora + cierre de hoy
     $abiertoAhora = $ficha->isAbiertoAhora();
     $diaHoyNum    = (int) now()->isoFormat('E');
@@ -323,8 +346,11 @@
     </div>
     @endif
 
+    {{-- ④ HORARIO + ⑤ DATOS — layout condicional --}}
+    <div class="mb-6 {{ $horariosCompacto ? 'grid sm:grid-cols-2 gap-6 items-start' : 'space-y-6' }}">
+
     {{-- ④ HORARIO --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3 flex-wrap">
                 <h2 class="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
@@ -355,27 +381,6 @@
         @if(empty($horariosFlat))
             <p class="text-sm text-gray-400 italic">No hay horario configurado aún. <a href="{{ route('panel.edit') }}" class="text-amber-600 hover:underline">Configurar ahora</a></p>
         @else
-            @php
-                $grupos = [];
-                $i = 0;
-                while ($i < 7) {
-                    $h = $horariosFlat[$diasNombres[$i]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
-                    $j = $i + 1;
-                    while ($j < 7) {
-                        $hNext = $horariosFlat[$diasNombres[$j]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
-                        if ($h['cerrado'] == $hNext['cerrado'] && $h['apertura'] == $hNext['apertura'] && $h['cierre'] == $hNext['cierre']) {
-                            $j++;
-                        } else {
-                            break;
-                        }
-                    }
-                    $label = ($j - 1 > $i)
-                        ? $diasCortos[$i] . ' – ' . $diasCortos[$j - 1]
-                        : $diasCortos[$i];
-                    $grupos[] = ['label' => $label, 'cerrado' => $h['cerrado'], 'apertura' => $h['apertura'], 'cierre' => $h['cierre']];
-                    $i = $j;
-                }
-            @endphp
             <div class="space-y-2">
                 @foreach($grupos as $g)
                 <div class="flex items-center gap-3 text-sm">
@@ -394,10 +399,10 @@
                 </p>
             @endif
         @endif
-    </div>
+    </div>{{-- /④ HORARIO --}}
 
     {{-- ⑤ DATOS DE CONTACTO + DESCRIPCIÓN --}}
-    <div class="grid sm:grid-cols-2 gap-6 mb-6">
+    <div class="{{ $horariosCompacto ? 'grid gap-6 content-start' : 'grid sm:grid-cols-2 gap-6' }}">
 
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
@@ -441,7 +446,9 @@
             @endif
         </div>
 
-    </div>
+    </div>{{-- /⑤ DATOS --}}
+
+    </div>{{-- /wrapper ④+⑤ --}}
 
     {{-- ⑥ BANNER DE UPGRADE --}}
     @if(! $esPremium)
