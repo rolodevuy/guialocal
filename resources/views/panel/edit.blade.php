@@ -5,11 +5,13 @@
 
     <div class="mb-6 flex items-center gap-3">
         <a href="{{ route('panel.index') }}"
-           class="text-gray-400 hover:text-gray-600 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           class="inline-flex items-center gap-1.5 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
+            Volver al panel
         </a>
+        <span class="text-gray-300">·</span>
         <h1 class="text-xl font-bold text-gray-800">Editar datos del negocio</h1>
     </div>
 

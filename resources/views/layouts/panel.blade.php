@@ -20,7 +20,7 @@
                     </svg>
                 </a>
                 <span class="text-gray-300">|</span>
-                <span class="text-sm font-semibold text-gray-700">Panel de negocio</span>
+                <a href="{{ route('panel.index') }}" class="text-sm font-semibold text-gray-700 hover:text-amber-600 transition-colors">Panel de negocio</a>
             </div>
             <div class="flex items-center gap-4">
                 @auth
