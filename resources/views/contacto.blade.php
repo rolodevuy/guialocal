@@ -44,8 +44,20 @@
                 </div>
             @endif
 
-            <form action="{{ route('contacto.store') }}{{ request('asunto') ? '?asunto='.e(request('asunto')) : '' }}" method="POST" class="space-y-5">
+            <form action="{{ route('contacto.store') }}" method="POST" class="space-y-5">
                 @csrf
+                @php
+                    $asuntoLabel = match(request('asunto')) {
+                        'upgrade-premium'  => 'Interés en plan Premium',
+                        'upgrade-basico'   => 'Interés en plan Básico',
+                        'consulta-planes'  => 'Consulta sobre planes',
+                        'alta-negocio'     => 'Alta de negocio',
+                        default            => '',
+                    };
+                @endphp
+                @if($asuntoLabel)
+                    <input type="hidden" name="asunto" value="{{ $asuntoLabel }}">
+                @endif
 
                 {{-- Nombre --}}
                 <div>
