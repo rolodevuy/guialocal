@@ -21,11 +21,9 @@ Ya tenés una cuenta con **{{ $claim->email }}**. Usá tu contraseña actual par
 @endif
 
 Desde tu panel vas a poder:
-- Editar la información de tu negocio
-- Subir fotos y logo
-- Publicar promociones
-- Responder reseñas de clientes
-- Ver estadísticas de visitas
+- Editar la información de tu negocio (descripción, contacto, redes)
+- Ver tu ficha verificada con el badge ✓
+- Acceder a planes con estadísticas, logo, promociones y más
 
 <x-mail::button :url="config('app.url') . '/panel/login'">
 Ingresar al panel
