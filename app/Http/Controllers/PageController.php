@@ -8,4 +8,9 @@ class PageController extends Controller
     {
         return view('pages.about');
     }
+
+    public function precios()
+    {
+        return view('pages.precios');
+    }
 }

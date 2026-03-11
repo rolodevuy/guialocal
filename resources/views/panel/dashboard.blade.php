@@ -245,7 +245,7 @@
             <p class="text-sm font-semibold text-gray-700">Gráfico de visitas día a día</p>
             <p class="text-xs text-gray-500 mt-0.5">Con <strong>Premium</strong> ves el historial de los últimos 30 días y detectás tus mejores días.</p>
         </div>
-        <a href="{{ route('contacto.show') }}?asunto=upgrade-premium"
+        <a href="{{ route('precios') }}"
            class="shrink-0 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg transition-colors">
             Quiero Premium
         </a>
@@ -377,7 +377,7 @@
                     </ul>
                 @endif
             </div>
-            <a href="{{ route('contacto.show') }}?asunto=upgrade-premium"
+            <a href="{{ route('precios') }}"
                class="shrink-0 px-5 py-2.5 text-sm font-semibold rounded-xl transition-colors whitespace-nowrap
                 {{ $esGratuito
                     ? 'bg-amber-500 hover:bg-amber-600 text-white'

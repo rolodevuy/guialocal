@@ -50,6 +50,7 @@ Route::get('/contacto', [ContactoController::class, 'show'])->name('contacto.sho
 Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');
 
 Route::get('/quienes-somos', [PageController::class, 'about'])->name('quienes-somos');
+Route::get('/precios',       [PageController::class, 'precios'])->name('precios');
 
 Route::post('/newsletter/suscribir', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe')->middleware('throttle:3,1');
 Route::get('/newsletter/baja/{token}', [NewsletterController::class, 'baja'])->name('newsletter.baja');
