@@ -9,10 +9,10 @@ Recibimos tu consulta y te responderemos en un plazo de **24 a 48 horas hábiles
 {{ $consulta->mensaje }}
 </x-mail::panel>
 
-Si tenés alguna otra consulta, no dudes en escribirnos nuevamente.
+Mientras tanto, podés ver todos los planes disponibles y lo que incluye cada uno.
 
-<x-mail::button :url="config('app.url') . '/contacto'">
-Ir a contacto
+<x-mail::button :url="config('app.url') . '/precios'">
+Ver planes
 </x-mail::button>
 
 El equipo de **{{ config('app.name') }}**
