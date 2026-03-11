@@ -117,14 +117,23 @@
             </div>
 
             {{-- RUT --}}
-            <div>
+            <div x-data="{ rut: '{{ old('rut_numero') }}', get ok() { return /^\d{12}$/.test(this.rut) }, get touched() { return this.rut.length > 0 } }">
                 <label for="rut_numero" class="block text-sm font-medium text-gray-700 mb-1.5">
                     Número de RUT <span class="text-red-400">*</span>
                 </label>
-                <input type="text" id="rut_numero" name="rut_numero" value="{{ old('rut_numero') }}"
-                       placeholder="123456789012" maxlength="12" inputmode="numeric"
-                       class="w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-amber-400 focus:ring-amber-400 transition-colors @error('rut_numero') border-red-300 @enderror">
-                <p class="mt-1 text-xs text-gray-400">12 dígitos, sin guiones ni puntos.</p>
+                <div class="relative">
+                    <input type="text" id="rut_numero" name="rut_numero"
+                           x-model="rut"
+                           placeholder="123456789012" maxlength="12" inputmode="numeric"
+                           :class="touched && !ok ? 'border-red-300' : (ok ? 'border-green-400' : 'border-gray-200')"
+                           class="w-full rounded-xl bg-gray-50 px-4 py-2.5 pr-9 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-colors @error('rut_numero') border-red-300 @enderror">
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <svg x-show="ok" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <svg x-show="touched && !ok" class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </div>
+                </div>
+                <p x-show="touched && !ok" class="mt-1 text-xs text-red-500">El RUT debe tener exactamente 12 dígitos.</p>
+                <p x-show="!touched || ok" class="mt-1 text-xs text-gray-400">12 dígitos, sin guiones ni puntos. <span x-show="ok" class="text-green-600 font-medium">✓ Correcto</span></p>
                 @error('rut_numero')
                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                 @enderror
