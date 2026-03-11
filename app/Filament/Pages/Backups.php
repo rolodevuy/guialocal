@@ -18,12 +18,14 @@ class Backups extends Page
     protected static string  $view            = 'filament.pages.backups';
 
     public bool $running = false;
+    public bool $showConfig = false;
 
     // Config properties
     public string $backupTime = '01:30';
     public bool $passwordEnabled = false;
     public string $backupPassword = '';
     public int $retentionDays = 3;
+    public string $filenamePrefix = '';
 
     public function mount(): void
     {
@@ -31,6 +33,7 @@ class Backups extends Page
         $this->passwordEnabled = (bool) Setting::get('backup_password_enabled', '0');
         $this->backupPassword = Setting::get('backup_password', '');
         $this->retentionDays = (int) Setting::get('backup_retention_days', '3');
+        $this->filenamePrefix = Setting::get('backup_filename_prefix', '');
     }
 
     public function saveConfig(): void
@@ -55,19 +58,26 @@ class Backups extends Page
         Setting::set('backup_password_enabled', $this->passwordEnabled ? '1' : '0');
         Setting::set('backup_password', $this->passwordEnabled ? $this->backupPassword : '');
         Setting::set('backup_retention_days', (string) max(1, $this->retentionDays));
+        Setting::set('backup_filename_prefix', $this->filenamePrefix);
 
         Notification::make()
             ->title('Configuración guardada')
             ->success()
             ->send();
+
+        $this->showConfig = false;
     }
 
-    private function applyPasswordConfig(): void
+    private function applyBackupConfig(): void
     {
         if ($this->passwordEnabled && $this->backupPassword) {
             config(['backup.backup.destination.password' => $this->backupPassword]);
         } else {
             config(['backup.backup.destination.password' => null]);
+        }
+
+        if ($this->filenamePrefix) {
+            config(['backup.backup.destination.filename_prefix' => $this->filenamePrefix . '-']);
         }
     }
 
@@ -98,7 +108,7 @@ class Backups extends Page
         $this->running = true;
 
         try {
-            $this->applyPasswordConfig();
+            $this->applyBackupConfig();
             Artisan::call('backup:run', ['--only-db' => true]);
             Notification::make()
                 ->title('Backup de BD creado correctamente')
@@ -120,7 +130,7 @@ class Backups extends Page
         $this->running = true;
 
         try {
-            $this->applyPasswordConfig();
+            $this->applyBackupConfig();
             Artisan::call('backup:run');
             Notification::make()
                 ->title('Backup completo creado (BD + archivos)')
