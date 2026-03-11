@@ -28,7 +28,7 @@ Route::post('/negocios/{slug}/resenas', [ResenaController::class, 'store'])->nam
     ->middleware('throttle:5,1'); // máx 5 reseñas por minuto por IP
 Route::get('/negocios/{slug}/reclamar', [ClaimController::class, 'create'])->name('negocios.claim');
 Route::post('/negocios/{slug}/reclamar', [ClaimController::class, 'store'])->name('negocios.claim.store')
-    ->middleware('throttle:3,10'); // máx 3 claims cada 10 min por IP
+    ->middleware('throttle:5,60'); // máx 5 claims por hora por IP
 
 Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->name('categorias.show');
