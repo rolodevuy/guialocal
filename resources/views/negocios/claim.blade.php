@@ -40,6 +40,10 @@
                 <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
                 Acceso a planes con estadísticas, promociones y más
             </li>
+            <li class="flex items-start gap-2 opacity-60">
+                <svg class="w-4 h-4 text-green-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Responder reseñas de clientes <span class="text-xs text-green-500 font-medium">(próximamente)</span></span>
+            </li>
         </ul>
         <p class="text-xs text-green-600 mt-3">
             ¿Querés saber qué incluye cada plan?
