@@ -231,18 +231,11 @@
 
             {{-- Días especiales --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <div class="flex items-center justify-between mb-1">
-                    <h2 class="text-sm font-semibold text-gray-700">Días especiales</h2>
-                    <button type="button"
-                            @click="agregando = !agregando"
-                            class="text-xs font-semibold px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg transition-colors">
-                        + Agregar
-                    </button>
-                </div>
+                <h2 class="text-sm font-semibold text-gray-700 mb-1">Días especiales</h2>
                 <p class="text-xs text-gray-400 mb-4">Feriados, vacaciones u horarios fuera de lo habitual.</p>
 
                 {{-- Form agregar --}}
-                <div x-show="agregando" class="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-4 space-y-3">
+                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-4 space-y-3">
 
                     {{-- Fila 1: Nombre + Checks --}}
                     <div class="flex items-start gap-4">
