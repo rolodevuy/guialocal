@@ -17,6 +17,13 @@ class ContactoController extends Controller
 
     public function store(Request $request)
     {
+        $asuntoLabels = [
+            'upgrade-premium' => 'Interés en plan Premium',
+            'upgrade-basico'  => 'Interés en plan Básico',
+            'consulta-planes' => 'Consulta sobre planes',
+            'alta-negocio'    => 'Alta de negocio',
+        ];
+
         $validated = $request->validate([
             'nombre'  => ['required', 'string', 'max:100'],
             'email'   => ['required', 'email', 'max:150'],
@@ -28,6 +35,8 @@ class ContactoController extends Controller
             'mensaje.required' => 'El mensaje es obligatorio.',
             'mensaje.min'      => 'El mensaje debe tener al menos 10 caracteres.',
         ]);
+
+        $validated['asunto'] = $asuntoLabels[$request->query('asunto')] ?? null;
 
         $consulta = Consulta::create($validated);
 

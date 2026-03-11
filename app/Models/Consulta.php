@@ -9,6 +9,7 @@ class Consulta extends Model
     protected $fillable = [
         'nombre',
         'email',
+        'asunto',
         'mensaje',
         'leido',
     ];
