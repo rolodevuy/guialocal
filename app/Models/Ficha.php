@@ -154,7 +154,7 @@ class Ficha extends Model implements HasMedia
 
     public function getIsVerifiedAttribute(): bool
     {
-        return $this->verified_at !== null;
+        return $this->user_id !== null && $this->verified_at !== null;
     }
 
     // ── Scopes ────────────────────────────────────────────────────────────────
