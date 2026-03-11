@@ -22,3 +22,6 @@ Schedule::command('backup:run --only-db')->daily()->at($backupTime);
 Schedule::command('backup:clean')->daily()->at(
     \Carbon\Carbon::createFromFormat('H:i', $backupTime)->addMinutes(30)->format('H:i')
 );
+
+// Limpiar constancias de reclamos rechazados (90 días)
+Schedule::command('claims:purge-rejected')->weekly();
