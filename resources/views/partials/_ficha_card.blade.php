@@ -12,12 +12,20 @@
 
     {{-- Imagen --}}
     <div class="relative h-36 sm:h-40 {{ $bgLight }} overflow-hidden shrink-0">
-        @php $portadaUrl = $ficha->getPortadaUrl(); @endphp
+        @php
+            $portadaUrl    = $ficha->getPortadaUrl();
+            $esGenerica    = $portadaUrl && !$ficha->getFirstMediaUrl('portada');
+        @endphp
         @if($portadaUrl)
             <img src="{{ $portadaUrl }}"
                  alt="{{ $ficha->lugar->nombre }}"
                  loading="lazy"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            @if($esGenerica)
+                <span class="absolute bottom-1.5 right-2 text-white/60 text-[10px] leading-none select-none pointer-events-none">
+                    imagen ilustrativa
+                </span>
+            @endif
         @else
             <div class="w-full h-full flex items-center justify-center">
                 <svg class="w-14 h-14 {{ $iconColor }} opacity-40" fill="currentColor" viewBox="0 0 24 24">

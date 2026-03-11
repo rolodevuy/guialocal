@@ -180,12 +180,20 @@
         <div class="flex-1 min-w-0">
 
             {{-- Imagen portada --}}
-            <div class="rounded-2xl overflow-hidden bg-amber-50 mb-6 h-56 sm:h-72">
-                @php $portadaUrl = $ficha?->getPortadaUrl() ?? ''; @endphp
+            <div class="relative rounded-2xl overflow-hidden bg-amber-50 mb-6 h-56 sm:h-72">
+                @php
+                    $portadaUrl = $ficha?->getPortadaUrl() ?? '';
+                    $esGenerica = $portadaUrl && !$ficha?->getFirstMediaUrl('portada');
+                @endphp
                 @if($portadaUrl)
                     <img src="{{ $portadaUrl }}"
                          alt="{{ $lugar->nombre }}"
                          class="w-full h-full object-cover">
+                    @if($esGenerica)
+                        <span class="absolute bottom-2.5 right-3 text-white/50 text-xs leading-none select-none pointer-events-none">
+                            imagen ilustrativa
+                        </span>
+                    @endif
                 @else
                     <div class="w-full h-full flex items-center justify-center">
                         <svg class="w-20 h-20 text-amber-200" fill="currentColor" viewBox="0 0 24 24">

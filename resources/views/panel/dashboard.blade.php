@@ -6,9 +6,8 @@
     $esPremium      = $plan === 'premium';
     $esBasico       = $plan === 'basico';
     $esGratuito     = $plan === 'gratuito';
-    $limPromos      = $ficha->planIncluye('promociones');
-    $tieneVisitas   = $ficha->planIncluye('visitas');
-    $tieneDestacado = $ficha->planIncluye('destacado');
+    $limPromos    = $ficha->planIncluye('promociones');
+    $tieneVisitas = $ficha->planIncluye('visitas');
     $publicado      = $ficha->activo && $ficha->estado === 'activa';
 
     $planLabel = [
@@ -116,99 +115,6 @@
                 Editar
             </a>
         </div>
-    </div>
-
-    {{-- ② QUÉ INCLUYE TU PLAN --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6" x-data="{ abierto: false }">
-        <button @click="abierto = !abierto"
-                class="w-full flex items-center justify-between px-6 py-4 text-left group">
-            <h2 class="text-sm font-semibold text-gray-700">Funciones de tu plan</h2>
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
-                 :class="abierto ? 'rotate-180' : ''"
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </button>
-        <div x-show="abierto"
-             x-transition:enter="transition ease-out duration-150"
-             x-transition:enter-start="opacity-0 -translate-y-1"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-100"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="px-6 pb-6">
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-
-            @php
-            $features = [
-                ['key' => 'visitas',   'label' => 'Estadísticas de visitas',    'desde' => 'Básico'],
-                ['key' => 'whatsapp',  'label' => 'Botón WhatsApp en ficha',    'desde' => 'Básico'],
-                ['key' => 'logo',      'label' => 'Logo propio',                'desde' => 'Básico'],
-                ['key' => 'destacado', 'label' => 'Primero en resultados',       'desde' => 'Premium'],
-            ];
-            @endphp
-
-            @foreach($features as $f)
-            @php $incluido = $ficha->planIncluye($f['key']); @endphp
-            <div class="flex items-start gap-2.5 p-3 rounded-xl {{ $incluido ? 'bg-green-50' : 'bg-gray-50' }}">
-                @if($incluido)
-                    <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span class="text-xs text-gray-700 font-medium">{{ $f['label'] }}</span>
-                @else
-                    <svg class="w-4 h-4 text-gray-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    <div>
-                        <span class="text-xs text-gray-400 line-through">{{ $f['label'] }}</span>
-                        <span class="block text-xs text-gray-400 mt-0.5">Plan {{ $f['desde'] }}</span>
-                    </div>
-                @endif
-            </div>
-            @endforeach
-
-            {{-- Promociones --}}
-            <div class="flex items-start gap-2.5 p-3 rounded-xl {{ $limPromos > 0 ? 'bg-green-50' : 'bg-gray-50' }}">
-                @if($limPromos > 0)
-                    <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span class="text-xs text-gray-700 font-medium">
-                        Promociones <span class="text-gray-400 font-normal">(máx. {{ $limPromos === PHP_INT_MAX ? '∞' : $limPromos }})</span>
-                    </span>
-                @else
-                    <svg class="w-4 h-4 text-gray-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    <div>
-                        <span class="text-xs text-gray-400 line-through">Promociones</span>
-                        <span class="block text-xs text-gray-400 mt-0.5">Plan Básico</span>
-                    </div>
-                @endif
-            </div>
-
-            {{-- Fotos --}}
-            @php $limFotos = $ficha->planIncluye('fotos'); @endphp
-            <div class="flex items-start gap-2.5 p-3 rounded-xl {{ $limFotos > 0 ? 'bg-green-50' : 'bg-gray-50' }}">
-                @if($limFotos > 0)
-                    <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span class="text-xs text-gray-700 font-medium">Galería <span class="text-gray-400 font-normal">(máx. {{ $limFotos }})</span></span>
-                @else
-                    <svg class="w-4 h-4 text-gray-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    <div>
-                        <span class="text-xs text-gray-400 line-through">Galería de fotos</span>
-                        <span class="block text-xs text-gray-400 mt-0.5">Plan Básico</span>
-                    </div>
-                @endif
-            </div>
-
-        </div>
-        </div>{{-- /x-show --}}
     </div>
 
     {{-- ③ STATS DE LA SEMANA --}}
