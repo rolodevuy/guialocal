@@ -47,7 +47,7 @@
         </ul>
         <p class="text-xs text-green-600 mt-3">
             ¿Querés saber qué incluye cada plan?
-            <a href="{{ route('contacto.show') }}" class="underline hover:text-green-800">Consultanos sin compromiso</a>.
+            <a href="{{ route('precios') }}" class="underline hover:text-green-800">Ver planes</a>.
         </p>
     </div>
 
