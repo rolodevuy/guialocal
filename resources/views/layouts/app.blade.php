@@ -38,11 +38,11 @@
             <div class="flex items-center justify-between h-16">
 
                 {{-- Logo --}}
-                <a href="{{ route('home') }}" class="flex items-center gap-1.5 font-extrabold hover:opacity-90 transition-opacity leading-none">
-                    <svg class="w-7 h-7 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('home') }}" class="flex items-center gap-1.5 font-extrabold hover:opacity-90 transition-opacity">
+                    <svg class="w-7 h-7 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                     </svg>
-                    <span class="text-amber-500 text-lg">GUÍA</span><span class="text-gray-900 text-xl">LOCAL</span>
+                    <span class="text-xl"><span class="text-amber-500" style="font-size:0.9em">GUÍA</span><span class="text-gray-900">LOCAL</span></span>
                 </a>
 
                 {{-- Nav desktop --}}
@@ -153,11 +153,11 @@
 
                 {{-- Brand --}}
                 <div>
-                    <div class="flex items-center gap-1.5 font-extrabold mb-3 leading-none">
-                        <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-1.5 font-extrabold mb-3">
+                        <svg class="w-6 h-6 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                         </svg>
-                        <span class="text-amber-400 text-base">GUÍA</span><span class="text-white text-lg">LOCAL</span>
+                        <span class="text-lg"><span class="text-amber-400" style="font-size:0.9em">GUÍA</span><span class="text-white">LOCAL</span></span>
                     </div>
                     <p class="text-sm text-gray-400 leading-relaxed">
                         Tu guía de negocios y servicios del barrio. Encontrá lo que necesitás cerca tuyo.
