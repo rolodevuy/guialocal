@@ -15,5 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (
+            \Illuminate\Http\Exceptions\ThrottleRequestsException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            if ($request->isMethod('POST') && !$request->expectsJson()) {
+                return back()->withErrors([
+                    'throttle' => 'Realizaste demasiados intentos. Esperá unos minutos antes de intentarlo de nuevo.',
+                ])->withInput();
+            }
+        });
     })->create();
