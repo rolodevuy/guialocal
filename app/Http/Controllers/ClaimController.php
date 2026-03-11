@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NuevoReclamo;
 use App\Models\ClaimRequest;
 use App\Models\Lugar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ClaimController extends Controller
 {
@@ -74,6 +76,8 @@ class ClaimController extends Controller
 
         $claim->addMediaFromRequest('constancia')
             ->toMediaCollection('constancia_rut');
+
+        Mail::to(config('app.admin_email'))->send(new NuevoReclamo($claim));
 
         return redirect()->route('negocios.show', $lugar->slug)
             ->with('success', '¡Solicitud enviada! Te responderemos en 24-48 horas.');
