@@ -6,7 +6,9 @@ use App\Models\Articulo;
 use App\Models\Guia;
 use App\Models\Lugar;
 use App\Models\Sector;
+use App\Models\Setting;
 use App\Observers\LugarObserver;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +28,17 @@ class AppServiceProvider extends ServiceProvider
             URL::forceRootUrl('https://' . $forwardedHost);
             URL::forceScheme('https');
             request()->server->set('HTTPS', 'on');
+        }
+
+        // Backup: aplicar password desde settings si está habilitada
+        if (Schema::hasTable('settings')) {
+            $pwEnabled = Setting::get('backup_password_enabled', '0');
+            if ($pwEnabled === '1') {
+                $pw = Setting::get('backup_password', '');
+                if ($pw) {
+                    config(['backup.backup.destination.password' => $pw]);
+                }
+            }
         }
 
         // Comparte datos globales con todas las vistas del layout
