@@ -8,8 +8,10 @@ Llegó un mensaje desde el formulario de contacto de **{{ config('app.name') }}*
 |:------|:--------|
 | **Nombre** | {{ $consulta->nombre }} |
 | **Email** | {{ $consulta->email }} |
-@if($consulta->asunto)| **Asunto** | {{ $consulta->asunto }} |
-@endif| **Fecha** | {{ $consulta->created_at->translatedFormat('j M Y, H:i') }} |
+@if($consulta->asunto)
+| **Asunto** | {{ $consulta->asunto }} |
+@endif
+| **Fecha** | {{ $consulta->created_at->translatedFormat('j M Y, H:i') }} |
 </x-mail::table>
 
 **Mensaje:**
