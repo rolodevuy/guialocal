@@ -117,6 +117,55 @@ Orden de implementación acordado:
 
 ---
 
+## Sectores (transversal) ✅ Completo
+
+- [x] Modelo `Sector` con slug, nombre, descripcion, nombre_corto, `color_classes` JSON
+- [x] Tabla `sectores` con 3 verticales: Comercial, Gastronomía y Ocio, Turismo y Alojamiento
+- [x] FK `sector_id` en `categorias` (solo nivel 1; nivel 2 hereda del padre)
+- [x] Admin `/admin/sectors` — SectorResource; selector sector en CategoriaResource
+- [x] Público `/sectores/{slug}` — micrositio con hero coloreado, stats, categorías, destacados
+- [x] Home agrupada por sector — tarjetas "Explorar la guía" + tabs de destacados por sector
+- [x] Navbar con sectores directos (Comercial / Gastronomía / Turismo)
+- [x] Footer con links a sectores via view composer `$sectoresNav`
+
+---
+
+## Verificación de propietarios ✅ Completo
+
+- [x] **Reclamar negocio** — formulario `/negocios/{slug}/reclamar` con upload constancia RUT
+- [x] **ClaimRequestResource** — Filament con acciones Aprobar/Rechazar, badge pendientes
+- [x] **Badge verificado** — componente `<x-verified-badge>` SVG check amber; requiere `user_id` + `verified_at`
+- [x] **Campo verified_at** — timestamp nullable en `fichas`
+- [x] **Emails claim** — templates mejorados con tablas HTML, paneles, tema amber
+- [x] **Limpieza constancias rechazadas** — comando `claim:cleanup` elimina >90 días
+
+---
+
+## Mejoras transversales ✅ Completo
+
+- [x] **Página /precios** — 3 planes comparados con ✓/✗ por feature; CTAs pre-llenan asunto
+- [x] **Campo asunto en consultas** — nullable, mapeo a label, en subject del email admin
+- [x] **Email confirmación usuario** — `ConsultaRecibida` mailable con botón a /precios
+- [x] **Tema emails amber** — color #d97706, firma "El equipo de Guía Local"
+- [x] **Watermark imagen ilustrativa** — overlay en portadas de categoría usadas como fallback
+- [x] **Dashboard panel: horarios agrupados** — "Lun – Vie 09:00 – 18:00" en lugar de filas individuales
+- [x] **Backups automáticos** — spatie/laravel-backup, panel admin, schedule configurable desde admin
+- [x] **Importador OSM** — OverpassService + página Filament; modo localidad + modo radio; detección de duplicados
+- [x] **Optimización imágenes** — conversión WebP resize automático en todos los modelos con media
+
+---
+
+## Documentación ✅ Actualizada
+
+- [x] `build_steps.md` — pasos hasta Paso 67 (sectores, /precios, asunto contacto, watermark, horarios agrupados)
+- [x] `ROADMAP.md` — etapas 5-7 + sectores + mejoras transversales
+- [x] `FEATURE.md` — sectores, eventos, verificación, mejoras transversales
+- [x] `DATABASE.md` — tabla sectores, campo asunto en consultas, verified_at en fichas, claim_requests planificada
+- [x] `DECISIONS.md` — decisiones técnicas y de producto documentadas
+- [x] `BACKLOG.md` — este archivo
+
+---
+
 ## Pendiente / Ideas futuras (sin fecha)
 
 - [ ] Eventos locales — escalables: precio entrada, link tickets, categoría de evento *(scope acordado, ampliar cuando haya volumen)*

@@ -156,10 +156,86 @@ Implementación: tabla `ficha_visitas` (`ficha_id`, `fecha` DATE, `cantidad` INT
 
 ---
 
+---
+
+## Sectores (feature transversal) ✅
+
+Agrupa las categorías nivel 1 en 3 verticales temáticos que estructuran toda la guía.
+
+### Modelo Sector
+Tabla `sectores` con `nombre`, `slug`, `descripcion`, `nombre_corto`, `color_classes` (JSON con clases Tailwind literales por paleta). Helper `color($key, $default)` para acceder a clases desde Blade. 3 sectores creados: **Comercial** (amber), **Gastronomía y Ocio** (rose), **Turismo y Alojamiento** (sky).
+
+### FK sector_id en categorias
+Solo categorías de nivel 1 tienen `sector_id`. Las de nivel 2 heredan el sector del padre. Selector de sector en `CategoriaResource`.
+
+### Admin /admin/sectors
+`SectorResource` en Filament (grupo Directorio). Permite crear/editar sectores con nombre, slug auto, descripcion, nombre_corto y color_classes JSON.
+
+### Público /sectores/{slug}
+Micrositio por sector: hero con tint del color del sector, stats (negocios + categorías), grid de categorías del sector, sección de destacados (top 6 por `featured_score`). `SectorController@show`.
+
+### Home agrupada por sector
+Tarjetas "Explorar la guía" entre hero y destacados. Tabs Alpine.js en la sección de destacados: Todos / Comercial / Gastronomía / Turismo. Partial `_ficha_card.blade.php` reutilizable.
+
+### Navbar y footer con sectores
+Navbar reemplaza "Negocios" y "Categorías" por los 3 sectores (Comercial, Gastronomía, Turismo) con active state. Footer con links a sectores via view composer `$sectoresNav` en `AppServiceProvider`.
+
+---
+
+## Etapa 7 — Eventos locales ✅
+
+### Eventos locales
+Modelo `Evento` (titulo, slug, descripcion, fecha_inicio, fecha_fin, hora_inicio, hora_fin, lugar_id, publicado). Tabla `eventos` con índice `(publicado, fecha_inicio)`. `scopePublicado` + `scopeProximo`. Media collection `portada` con conversión WebP.
+
+`EventoResource` en Filament con tabs: Contenido, Fecha y hora, Imagen, Relaciones, Configuración. Tabla con imagen circular, fechas y lugar. Grupo Contenido.
+
+Páginas públicas: `/eventos` (listado paginado con badges "Hoy"/"Esta semana") y `/eventos/{slug}` (ficha con sidebar cuándo/dónde).
+
+Módulo en home: sección "Eventos próximos" con 3 cards. Oculta si no hay eventos próximos. Reemplazó la sección mapa en home (el mapa sigue en `/mapa`).
+
+---
+
+## Verificación de propietarios ✅
+
+### Reclamar negocio
+Formulario público en `/negocios/{slug}/reclamar`. Botón "Reclamalo y gestionalo" en la ficha (solo si sin propietario asignado). El propietario sube su constancia de RUT (imagen/PDF). Admin aprueba o rechaza desde Filament.
+
+Al aprobar: crea cuenta de usuario, vincula la ficha (`user_id`), marca `verified_at`, envía email con credenciales al propietario.
+
+### Badge verificado
+Componente `<x-verified-badge>` con SVG check en círculo amber. Se muestra en `negocios/show.blade.php` y en `_ficha_card.blade.php` cuando `ficha.verified_at != null` y `ficha.user_id != null`. Sin propietario asignado, el badge no se muestra aunque exista `verified_at`.
+
+### Emails de aprobación/rechazo
+Mailables `ClaimApproved` y `ClaimRejected`. Templates con tablas HTML, paneles destacados y mejor copy. Tema amber (`#d97706`) en botones, panel y header. Firma "El equipo de Guía Local".
+
+### Limpieza automática
+Comando `claim:cleanup` elimina las constancias de reclamos rechazados con más de 90 días.
+
+---
+
+## Mejoras transversales ✅
+
+### Página /precios
+Página pública estática con los 3 planes del directorio comparados. `PageController@precios` → vista `pages/precios.blade.php`. 3 cards: Gratuito (gratis), Básico (consultar), Premium (consultar). Tabla de features con ✓/✗ por plan. Sección "¿Tenés dudas?" con CTA a `/contacto?asunto=consulta-planes`. Los botones de CTA pre-llenan el asunto: `alta-negocio`, `upgrade-basico`, `upgrade-premium`.
+
+### Formulario de contacto mejorado
+Campo `asunto` nullable en tabla `consultas` (migración `add_asunto_to_consultas`). El asunto llega como query param `?asunto=` desde /precios u otras páginas y se mapea a un label legible en Blade. Viaja como hidden input POST. El controller lo valida como `nullable|string`. `NuevaConsulta` mailable: subject incluye el asunto si está presente (`$consulta->asunto ?? 'Nueva consulta recibida'`).
+
+### Email de confirmación al usuario
+`ConsultaRecibida` mailable enviado al email del remitente al guardar la consulta. Incluye resumen del mensaje enviado y botón a `/precios`. Tema amber.
+
+### Watermark en imágenes genéricas
+Overlay "imagen ilustrativa" superpuesto en imágenes de categoría usadas como fallback de portada. Visible en `negocios/show.blade.php` y en `_ficha_card.blade.php`. Detección: `$portadaUrl` existe (la categoría tiene imagen genérica) pero `getFirstMediaUrl('portada')` está vacío (la ficha no tiene portada propia).
+
+### Dashboard panel: horarios agrupados
+En el dashboard del panel propietario (`/panel`), el horario semanal muestra rangos de días consecutivos con el mismo horario en lugar de filas individuales. Ejemplo: "Lun – Vie 09:00 – 18:00" en lugar de 5 filas. Layout adaptativo: horario + contacto + descripción en grid de 2 columnas desktop, 1 columna mobile.
+
+---
+
 ## Ideas futuras / pendiente
 
 - **Comparativa vs categoría** — cruzar visitas propias con el promedio de fichas del mismo rubro (requiere más datos históricos)
-- **Eventos locales** — agenda con fecha, lugar, relación a negocios; requiere definición de scope
+- **Eventos locales escalables** — precio entrada, link tickets, categoría de evento
 - **Favoritos** — requiere auth de usuario público (sistema separado a propietarios)
-- **Meilisearch** — migración de Scout si el volumen lo justifica
-- **Páginas de error personalizadas** — 404 con buscador, 500 temática
+- **Meilisearch** — migración de Scout si el volumen lo justifica (interfaz Scout ya preparada)
+- **Aplicación mobile** — consumo de API Laravel (requiere capa API REST)

@@ -11,6 +11,7 @@ Esquema de la base de datos del proyecto. Motor: MariaDB 10.x vía XAMPP.
 | `users` | Usuarios del sistema (admins + propietarios de negocios) |
 | `lugares` | Lugar físico: nombre, slug, dirección, lat/lng, categoría, zona |
 | `fichas` | Perfil gestionado de un negocio (1:1 con `lugares`) |
+| `sectores` | Verticales temáticos que agrupan categorías nivel 1 |
 | `categorias` | Jerarquía de categorías hasta 3 niveles |
 | `zonas` | Barrios/sectores geográficos con centroide |
 | `promociones` | Ofertas/promos de una ficha, con fechas y estado |
@@ -18,13 +19,22 @@ Esquema de la base de datos del proyecto. Motor: MariaDB 10.x vía XAMPP.
 | `articulos` | Contenido editorial (blog) |
 | `guias` | Guías temáticas con relación M:N a lugares |
 | `guia_lugar` | Pivot: guia ↔ lugar (con orden) |
+| `eventos` | Eventos locales con fechas y relación a lugar |
 | `featured_slots` | Slots curados para home y editorial (polimórfico) |
 | `slug_redirects` | Mapeo old_slug → new_slug para redirects 301 |
 | `consultas` | Mensajes del formulario de contacto |
 | `suscriptores` | Suscriptores al newsletter (email, zona, token de baja) |
 | `ficha_visitas` | Log diario de visitas por ficha (para métricas Premium) |
+| `claim_requests` | Solicitudes de reclamo de negocio por propietarios |
+| `settings` | Configuración clave-valor persistente (backups, etc.) |
 | `media` | Spatie Media Library (polimórfica, todos los modelos) |
 | `sessions` / `cache` / `jobs` | Laravel default |
+
+### Tablas planificadas (pendientes de crear)
+
+| Tabla | Estado | Descripción |
+|---|---|---|
+| — | — | — |
 
 ---
 
@@ -87,12 +97,15 @@ CREATE TABLE fichas (
   estado               ENUM('pendiente','activa','rechazada','suspendida') DEFAULT 'pendiente',
   activo               TINYINT(1) DEFAULT 1,
   visitas              INT UNSIGNED DEFAULT 0,       -- se incrementa en cada visita
+  verified_at          TIMESTAMP NULL,               -- fecha en que el admin verificó al propietario
   created_at           TIMESTAMP NULL,
   updated_at           TIMESTAMP NULL,
   FOREIGN KEY (lugar_id) REFERENCES lugares(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id)  REFERENCES users(id) ON DELETE SET NULL
 );
 -- Media: colecciones 'logo' (singleFile), 'portada' (singleFile), 'galeria' (múltiple)
+-- Badge verificado: se muestra si verified_at != null AND user_id != null
+-- Accessor is_verified: (bool) $this->verified_at && $this->user_id
 ```
 
 ### resenas
@@ -240,6 +253,26 @@ CREATE TABLE featured_slots (
 );
 ```
 
+### sectores
+
+```sql
+CREATE TABLE sectores (
+  id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nombre       VARCHAR(255) NOT NULL,
+  slug         VARCHAR(255) UNIQUE NOT NULL,
+  descripcion  TEXT NULL,
+  nombre_corto VARCHAR(50) NULL,            -- nombre abreviado para nav y tabs (ej: "Gastronomía")
+  icono        VARCHAR(255) NULL,
+  color_classes JSON NULL,                  -- clases Tailwind literales: {bg, text, border, ring, ...}
+  created_at   TIMESTAMP NULL,
+  updated_at   TIMESTAMP NULL
+);
+```
+
+Cada sector agrupa categorías de nivel 1. Las categorías nivel 2 heredan el sector del padre. El JSON `color_classes` contiene clases Tailwind literales para que el compilador las incluya en el CSS (Tailwind v4 requiere clases completas, no dinámicas).
+
+FK en `categorias`: `sector_id BIGINT UNSIGNED NULL, FOREIGN KEY (sector_id) REFERENCES sectores(id) ON DELETE SET NULL`
+
 ### consultas
 
 ```sql
@@ -247,12 +280,15 @@ CREATE TABLE consultas (
   id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   nombre     VARCHAR(255) NOT NULL,
   email      VARCHAR(255) NOT NULL,
+  asunto     VARCHAR(255) NULL,             -- pre-llenado desde /precios u otras páginas vía ?asunto=
   mensaje    TEXT NOT NULL,
   leido      TINYINT(1) DEFAULT 0,
   created_at TIMESTAMP NULL,
   updated_at TIMESTAMP NULL
 );
 ```
+
+El campo `asunto` llega como query param y se mapea a un label legible en Blade. Se incluye en el subject del email al admin (`NuevaConsulta` mailable). El usuario recibe un email de confirmación (`ConsultaRecibida` mailable) con el resumen de su mensaje.
 
 ### suscriptores
 
@@ -290,14 +326,52 @@ CREATE TABLE ficha_visitas (
 
 Un registro por ficha por día. Se inserta/actualiza en cada visita a la ficha pública via UPSERT (`cantidad + 1`). Se usa en `PanelController@index` para mostrar el gráfico de los últimos 30 días a fichas Premium.
 
+### claim_requests
+
+```sql
+CREATE TABLE claim_requests (
+  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  ficha_id    BIGINT UNSIGNED NOT NULL,
+  nombre      VARCHAR(255) NOT NULL,
+  email       VARCHAR(255) NOT NULL,
+  rut         VARCHAR(12) NOT NULL,          -- RUT del negocio (12 dígitos)
+  mensaje     TEXT NULL,
+  estado      ENUM('pendiente','aprobado','rechazado') DEFAULT 'pendiente',
+  motivo_rechazo TEXT NULL,
+  created_at  TIMESTAMP NULL,
+  updated_at  TIMESTAMP NULL,
+  FOREIGN KEY (ficha_id) REFERENCES fichas(id) ON DELETE CASCADE,
+  INDEX idx_ficha_estado (ficha_id, estado)
+);
+-- Media: colección 'constancia_rut' (singleFile) — limpieza automática a los 90 días si rechazado
+```
+
+Al aprobar: se crea cuenta de usuario, se vincula `fichas.user_id`, se marca `fichas.verified_at`, se envía email con credenciales. Al rechazar: se envía email con motivo. El comando `claim:cleanup` elimina las constancias de reclamos rechazados con más de 90 días.
+
+### settings
+
+```sql
+CREATE TABLE settings (
+  id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  key        VARCHAR(255) UNIQUE NOT NULL,
+  value      TEXT NULL,
+  created_at TIMESTAMP NULL,
+  updated_at TIMESTAMP NULL
+);
+```
+
+Configuración clave-valor persistente. Usada actualmente para configuración de backups (hora, retención, contraseña, prefijo) desde el panel admin. Leída en `AppServiceProvider::boot()` con fallback seguro (try/catch + `Schema::hasTable`).
+
 ---
 
 ## Decisiones de diseño
 
 - **Slugs únicos** en `categorias`, `zonas`, `lugares` para URLs limpias y SEO.
-- **JSON para datos flexibles** (`horarios`, `redes_sociales`): evita tablas de relación para estructuras simples y variables por negocio.
+- **JSON para datos flexibles** (`horarios`, `redes_sociales`, `color_classes`): evita tablas de relación para estructuras simples y variables por negocio. `color_classes` en sectores almacena clases Tailwind literales (requerido por Tailwind v4).
 - **`plan` como enum** con `featured_score` calculado: orden en resultados controlado por reglas de negocio, no por consultas complejas.
 - **Media polimórfica** (Spatie): un solo sistema de archivos para todos los modelos con medios.
 - **`is_admin` en users**: separa admins de propietarios sin tablas adicionales. Los propietarios tienen `is_admin=false` y solo acceden a `/panel`.
 - **`aprobada=false` default en reseñas**: toda reseña pasa por moderación antes de ser pública.
 - **`visitas` en fichas**: contador simple, sin tabla de eventos por visita. Suficiente para mostrar popularidad relativa; se puede migrar a una tabla de eventos si se necesita análisis temporal.
+- **`verified_at` + `user_id` para badge verificado**: el badge solo se muestra si ambos están presentes. `verified_at` sin `user_id` no genera badge (propietario desvinculado).
+- **`sector_id` solo en nivel 1**: las categorías nivel 2 heredan el sector del padre via relación Eloquent, sin FK redundante.

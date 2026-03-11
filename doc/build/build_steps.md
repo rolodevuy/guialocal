@@ -1834,6 +1834,102 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+---
+
+## Bloque 15 — Panel propietario e insights
+
+---
+
+### Paso 64 — Panel propietario: dashboard con horarios agrupados ✅
+
+**Objetivo:** Mejorar la presentación del horario semanal en el dashboard del panel propietario agrupando días consecutivos con el mismo horario.
+
+**Resultado esperado:**
+- En lugar de mostrar 5 filas separadas (Lun, Mar, Mié, Jue, Vie), muestra "Lun – Vie 09:00 – 18:00"
+- Días consecutivos con mismo horario se agrupan automáticamente
+- Layout adaptativo: horario + contacto + descripción en grid de 2 columnas
+
+**Criterio de terminado:**
+- Dashboard muestra rangos de días en lugar de filas individuales ✅
+- Layout de 2 columnas en desktop, 1 columna en mobile ✅
+
+**Notas:**
+- Lógica de agrupación en Blade / PHP con array de días consecutivos
+- Días mapeados: Lunes=0 … Domingo=6; se compara apertura+cierre para agrupar
+- Resultado: "Lun – Vie 09:00 – 18:00", "Sáb 10:00 – 14:00", "Dom Cerrado"
+
+---
+
+### Paso 65 — Página /precios ✅
+
+**Objetivo:** Tener una página pública con los planes de la guía y sus features comparadas.
+
+**Resultado esperado:**
+- Ruta `GET /precios` → `PageController@precios` → vista `pages/precios.blade.php`
+- 3 cards: Gratuito (gratis), Básico (consultar), Premium (consultar)
+- Tabla de features con ✓/✗ por plan
+- Sección "¿Tenés dudas?" con CTA a `/contacto?asunto=consulta-planes`
+- CTAs pre-llenan asunto: `alta-negocio`, `upgrade-basico`, `upgrade-premium`
+
+**Criterio de terminado:**
+- `/precios` responde HTTP 200 ✅
+- Los 3 planes se ven con sus features ✅
+- Los botones de CTA llevan al contacto con el asunto prellenado ✅
+
+**Notas:**
+- `PageController@precios` retorna vista estática sin datos del controller
+- Los query params `?asunto=alta-negocio` etc. son leídos en ContactoController para pre-llenar el campo asunto
+- Link a `/precios` agregado al footer
+
+---
+
+### Paso 66 — Formulario de contacto: campo asunto + emails mejorados ✅
+
+**Objetivo:** Agregar campo `asunto` al formulario de contacto para poder pre-llenar el motivo desde otras páginas, y mejorar los emails transaccionales.
+
+**Resultado esperado:**
+- Campo `asunto` nullable en tabla `consultas` (migración `add_asunto_to_consultas`)
+- El asunto llega como query param `?asunto=` y se mapea en Blade a label legible
+- Controller valida asunto como `nullable|string`
+- `NuevaConsulta` mailable: subject incluye el asunto si está presente
+- `ConsultaRecibida` mailable: email de confirmación al usuario con su mensaje y botón a `/precios`
+- Tema de emails: amber (`#d97706`) para botones, panel y header
+- Firma genérica: "El equipo de Guía Local"
+
+**Criterio de terminado:**
+- `/contacto?asunto=consulta-planes` pre-llena el asunto en el formulario ✅
+- Email al admin incluye el asunto en el subject ✅
+- Usuario recibe email de confirmación con su mensaje ✅
+- Emails usan tema amber ✅
+
+**Notas:**
+- Migración: `$table->string('asunto')->nullable()->after('email')` en tabla `consultas`
+- Asuntos mapeados en Blade: `alta-negocio` → "Quiero agregar mi negocio", `upgrade-basico` → "Quiero el plan Básico", etc.
+- `ConsultaRecibida` es un Mailable nuevo, enviado al `$consulta->email` al guardar
+- `NuevaConsulta` subject: `$consulta->asunto ?? 'Nueva consulta recibida'`
+
+---
+
+### Paso 67 — UI: watermark en imágenes genéricas ✅
+
+**Objetivo:** Indicar visualmente al usuario que la imagen mostrada es ilustrativa (de categoría) y no la foto real del negocio.
+
+**Resultado esperado:**
+- Texto "imagen ilustrativa" superpuesto en imágenes de categoría usadas como fallback
+- Visible en `negocios/show.blade.php` y en `_ficha_card.blade.php`
+- No aparece cuando el negocio tiene portada propia
+
+**Criterio de terminado:**
+- Negocio sin portada propia muestra watermark ✅
+- Negocio con portada propia no muestra watermark ✅
+
+**Notas:**
+- Detección: `$portadaUrl` existe (categoría tiene imagen genérica) pero `getFirstMediaUrl('portada')` está vacío
+- Watermark: `<span>` absoluto en esquina inferior izquierda con fondo semitransparente
+- Clases: `absolute bottom-1 left-1 text-[10px] text-white/70 bg-black/30 px-1 rounded`
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
