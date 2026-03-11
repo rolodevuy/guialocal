@@ -46,6 +46,7 @@
 
             <form action="{{ route('contacto.store') }}" method="POST" class="space-y-5">
                 @csrf
+                <input type="hidden" name="_asunto" value="{{ request('asunto') }}">
 
                 {{-- Nombre --}}
                 <div>
