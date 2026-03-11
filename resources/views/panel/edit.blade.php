@@ -195,7 +195,15 @@
                 this.nuevoE = { nombre: '', fecha: '', mes: '1', dia: '1', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' };
                 this.agregando = false;
             },
-            eliminar(i) { this.especiales.splice(i, 1); }
+            eliminar(i) { this.especiales.splice(i, 1); },
+            formatFecha(e) {
+                if (!e.fecha) return '';
+                const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+                const [y, m, d] = e.fecha.split('-').map(Number);
+                return e.se_repite
+                    ? d + ' de ' + meses[m - 1]
+                    : d + ' de ' + meses[m - 1] + ' de ' + y;
+            }
         }" class="space-y-6">
 
             <input type="hidden" name="horarios"            :value="horariosJson">
@@ -335,7 +343,7 @@
                                     <span x-show="!e.activo"   class="text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Inactivo</span>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-0.5">
-                                    <span x-text="e.fecha"></span>
+                                    <span x-text="formatFecha(e)"></span>
                                     <span class="mx-1">·</span>
                                     <span x-text="e.cerrado ? 'Cerrado' : (e.apertura + ' – ' + e.cierre)"></span>
                                 </p>
