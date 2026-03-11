@@ -98,10 +98,11 @@
             @endif
         </div>
 
-        <div class="mt-5 flex items-center gap-3">
+        <div class="mt-5 flex items-center gap-4">
             <button wire:click="buscar"
                     wire:loading.attr="disabled"
-                    class="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 disabled:opacity-60 transition-colors">
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-60 transition-colors dark:focus:ring-offset-gray-900">
                 <svg wire:loading wire:target="buscar" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
@@ -114,7 +115,7 @@
                 <span wire:loading wire:target="buscar">Buscando...</span>
             </button>
 
-            <p class="text-xs text-gray-400">Los datos provienen de OpenStreetMap (licencia ODbL)</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Datos de OpenStreetMap (ODbL)</p>
         </div>
     </div>
 
@@ -165,11 +166,13 @@
 
             <div class="flex items-center gap-2">
                 <button wire:click="seleccionarTodos"
-                        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        type="button"
+                        class="rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors dark:border-amber-600 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50">
                     Seleccionar todos los nuevos
                 </button>
                 <button wire:click="deseleccionarTodos"
-                        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        type="button"
+                        class="rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                     Deseleccionar todos
                 </button>
             </div>
