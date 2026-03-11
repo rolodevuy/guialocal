@@ -44,9 +44,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('contacto.store') }}" method="POST" class="space-y-5">
+            <form action="{{ route('contacto.store') }}{{ request('asunto') ? '?asunto='.e(request('asunto')) : '' }}" method="POST" class="space-y-5">
                 @csrf
-                <input type="hidden" name="_asunto" value="{{ request('asunto') }}">
 
                 {{-- Nombre --}}
                 <div>

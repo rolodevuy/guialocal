@@ -36,7 +36,7 @@ class ContactoController extends Controller
             'mensaje.min'      => 'El mensaje debe tener al menos 10 caracteres.',
         ]);
 
-        $validated['asunto'] = $asuntoLabels[$request->input('_asunto')] ?? null;
+        $validated['asunto'] = $asuntoLabels[$request->query('asunto')] ?? null;
 
         $consulta = Consulta::create($validated);
 
