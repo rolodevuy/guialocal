@@ -175,7 +175,7 @@
             dias:       {{ \Illuminate\Support\Js::from($horariosDias) }},
             especiales: {{ \Illuminate\Support\Js::from($horariosEspeciales) }},
             agregando:  false,
-            nuevoE: { nombre: '', fecha: '', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' },
+            nuevoE: { nombre: '', fecha: '', mes: '1', dia: '1', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' },
             get horariosJson() {
                 return JSON.stringify(this.dias.map(d => ({
                     dia_inicio: d.dia,
@@ -187,9 +187,12 @@
             },
             get especialesJson() { return JSON.stringify(this.especiales); },
             agregar() {
-                if (!this.nuevoE.nombre || !this.nuevoE.fecha) return;
-                this.especiales.push(Object.assign({}, this.nuevoE));
-                this.nuevoE = { nombre: '', fecha: '', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' };
+                const fecha = this.nuevoE.se_repite
+                    ? '2000-' + String(this.nuevoE.mes).padStart(2,'0') + '-' + String(this.nuevoE.dia).padStart(2,'0')
+                    : this.nuevoE.fecha;
+                if (!this.nuevoE.nombre || !fecha) return;
+                this.especiales.push({ ...this.nuevoE, fecha });
+                this.nuevoE = { nombre: '', fecha: '', mes: '1', dia: '1', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' };
                 this.agregando = false;
             },
             eliminar(i) { this.especiales.splice(i, 1); }
@@ -240,28 +243,60 @@
 
                 {{-- Form agregar --}}
                 <div x-show="agregando" class="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-4 space-y-3">
-                    <div class="grid sm:grid-cols-2 gap-3">
-                        <div>
+
+                    {{-- Fila 1: Nombre + Checks --}}
+                    <div class="flex items-start gap-4">
+                        <div class="flex-1 min-w-0">
                             <label class="block text-xs font-medium text-gray-600 mb-1">Nombre / motivo</label>
                             <input type="text" x-model="nuevoE.nombre" placeholder="Ej: 1ro de Mayo"
                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
                         </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
-                            <input type="date" x-model="nuevoE.fecha"
-                                   class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <div class="flex flex-col gap-2 pt-5 shrink-0">
+                            <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer whitespace-nowrap">
+                                <input type="checkbox" x-model="nuevoE.se_repite" class="rounded text-amber-500 focus:ring-amber-400">
+                                Se repite cada año
+                            </label>
+                            <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                                <input type="checkbox" x-model="nuevoE.activo" class="rounded text-amber-500 focus:ring-amber-400">
+                                Activo
+                            </label>
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-4">
-                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                            <input type="checkbox" x-model="nuevoE.se_repite" class="rounded text-amber-500 focus:ring-amber-400">
-                            Se repite cada año
-                        </label>
-                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                            <input type="checkbox" x-model="nuevoE.activo" class="rounded text-amber-500 focus:ring-amber-400">
-                            Activo
-                        </label>
+
+                    {{-- Fila 2: Fecha --}}
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
+                        {{-- Fecha con año (no se repite) --}}
+                        <input x-show="!nuevoE.se_repite"
+                               type="date" x-model="nuevoE.fecha"
+                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        {{-- Mes + Día sin año (se repite) --}}
+                        <div x-show="nuevoE.se_repite" class="flex items-center gap-2">
+                            <select x-model="nuevoE.mes"
+                                    class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                            <select x-model="nuevoE.dia"
+                                    class="w-20 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                                <template x-for="d in 31" :key="d">
+                                    <option :value="d" x-text="d"></option>
+                                </template>
+                            </select>
+                        </div>
                     </div>
+
+                    {{-- Fila 3: Cerrado / Horario --}}
                     <div class="flex items-center gap-3">
                         <button type="button"
                                 @click="nuevoE.cerrado = !nuevoE.cerrado"
@@ -279,13 +314,14 @@
                                    class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 flex-1 min-w-0">
                         </div>
                     </div>
+
                     <div class="flex justify-end gap-2 pt-1">
                         <button type="button" @click="agregando = false"
                                 class="text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 transition-colors">
                             Cancelar
                         </button>
                         <button type="button" @click="agregar()"
-                                :disabled="!nuevoE.nombre || !nuevoE.fecha"
+                                :disabled="!nuevoE.nombre || (!nuevoE.se_repite && !nuevoE.fecha)"
                                 class="text-xs font-semibold px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                             Agregar
                         </button>
