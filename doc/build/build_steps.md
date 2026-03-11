@@ -1597,6 +1597,41 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 60 — Sistema de backups con rotación y panel admin ✅
+
+**Objetivo:** Backups automáticos diarios de BD (con opción manual completo) y panel de gestión en admin.
+
+**Paquete:** `spatie/laravel-backup`
+
+**Funcionalidad:**
+- Backup automático diario de BD a las 01:30 (`backup:run --only-db`)
+- Limpieza automática a las 02:00 (`backup:clean`)
+- Panel admin `/admin/backups` con:
+  - Botón backup solo BD
+  - Botón backup completo (BD + archivos)
+  - Lista de backups existentes con fecha, tamaño
+  - Descarga y eliminación individual
+  - Limpieza manual de backups antiguos
+
+**Archivos creados/modificados:**
+- `config/backup.php` — configuración spatie/laravel-backup
+- `app/Filament/Pages/Backups.php` — página Filament con acciones Livewire
+- `resources/views/filament/pages/backups.blade.php` — vista del panel
+- `routes/console.php` — schedule de backup:run y backup:clean
+
+---
+
+### Paso 61 — Favicon ✅
+
+**Objetivo:** Agregar favicon del pin naranja al sitio.
+
+**Archivos creados:**
+- `public/favicon.png` — ícono pin naranja 512x512 fondo transparente
+
+**Pendiente:** agregar tags `<link rel="icon">` en el layout `app.blade.php`.
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
