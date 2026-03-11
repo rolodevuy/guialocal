@@ -343,6 +343,55 @@
 
     </div>
 
+    {{-- Horarios --}}
+    @php
+        $diasNombres  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+        $diasCortos   = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+        $horariosFlat = [];
+        foreach ($ficha->horarios ?? [] as $franja) {
+            $inicio = array_search($franja['dia_inicio'] ?? '', $diasNombres);
+            $fin    = !empty($franja['dia_fin']) ? array_search($franja['dia_fin'], $diasNombres) : $inicio;
+            if ($inicio === false) continue;
+            if ($fin === false) $fin = $inicio;
+            for ($i = $inicio; $i <= $fin; $i++) {
+                $horariosFlat[$diasNombres[$i]] = [
+                    'cerrado'  => (bool)($franja['cerrado'] ?? false),
+                    'apertura' => $franja['apertura'] ?? '',
+                    'cierre'   => $franja['cierre'] ?? '',
+                ];
+            }
+        }
+        $cantEspeciales = count($ficha->horarios_especiales ?? []);
+    @endphp
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-gray-700">Horario</h2>
+            <a href="{{ route('panel.edit') }}" class="text-xs text-amber-600 hover:underline">Editar</a>
+        </div>
+        @if(empty($horariosFlat))
+            <p class="text-sm text-gray-400 italic">No hay horario configurado aún.</p>
+        @else
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-1.5">
+                @foreach($diasNombres as $idx => $dia)
+                @php $h = $horariosFlat[$dia] ?? null; @endphp
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="w-8 text-xs font-medium text-gray-400 shrink-0">{{ $diasCortos[$idx] }}</span>
+                    @if(!$h || $h['cerrado'])
+                        <span class="text-gray-300">Cerrado</span>
+                    @else
+                        <span class="text-gray-700">{{ $h['apertura'] }} – {{ $h['cierre'] }}</span>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+            @if($cantEspeciales > 0)
+                <p class="text-xs text-gray-400 mt-3">
+                    + {{ $cantEspeciales }} {{ $cantEspeciales === 1 ? 'día especial' : 'días especiales' }} configurado{{ $cantEspeciales === 1 ? '' : 's' }}
+                </p>
+            @endif
+        @endif
+    </div>
+
     {{-- Banner de upgrade (personalizado por plan) --}}
     @if(! $esPremium)
     <div class="rounded-2xl border p-6
