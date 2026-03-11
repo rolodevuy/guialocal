@@ -31,15 +31,17 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Backup: aplicar password desde settings si está habilitada
-        if (Schema::hasTable('settings')) {
-            $pwEnabled = Setting::get('backup_password_enabled', '0');
-            if ($pwEnabled === '1') {
-                $pw = Setting::get('backup_password', '');
-                if ($pw) {
-                    config(['backup.backup.destination.password' => $pw]);
+        try {
+            if (Schema::hasTable('settings')) {
+                $pwEnabled = Setting::get('backup_password_enabled', '0');
+                if ($pwEnabled === '1') {
+                    $pw = Setting::get('backup_password', '');
+                    if ($pw) {
+                        config(['backup.backup.destination.password' => $pw]);
+                    }
                 }
             }
-        }
+        } catch (\Throwable) {}
 
         // Comparte datos globales con todas las vistas del layout
         View::composer('layouts.app', function ($view) {
