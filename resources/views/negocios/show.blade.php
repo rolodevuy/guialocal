@@ -171,8 +171,11 @@
             {{-- Encabezado --}}
             <div class="flex flex-wrap items-start gap-3 mb-4">
                 <div class="flex-1 min-w-0">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 leading-tight">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 leading-tight flex items-center gap-1.5">
                         {{ $lugar->nombre }}
+                        @if($ficha?->is_verified)
+                            <x-verified-badge size="md" />
+                        @endif
                     </h1>
                     <div class="flex flex-wrap items-center gap-2 mt-2">
                         <a href="{{ route('negocios.index', ['categoria' => $lugar->categoria->slug]) }}"
@@ -624,12 +627,14 @@
 
                     @else
 
-                        {{-- Gratuito / sin ficha: CTA para reclamar / gestionar --}}
-                        <p class="text-xs text-gray-400 mb-2 text-center">¿Es tu negocio?</p>
-                        <a href="{{ route('contacto.show') }}"
-                           class="block w-full text-center px-4 py-2.5 border border-amber-400 text-amber-600 hover:bg-amber-50 text-sm font-medium rounded-xl transition-colors">
-                            Contactanos para gestionarlo
-                        </a>
+                        {{-- Gratuito / sin ficha: CTA para reclamar --}}
+                        @if(!$ficha?->user_id)
+                            <p class="text-xs text-gray-400 mb-2 text-center">¿Es tu negocio?</p>
+                            <a href="{{ route('negocios.claim', $lugar) }}"
+                               class="block w-full text-center px-4 py-2.5 border border-amber-400 text-amber-600 hover:bg-amber-50 text-sm font-medium rounded-xl transition-colors">
+                                Reclamalo y gestionalo
+                            </a>
+                        @endif
 
                     @endif
                 </div>

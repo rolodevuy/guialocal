@@ -76,6 +76,7 @@ class Ficha extends Model implements HasMedia
         'featured_score',
         'visitas',
         'activo',
+        'verified_at',
     ];
 
     protected $casts = [
@@ -86,6 +87,7 @@ class Ficha extends Model implements HasMedia
         'activo'              => 'boolean',
         'featured_score'      => 'integer',
         'visitas'             => 'integer',
+        'verified_at'         => 'datetime',
     ];
 
     public function registerMediaCollections(): void
@@ -148,6 +150,11 @@ class Ficha extends Model implements HasMedia
         return $this->lugar?->categoria?->getFirstMediaUrl('imagen_generica', 'optimized')
             ?: $this->lugar?->categoria?->getFirstMediaUrl('imagen_generica', 'webp')
             ?: ($this->lugar?->categoria?->getFirstMediaUrl('imagen_generica') ?? '');
+    }
+
+    public function getIsVerifiedAttribute(): bool
+    {
+        return $this->verified_at !== null;
     }
 
     // ── Scopes ────────────────────────────────────────────────────────────────

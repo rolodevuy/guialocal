@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClaimController;
 use App\Http\Controllers\ArticuloController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\CategoriaController;
@@ -25,6 +26,9 @@ Route::get('/negocios', [NegocioController::class, 'index'])->name('negocios.ind
 Route::get('/negocios/{slug}', [NegocioController::class, 'show'])->name('negocios.show');
 Route::post('/negocios/{slug}/resenas', [ResenaController::class, 'store'])->name('negocios.resenas.store')
     ->middleware('throttle:5,1'); // máx 5 reseñas por minuto por IP
+Route::get('/negocios/{slug}/reclamar', [ClaimController::class, 'create'])->name('negocios.claim');
+Route::post('/negocios/{slug}/reclamar', [ClaimController::class, 'store'])->name('negocios.claim.store')
+    ->middleware('throttle:3,10'); // máx 3 claims cada 10 min por IP
 
 Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->name('categorias.show');

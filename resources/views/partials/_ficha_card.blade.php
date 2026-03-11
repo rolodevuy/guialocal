@@ -34,8 +34,11 @@
 
     {{-- Info --}}
     <div class="p-3 sm:p-4 flex flex-col flex-1">
-        <h3 class="font-bold text-gray-900 text-sm sm:text-base group-hover:{{ $textColor }} transition-colors leading-snug">
+        <h3 class="font-bold text-gray-900 text-sm sm:text-base group-hover:{{ $textColor }} transition-colors leading-snug flex items-center gap-1">
             {{ $ficha->lugar->nombre }}
+            @if($ficha->is_verified)
+                <x-verified-badge size="sm" />
+            @endif
         </h3>
         @if($ficha->descripcion)
         <p class="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed flex-1">
