@@ -7,6 +7,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -32,6 +33,13 @@ class AdminPanelProvider extends PanelProvider
             ->theme(asset('css/filament/admin/theme.css'))
             ->colors([
                 'primary' => Color::Amber,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make('Directorio')->icon('heroicon-o-building-storefront'),
+                NavigationGroup::make('Comercial')->icon('heroicon-o-currency-dollar'),
+                NavigationGroup::make('Contenido')->icon('heroicon-o-document-text'),
+                NavigationGroup::make('Propietarios')->icon('heroicon-o-users'),
+                NavigationGroup::make('Comunidad')->icon('heroicon-o-chat-bubble-left-right'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

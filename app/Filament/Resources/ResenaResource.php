@@ -21,7 +21,7 @@ class ResenaResource extends Resource
     protected static ?string $modelLabel      = 'Reseña';
     protected static ?string $pluralModelLabel = 'Reseñas';
     protected static ?string $navigationGroup = 'Comunidad';
-    protected static ?int    $navigationSort  = 1;
+    protected static ?int    $navigationSort  = 0;
 
     /** Muestra badge con cantidad de reseñas pendientes */
     public static function getNavigationBadge(): ?string

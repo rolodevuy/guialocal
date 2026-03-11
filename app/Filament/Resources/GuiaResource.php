@@ -21,7 +21,8 @@ class GuiaResource extends Resource
     protected static ?string $navigationLabel  = 'Guías';
     protected static ?string $modelLabel       = 'Guía';
     protected static ?string $pluralModelLabel = 'Guías';
-    protected static ?int    $navigationSort   = 6;
+    protected static ?string $navigationGroup  = 'Contenido';
+    protected static ?int    $navigationSort   = 1;
 
     public static function form(Form $form): Form
     {

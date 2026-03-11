@@ -27,6 +27,8 @@ class CategoriaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Categorías';
 
+    protected static ?string $navigationGroup = 'Directorio';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form

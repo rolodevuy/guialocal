@@ -24,6 +24,8 @@ class SectorResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Sectores';
 
+    protected static ?string $navigationGroup = 'Directorio';
+
     protected static ?int $navigationSort = 0;
 
     public static function form(Form $form): Form

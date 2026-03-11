@@ -22,7 +22,7 @@ class EventoResource extends Resource
     protected static ?string $modelLabel      = 'Evento';
     protected static ?string $pluralModelLabel = 'Eventos';
     protected static ?string $navigationGroup = 'Contenido';
-    protected static ?int    $navigationSort  = 7;
+    protected static ?int    $navigationSort  = 2;
 
     public static function form(Form $form): Form
     {

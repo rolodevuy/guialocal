@@ -14,11 +14,11 @@ class SuscriptorResource extends Resource
 {
     protected static ?string $model = Suscriptor::class;
     protected static ?string $navigationIcon  = 'heroicon-o-envelope';
-    protected static ?string $navigationGroup = 'Comunicación';
+    protected static ?string $navigationGroup = 'Comunidad';
     protected static ?string $navigationLabel = 'Newsletter';
     protected static ?string $modelLabel      = 'suscriptor';
     protected static ?string $pluralModelLabel = 'suscriptores';
-    protected static ?int $navigationSort     = 1;
+    protected static ?int $navigationSort     = 2;
 
     public static function getNavigationBadge(): ?string
     {

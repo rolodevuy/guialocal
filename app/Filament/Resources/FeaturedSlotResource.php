@@ -22,7 +22,8 @@ class FeaturedSlotResource extends Resource
     protected static ?string $navigationLabel  = 'Destacados';
     protected static ?string $modelLabel       = 'Slot destacado';
     protected static ?string $pluralModelLabel = 'Slots destacados';
-    protected static ?int    $navigationSort   = 7;
+    protected static ?string $navigationGroup  = 'Comercial';
+    protected static ?int    $navigationSort   = 1;
 
     // Mapeo tipo → clase PHP
     const TIPOS = [

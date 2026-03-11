@@ -29,9 +29,9 @@ class ClaimRequestResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Reclamos';
 
-    protected static ?int $navigationSort = 12;
+    protected static ?string $navigationGroup = 'Propietarios';
 
-    protected static ?string $navigationGroup = 'Gestión';
+    protected static ?int $navigationSort = 1;
 
     public static function getNavigationBadge(): ?string
     {

@@ -22,7 +22,9 @@ class ConsultaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Consultas';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?string $navigationGroup = 'Comunidad';
+
+    protected static ?int $navigationSort = 1;
 
     public static function getNavigationBadge(): ?string
     {

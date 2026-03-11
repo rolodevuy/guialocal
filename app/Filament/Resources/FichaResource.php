@@ -27,6 +27,8 @@ class FichaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Fichas';
 
+    protected static ?string $navigationGroup = 'Directorio';
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
