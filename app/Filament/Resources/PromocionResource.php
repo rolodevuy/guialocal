@@ -76,6 +76,7 @@ class PromocionResource extends Resource
                 ->image()
                 ->imageEditor()
                 ->maxSize(2048)
+                ->helperText('Recomendado: 800x600px. Máx 2MB. Se optimiza automáticamente.')
                 ->columnSpanFull(),
 
         ])->columns(2);

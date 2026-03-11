@@ -162,7 +162,7 @@ class CategoriaResource extends Resource
                     ->imageCropAspectRatio('16:9')
                     ->imageResizeTargetWidth('800')
                     ->imageResizeTargetHeight('450')
-                    ->helperText('Se usa como portada de los negocios de esta categoría que no tienen imagen propia.')
+                    ->helperText('Recomendado: 800x450px. Se usa como portada de negocios sin imagen propia. Se optimiza automáticamente.')
                     ->columnSpanFull(),
             ]);
     }

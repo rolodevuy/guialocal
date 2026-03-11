@@ -32,7 +32,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             @foreach($eventos as $evento)
             @php
-                $portada = $evento->getFirstMediaUrl('portada', 'webp') ?: $evento->getFirstMediaUrl('portada');
+                $portada = $evento->getFirstMediaUrl('portada', 'optimized') ?: $evento->getFirstMediaUrl('portada', 'webp') ?: $evento->getFirstMediaUrl('portada');
                 $esHoy   = $evento->fecha_inicio->isToday();
                 $esSemana = $evento->fecha_inicio->isCurrentWeek();
             @endphp

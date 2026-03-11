@@ -242,7 +242,7 @@ class FichaResource extends Resource
                                     ->image()
                                     ->imageEditor()
                                     ->maxSize(1024)
-                                    ->helperText('Logo del negocio. Máx 1MB.')
+                                    ->helperText('Recomendado: 300x300px. Máx 1MB. Se optimiza automáticamente.')
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('portada')
                                     ->label('Imagen de portada')
@@ -250,7 +250,7 @@ class FichaResource extends Resource
                                     ->image()
                                     ->imageEditor()
                                     ->maxSize(2048)
-                                    ->helperText('Imagen principal. Máx 2MB.')
+                                    ->helperText('Recomendado: 1200x400px. Máx 2MB. Se optimiza automáticamente.')
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('galeria')
                                     ->label('Galería')
@@ -260,7 +260,7 @@ class FichaResource extends Resource
                                     ->reorderable()
                                     ->maxFiles(10)
                                     ->maxSize(2048)
-                                    ->helperText('Hasta 10 imágenes. Podés reordenarlas arrastrando.')
+                                    ->helperText('Hasta 10 imágenes (máx 2MB c/u). Se optimizan automáticamente.')
                                     ->columnSpanFull(),
                             ]),
                     ])

@@ -39,9 +39,13 @@ class Categoria extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('webp')
+        $this->addMediaConversion('optimized')
             ->format('webp')
-            ->quality(82)
+            ->quality(80)
+            ->width(800)
+            ->height(450)
+            ->sharpen(10)
+            ->nonQueued()
             ->performOnCollections('imagen_generica');
     }
 

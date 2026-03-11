@@ -49,9 +49,13 @@ class Articulo extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('webp')
+        $this->addMediaConversion('optimized')
             ->format('webp')
-            ->quality(82)
+            ->quality(80)
+            ->width(1200)
+            ->height(630)
+            ->sharpen(10)
+            ->nonQueued()
             ->performOnCollections('portada');
     }
 

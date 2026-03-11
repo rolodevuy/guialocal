@@ -97,10 +97,32 @@ class Ficha extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('webp')
+        $this->addMediaConversion('optimized')
             ->format('webp')
-            ->quality(82)
-            ->performOnCollections('portada', 'logo');
+            ->quality(80)
+            ->width(1200)
+            ->height(400)
+            ->sharpen(10)
+            ->nonQueued()
+            ->performOnCollections('portada');
+
+        $this->addMediaConversion('optimized')
+            ->format('webp')
+            ->quality(80)
+            ->width(300)
+            ->height(300)
+            ->sharpen(10)
+            ->nonQueued()
+            ->performOnCollections('logo');
+
+        $this->addMediaConversion('optimized')
+            ->format('webp')
+            ->quality(80)
+            ->width(1200)
+            ->height(800)
+            ->sharpen(10)
+            ->nonQueued()
+            ->performOnCollections('galeria');
     }
 
     // ── Imagen con fallback ───────────────────────────────────────────────────
@@ -113,16 +135,18 @@ class Ficha extends Model implements HasMedia
      */
     public function getPortadaUrl(): string
     {
-        // Propia: WebP > original
-        $url = $this->getFirstMediaUrl('portada', 'webp')
+        // Propia: optimized > webp legacy > original
+        $url = $this->getFirstMediaUrl('portada', 'optimized')
+            ?: $this->getFirstMediaUrl('portada', 'webp')
             ?: $this->getFirstMediaUrl('portada');
 
         if ($url) {
             return $url;
         }
 
-        // Fallback categoría: WebP > original
-        return $this->lugar?->categoria?->getFirstMediaUrl('imagen_generica', 'webp')
+        // Fallback categoría: optimized > webp legacy > original
+        return $this->lugar?->categoria?->getFirstMediaUrl('imagen_generica', 'optimized')
+            ?: $this->lugar?->categoria?->getFirstMediaUrl('imagen_generica', 'webp')
             ?: ($this->lugar?->categoria?->getFirstMediaUrl('imagen_generica') ?? '');
     }
 

@@ -1632,6 +1632,66 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 62 — Backups: config desde admin (hora, password, prefijo) ✅
+
+**Objetivo:** Permitir configurar backups desde el panel admin sin tocar código.
+
+**Cambios:**
+- Modelo `Setting` key-value para configuración persistente
+- Modal de configuración en `/admin/backups` con:
+  - Hora del backup diario
+  - Días de retención
+  - Toggle protección con contraseña (zip encriptado AES-256)
+  - Prefijo personalizable para nombre de archivo
+- Fix bug: `getBackups()` duplicaba `private/` en la ruta → backups no se listaban
+- Schedule dinámico: lee hora desde Settings con fallback seguro (try/catch + Schema::hasTable)
+- Password aplicada en AppServiceProvider boot para cron automático
+
+**Archivos creados:**
+- `database/migrations/2026_03_11_063257_create_settings_table.php`
+- `app/Models/Setting.php`
+
+**Archivos modificados:**
+- `app/Filament/Pages/Backups.php`
+- `resources/views/filament/pages/backups.blade.php`
+- `routes/console.php`
+- `config/backup.php`
+- `app/Providers/AppServiceProvider.php`
+
+---
+
+### Paso 63 — Optimización de imágenes con resize automático ✅
+
+**Objetivo:** Redimensionar y convertir a WebP todas las imágenes al subirlas para reducir peso y mejorar rendimiento en móviles (iOS incluido).
+
+**Conversiones por modelo (Spatie MediaLibrary):**
+
+| Modelo | Colección | Tamaño | Formato |
+|--------|-----------|--------|---------|
+| Ficha | portada | 1200x400 | WebP 80% |
+| Ficha | logo | 300x300 | WebP 80% |
+| Ficha | galeria | 1200x800 | WebP 80% |
+| Categoria | imagen_generica | 800x450 | WebP 80% |
+| Evento | portada | 1200x630 | WebP 80% |
+| Articulo | portada | 1200x630 | WebP 80% |
+| Guia | portada | 1200x630 | WebP 80% |
+| Promocion | imagen | 800x600 | WebP 80% |
+
+**Cambios adicionales:**
+- Conversión renombrada de `webp` a `optimized` (incluye resize + sharpen)
+- Helper text en todos los uploads de Filament con tamaño recomendado
+- Vistas públicas actualizadas: fallback `optimized` > `webp` (legacy) > original
+- Conversiones `nonQueued()`: se ejecutan al subir, sin necesidad de queue worker
+
+**Archivos modificados:**
+- 6 modelos: Ficha, Categoria, Evento, Articulo, Guia, Promocion
+- 6 resources Filament: helper text con tamaño recomendado
+- 4 vistas blade: home, eventos/show, eventos/index (fallback optimized)
+
+**Nota:** Para regenerar conversiones de imágenes existentes: `php artisan media-library:regenerate`
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

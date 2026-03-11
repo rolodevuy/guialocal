@@ -369,7 +369,7 @@
                 $ruta       = $esGuia ? route('guias.show', $item) : route('articulos.show', $item);
                 $titulo     = $item->titulo;
                 $intro      = $esGuia ? $item->intro : ($item->extracto ?? null);
-                $portada    = $item->getFirstMediaUrl('portada', 'webp') ?: $item->getFirstMediaUrl('portada');
+                $portada    = $item->getFirstMediaUrl('portada', 'optimized') ?: $item->getFirstMediaUrl('portada', 'webp') ?: $item->getFirstMediaUrl('portada');
                 $etiqueta   = $esGuia ? 'Guía' : 'Artículo';
                 $color      = $esGuia ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
                 $fecha      = $item->publicado_en?->format('d/m/Y');
@@ -430,7 +430,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             @foreach($eventosDestacados as $evento)
             @php
-                $portada = $evento->getFirstMediaUrl('portada', 'webp') ?: $evento->getFirstMediaUrl('portada');
+                $portada = $evento->getFirstMediaUrl('portada', 'optimized') ?: $evento->getFirstMediaUrl('portada', 'webp') ?: $evento->getFirstMediaUrl('portada');
                 $esHoy   = $evento->fecha_inicio->isToday();
             @endphp
 

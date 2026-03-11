@@ -6,7 +6,7 @@
 @section('content')
 
 @php
-    $portada = $evento->getFirstMediaUrl('portada', 'webp') ?: $evento->getFirstMediaUrl('portada');
+    $portada = $evento->getFirstMediaUrl('portada', 'optimized') ?: $evento->getFirstMediaUrl('portada', 'webp') ?: $evento->getFirstMediaUrl('portada');
 @endphp
 
 {{-- Header --}}

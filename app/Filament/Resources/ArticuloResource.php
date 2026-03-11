@@ -75,6 +75,7 @@ class ArticuloResource extends Resource
                                 ->image()
                                 ->imageEditor()
                                 ->maxSize(3072)
+                                ->helperText('Recomendado: 1200x630px. Máx 3MB. Se optimiza automáticamente.')
                                 ->columnSpanFull(),
                         ]),
 
