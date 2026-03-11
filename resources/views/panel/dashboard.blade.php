@@ -346,11 +346,13 @@
     </div>
     @endif
 
-    {{-- ④ HORARIO + ⑤ DATOS — layout condicional --}}
-    <div class="mb-6 {{ $horariosCompacto ? 'grid sm:grid-cols-2 gap-6 items-start' : 'space-y-6' }}">
+    {{-- ④ HORARIO + ⑤ DATOS — grid 2 cols, col-span condicional --}}
+    {{-- Compacto:    [Horario col1] [Contacto col2] / [Descripción col-span-2] --}}
+    {{-- No compacto: [Horario col-span-2] / [Contacto col1] [Descripción col2] --}}
+    <div class="grid sm:grid-cols-2 gap-6 items-start mb-6">
 
     {{-- ④ HORARIO --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 {{ $horariosCompacto ? '' : 'sm:col-span-2' }}">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3 flex-wrap">
                 <h2 class="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
@@ -401,9 +403,7 @@
         @endif
     </div>{{-- /④ HORARIO --}}
 
-    {{-- ⑤ DATOS DE CONTACTO + DESCRIPCIÓN --}}
-    <div class="{{ $horariosCompacto ? 'grid gap-6 content-start' : 'grid sm:grid-cols-2 gap-6' }}">
-
+    {{-- ⑤a CONTACTO --}}
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-700">Datos de contacto</h2>
@@ -434,7 +434,8 @@
             </ul>
         </div>
 
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    {{-- ⑤b DESCRIPCIÓN — fila entera si compacto, col2 si no --}}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 {{ $horariosCompacto ? 'sm:col-span-2' : '' }}">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-700">Descripción</h2>
                 <a href="{{ route('panel.edit') }}" class="text-xs text-amber-600 hover:underline">Editar</a>
@@ -446,9 +447,7 @@
             @endif
         </div>
 
-    </div>{{-- /⑤ DATOS --}}
-
-    </div>{{-- /wrapper ④+⑤ --}}
+    </div>{{-- /grid ④+⑤ --}}
 
     {{-- ⑥ BANNER DE UPGRADE --}}
     @if(! $esPremium)
