@@ -67,7 +67,13 @@ class PanelController extends Controller
             'lugar.categoria',
             'lugar.zona',
             'media',
-        ])->firstOrFail();
+        ])->first();
+
+        if (! $ficha) {
+            Auth::logout();
+            return redirect()->route('panel.login')
+                ->withErrors(['email' => 'Tu cuenta no tiene ningún negocio asignado.']);
+        }
 
         $promocionesPendientes = $ficha->promociones()->vigente()->count();
         $reseñasPendientes     = config('features.resenas')
@@ -100,13 +106,26 @@ class PanelController extends Controller
 
     public function edit()
     {
-        $ficha = Auth::user()->ficha()->with(['lugar', 'media'])->firstOrFail();
+        $ficha = Auth::user()->ficha()->with(['lugar', 'media'])->first();
+
+        if (! $ficha) {
+            Auth::logout();
+            return redirect()->route('panel.login')
+                ->withErrors(['email' => 'Tu cuenta no tiene ningún negocio asignado.']);
+        }
+
         return view('panel.edit', compact('ficha'));
     }
 
     public function update(Request $request)
     {
-        $ficha = Auth::user()->ficha()->firstOrFail();
+        $ficha = Auth::user()->ficha()->first();
+
+        if (! $ficha) {
+            Auth::logout();
+            return redirect()->route('panel.login')
+                ->withErrors(['email' => 'Tu cuenta no tiene ningún negocio asignado.']);
+        }
 
         $validated = $request->validate([
             'descripcion' => ['nullable', 'string', 'max:2000'],

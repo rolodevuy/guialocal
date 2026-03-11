@@ -56,6 +56,17 @@ class User extends Authenticatable implements FilamentUser
         return $this->is_admin === true;
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            // Desvincular fichas y quitar verificación
+            Ficha::where('user_id', $user->id)->update([
+                'user_id'     => null,
+                'verified_at' => null,
+            ]);
+        });
+    }
+
     /** El negocio que gestiona este usuario (si tiene uno asignado) */
     public function ficha()
     {
