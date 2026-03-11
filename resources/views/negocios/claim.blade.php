@@ -34,13 +34,17 @@
             </li>
             <li class="flex items-start gap-2">
                 <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                Estadísticas de visitas y consultas
+                Horarios, fotos y datos de contacto actualizados
             </li>
             <li class="flex items-start gap-2">
                 <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                Responder reseñas de clientes
+                Acceso a planes con estadísticas, promociones y más
             </li>
         </ul>
+        <p class="text-xs text-green-600 mt-3">
+            ¿Querés saber qué incluye cada plan?
+            <a href="{{ route('contacto') }}" class="underline hover:text-green-800">Consultanos sin compromiso</a>.
+        </p>
     </div>
 
     {{-- Info box --}}
