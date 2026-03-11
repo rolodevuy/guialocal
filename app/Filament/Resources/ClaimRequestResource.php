@@ -101,14 +101,18 @@ class ClaimRequestResource extends Resource
                         // Generar contraseña temporal
                         $password = Str::random(10);
 
-                        // Crear o buscar usuario
-                        $user = User::firstOrCreate(
-                            ['email' => $record->email],
-                            [
+                        // Crear usuario o resetear contraseña si ya existe
+                        $user = User::where('email', $record->email)->first();
+
+                        if ($user) {
+                            $user->update(['password' => Hash::make($password)]);
+                        } else {
+                            $user = User::create([
                                 'name'     => $record->nombre_completo,
+                                'email'    => $record->email,
                                 'password' => Hash::make($password),
-                            ]
-                        );
+                            ]);
+                        }
 
                         // Vincular ficha al usuario y marcar como verificada
                         $ficha = $record->lugar->fichas()->first();
