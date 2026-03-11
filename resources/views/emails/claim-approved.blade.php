@@ -5,6 +5,7 @@ Hola **{{ $claim->nombre_completo }}**,
 
 Tu solicitud para **{{ $claim->lugar->nombre }}** fue aprobada. Ya podés gestionar tu ficha desde el panel de autogestión.
 
+@if($isNewUser)
 <x-mail::panel>
 **Tus datos de acceso:**
 
@@ -13,6 +14,11 @@ Tu solicitud para **{{ $claim->lugar->nombre }}** fue aprobada. Ya podés gestio
 </x-mail::panel>
 
 Te recomendamos cambiar la contraseña una vez que ingreses.
+@else
+<x-mail::panel>
+Ya tenés una cuenta con **{{ $claim->email }}**. Usá tu contraseña actual para ingresar. Si no la recordás, podés resetearla desde el enlace de abajo.
+</x-mail::panel>
+@endif
 
 Desde tu panel vas a poder:
 - Editar la información de tu negocio

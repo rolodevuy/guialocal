@@ -15,7 +15,8 @@ class ClaimApproved extends Mailable
 
     public function __construct(
         public ClaimRequest $claim,
-        public string $password,
+        public ?string $password = null,
+        public bool $isNewUser = true,
     ) {}
 
     public function envelope(): Envelope

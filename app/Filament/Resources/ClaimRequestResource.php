@@ -98,20 +98,19 @@ class ClaimRequestResource extends Resource
                     ->modalDescription(fn (ClaimRequest $record) => "Se creará una cuenta para {$record->nombre_completo} ({$record->email}) y se vinculará al negocio {$record->lugar->nombre}.")
                     ->visible(fn (ClaimRequest $record): bool => $record->estado === 'pendiente')
                     ->action(function (ClaimRequest $record) {
-                        // Generar contraseña temporal
-                        $password = Str::random(10);
-
-                        // Crear usuario o resetear contraseña si ya existe
+                        // Crear usuario o usar existente
                         $user = User::where('email', $record->email)->first();
+                        $isNewUser = false;
+                        $password = null;
 
-                        if ($user) {
-                            $user->update(['password' => Hash::make($password)]);
-                        } else {
+                        if (!$user) {
+                            $password = Str::random(10);
                             $user = User::create([
                                 'name'     => $record->nombre_completo,
                                 'email'    => $record->email,
                                 'password' => Hash::make($password),
                             ]);
+                            $isNewUser = true;
                         }
 
                         // Vincular ficha al usuario y marcar como verificada
@@ -142,8 +141,8 @@ class ClaimRequestResource extends Resource
                             'reviewed_at' => now(),
                         ]);
 
-                        // Enviar email
-                        Mail::to($record->email)->send(new ClaimApproved($record, $password));
+                        // Enviar email según si es usuario nuevo o existente
+                        Mail::to($record->email)->send(new ClaimApproved($record, $password, $isNewUser));
 
                         Notification::make()
                             ->title('Reclamo aprobado')
