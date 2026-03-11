@@ -136,12 +136,200 @@
             </div>
         </div>
 
+        {{-- Horario semanal + Días especiales --}}
+        @php
+            $diasNombres = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+            // Convertir formato de rangos (Filament) a día‑por‑día para el editor
+            $horariosFlat = [];
+            foreach ($ficha->horarios ?? [] as $franja) {
+                $inicio = array_search($franja['dia_inicio'] ?? '', $diasNombres);
+                $fin    = !empty($franja['dia_fin'])
+                            ? array_search($franja['dia_fin'], $diasNombres)
+                            : $inicio;
+                if ($inicio === false) continue;
+                if ($fin === false) $fin = $inicio;
+                for ($i = $inicio; $i <= $fin; $i++) {
+                    $horariosFlat[$diasNombres[$i]] = [
+                        'cerrado'  => (bool) ($franja['cerrado'] ?? false),
+                        'apertura' => $franja['apertura'] ?? '09:00',
+                        'cierre'   => $franja['cierre'] ?? '18:00',
+                    ];
+                }
+            }
+
+            $horariosDias = [];
+            foreach ($diasNombres as $dia) {
+                $horariosDias[] = [
+                    'dia'      => $dia,
+                    'cerrado'  => $horariosFlat[$dia]['cerrado'] ?? false,
+                    'apertura' => $horariosFlat[$dia]['apertura'] ?? '09:00',
+                    'cierre'   => $horariosFlat[$dia]['cierre'] ?? '18:00',
+                ];
+            }
+
+            $horariosEspeciales = array_values($ficha->horarios_especiales ?? []);
+        @endphp
+
+        <div x-data="{
+            dias:       {{ \Illuminate\Support\Js::from($horariosDias) }},
+            especiales: {{ \Illuminate\Support\Js::from($horariosEspeciales) }},
+            agregando:  false,
+            nuevoE: { nombre: '', fecha: '', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' },
+            get horariosJson() {
+                return JSON.stringify(this.dias.map(d => ({
+                    dia_inicio: d.dia,
+                    dia_fin:    null,
+                    apertura:   d.cerrado ? null : d.apertura,
+                    cierre:     d.cerrado ? null : d.cierre,
+                    cerrado:    d.cerrado
+                })));
+            },
+            get especialesJson() { return JSON.stringify(this.especiales); },
+            agregar() {
+                if (!this.nuevoE.nombre || !this.nuevoE.fecha) return;
+                this.especiales.push(Object.assign({}, this.nuevoE));
+                this.nuevoE = { nombre: '', fecha: '', se_repite: false, activo: true, cerrado: true, apertura: '09:00', cierre: '18:00' };
+                this.agregando = false;
+            },
+            eliminar(i) { this.especiales.splice(i, 1); }
+        }" class="space-y-6">
+
+            <input type="hidden" name="horarios"            :value="horariosJson">
+            <input type="hidden" name="horarios_especiales" :value="especialesJson">
+
+            {{-- Horario semanal --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h2 class="text-sm font-semibold text-gray-700 mb-4">Horario semanal</h2>
+                <div class="divide-y divide-gray-50">
+                    <template x-for="(dia, i) in dias" :key="dia.dia">
+                        <div class="flex items-center gap-3 py-2.5">
+                            <span class="w-24 text-sm font-medium text-gray-700 shrink-0" x-text="dia.dia"></span>
+                            <button type="button"
+                                    @click="dias[i].cerrado = !dias[i].cerrado"
+                                    class="text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors shrink-0 w-20 text-center"
+                                    :class="dias[i].cerrado
+                                        ? 'bg-gray-100 text-gray-500 border-gray-200'
+                                        : 'bg-green-50 text-green-700 border-green-200'">
+                                <span x-text="dias[i].cerrado ? 'Cerrado' : 'Abierto'"></span>
+                            </button>
+                            <div x-show="!dias[i].cerrado" class="flex items-center gap-2 flex-1">
+                                <input type="time" x-model="dias[i].apertura"
+                                       class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 flex-1 min-w-0">
+                                <span class="text-gray-400 text-xs shrink-0">a</span>
+                                <input type="time" x-model="dias[i].cierre"
+                                       class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 flex-1 min-w-0">
+                            </div>
+                            <span x-show="dias[i].cerrado" class="text-xs text-gray-400">No abre este día</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            {{-- Días especiales --}}
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex items-center justify-between mb-1">
+                    <h2 class="text-sm font-semibold text-gray-700">Días especiales</h2>
+                    <button type="button"
+                            @click="agregando = !agregando"
+                            class="text-xs font-semibold px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg transition-colors">
+                        + Agregar
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mb-4">Feriados, vacaciones u horarios fuera de lo habitual.</p>
+
+                {{-- Form agregar --}}
+                <div x-show="agregando" class="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-4 space-y-3">
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Nombre / motivo</label>
+                            <input type="text" x-model="nuevoE.nombre" placeholder="Ej: 1ro de Mayo"
+                                   class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
+                            <input type="date" x-model="nuevoE.fecha"
+                                   class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" x-model="nuevoE.se_repite" class="rounded text-amber-500 focus:ring-amber-400">
+                            Se repite cada año
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" x-model="nuevoE.activo" class="rounded text-amber-500 focus:ring-amber-400">
+                            Activo
+                        </label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button"
+                                @click="nuevoE.cerrado = !nuevoE.cerrado"
+                                class="text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors w-20 text-center"
+                                :class="nuevoE.cerrado
+                                    ? 'bg-gray-100 text-gray-500 border-gray-200'
+                                    : 'bg-green-50 text-green-700 border-green-200'">
+                            <span x-text="nuevoE.cerrado ? 'Cerrado' : 'Abierto'"></span>
+                        </button>
+                        <div x-show="!nuevoE.cerrado" class="flex items-center gap-2 flex-1">
+                            <input type="time" x-model="nuevoE.apertura"
+                                   class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 flex-1 min-w-0">
+                            <span class="text-gray-400 text-xs shrink-0">a</span>
+                            <input type="time" x-model="nuevoE.cierre"
+                                   class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 flex-1 min-w-0">
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-1">
+                        <button type="button" @click="agregando = false"
+                                class="text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="button" @click="agregar()"
+                                :disabled="!nuevoE.nombre || !nuevoE.fecha"
+                                class="text-xs font-semibold px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Lista de fechas especiales --}}
+                <template x-if="especiales.length === 0">
+                    <p class="text-xs text-gray-400 text-center py-3">No hay días especiales configurados.</p>
+                </template>
+                <div class="space-y-2">
+                    <template x-for="(e, i) in especiales" :key="i">
+                        <div class="flex items-start justify-between gap-3 bg-gray-50 rounded-xl px-4 py-3">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-sm font-medium text-gray-800" x-text="e.nombre"></span>
+                                    <span x-show="e.se_repite" class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Anual</span>
+                                    <span x-show="!e.activo"   class="text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Inactivo</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    <span x-text="e.fecha"></span>
+                                    <span class="mx-1">·</span>
+                                    <span x-text="e.cerrado ? 'Cerrado' : (e.apertura + ' – ' + e.cierre)"></span>
+                                </p>
+                            </div>
+                            <button type="button" @click="eliminar(i)"
+                                    class="text-gray-300 hover:text-red-400 transition-colors shrink-0 mt-0.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </div>{{-- /x-data horarios --}}
+
         {{-- Nota sobre lo que maneja el admin --}}
         <div class="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-700">
             <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <p>Para cambiar <strong>horarios, dirección, fotos o plan</strong>, contactá al equipo de Guía Local.</p>
+            <p>Para cambiar <strong>dirección, fotos o plan</strong>, contactá al equipo de Guía Local.</p>
         </div>
 
         {{-- Botones --}}

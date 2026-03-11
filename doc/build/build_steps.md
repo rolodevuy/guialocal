@@ -1806,6 +1806,34 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 46 — Gestión de horarios en el panel del propietario ✅
+
+**Objetivo:** Permitir al propietario editar su horario semanal y agregar días especiales (feriados, vacaciones, etc.) desde `/panel/editar`, sin necesidad de contactar al admin.
+
+**Cambios realizados:**
+- `resources/views/panel/edit.blade.php`
+  - Nuevo bloque Alpine.js con dos secciones: **Horario semanal** (7 días) y **Días especiales**
+  - Horario semanal: toggle Cerrado/Abierto por día + inputs de apertura/cierre
+  - Días especiales: lista con nombre, fecha, toggle anual, activo/inactivo, toggle cerrado/horario especial
+  - Conversión de formato Filament (rangos: dia_inicio–dia_fin) a formato día‑por‑día para el editor
+  - Serialización via hidden inputs con Alpine getters `horariosJson` / `especialesJson`
+  - Nota al pie actualizada: ya no menciona "horarios" como algo solo administrable por el equipo
+
+- `app/Http/Controllers/PanelController.php`
+  - `update()`: agrega `horarios` y `horarios_especiales` a la validación como `string` nullable
+  - JSON decode antes de llamar a `$ficha->update()`, devolviendo arrays compatibles con los casts del modelo
+
+**Compatibilidad:**
+- Formato de salida del panel: `[{ dia_inicio, dia_fin: null, apertura, cierre, cerrado }]` — compatible con `Ficha::isAbiertoAhora()`
+- `horarios_especiales`: mismo formato que usa Filament — compatible sin cambios
+
+**Criterio de terminado:**
+- Propietario puede activar/desactivar días y cambiar horarios desde `/panel/editar` ✅
+- Propietario puede agregar y eliminar días especiales ✅
+- Los cambios se reflejan en `isAbiertoAhora()` y en la ficha pública ✅
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.

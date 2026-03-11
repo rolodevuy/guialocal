@@ -128,14 +128,17 @@ class PanelController extends Controller
         }
 
         $validated = $request->validate([
-            'descripcion' => ['nullable', 'string', 'max:2000'],
-            'telefono'    => ['nullable', 'string', 'max:50'],
-            'email'       => ['nullable', 'email', 'max:150'],
-            'sitio_web'   => ['nullable', 'string', 'max:255'],
+            'descripcion'         => ['nullable', 'string', 'max:2000'],
+            'telefono'            => ['nullable', 'string', 'max:50'],
+            'email'               => ['nullable', 'email', 'max:150'],
+            'sitio_web'           => ['nullable', 'string', 'max:255'],
             // Redes sociales como campos individuales
-            'instagram'   => ['nullable', 'url', 'max:255'],
-            'facebook'    => ['nullable', 'url', 'max:255'],
-            'whatsapp'    => ['nullable', 'url', 'max:255'],
+            'instagram'           => ['nullable', 'url', 'max:255'],
+            'facebook'            => ['nullable', 'url', 'max:255'],
+            'whatsapp'            => ['nullable', 'url', 'max:255'],
+            // Horarios (JSON serializado desde Alpine.js)
+            'horarios'            => ['nullable', 'string'],
+            'horarios_especiales' => ['nullable', 'string'],
         ], [
             'sitio_web.max'  => 'El sitio web no puede superar 255 caracteres.',
             'instagram.url'  => 'La URL de Instagram debe ser válida.',
@@ -162,6 +165,18 @@ class PanelController extends Controller
         // Normalizar sitio_web: quitar protocolo (se muestra con prefix https://)
         if (! empty($validated['sitio_web'])) {
             $validated['sitio_web'] = preg_replace('#^https?://#i', '', $validated['sitio_web']);
+        }
+
+        // Deserializar horarios JSON enviados por Alpine.js
+        if (isset($validated['horarios'])) {
+            $validated['horarios'] = !empty($validated['horarios'])
+                ? (json_decode($validated['horarios'], true) ?? null)
+                : null;
+        }
+        if (isset($validated['horarios_especiales'])) {
+            $validated['horarios_especiales'] = !empty($validated['horarios_especiales'])
+                ? (json_decode($validated['horarios_especiales'], true) ?? null)
+                : null;
         }
 
         $ficha->update($validated);
