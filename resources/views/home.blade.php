@@ -90,7 +90,7 @@
             <div class="flex justify-center">
                 @if($zonaPreferida)
                 {{-- Ya tiene zona: link directo --}}
-                <a href="{{ route('negocios.index', ['zona' => $zonaPreferida->slug]) }}"
+                <a href="{{ route('negocios.index', ['zona' => $zonaPreferida->slug]) }}" rel="nofollow"
                    class="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm rounded-xl shadow-sm transition-colors">
                     <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
@@ -227,7 +227,7 @@
                     </span>
                 </a>
 
-                <a href="{{ route('negocios.index', ['abiertos' => 1]) }}" class="group flex flex-col items-center text-center w-[4.5rem] sm:w-36 relative">
+                <a href="{{ route('negocios.index', ['abiertos' => 1]) }}" rel="nofollow" class="group flex flex-col items-center text-center w-[4.5rem] sm:w-36 relative">
                     <span class="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center bg-white border border-gray-200 shadow-md rounded-full relative">
                         <span class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-2 h-2 rounded-full" style="background:#22c55e">
                             <span class="absolute inset-0 rounded-full animate-ping" style="background:#22c55e;opacity:0.5"></span>
@@ -524,7 +524,7 @@
                 Cada negocio cuenta con una ficha detallada que incluye horarios actualizados en tiempo real, ubicación en el mapa, datos de contacto y reseñas de otros vecinos. Podés filtrar por zona, categoría o buscar los que están abiertos ahora.
             </p>
             <p>
-                Explorá el <a href="{{ route('mapa.index') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">mapa interactivo</a> para descubrir negocios cercanos, navegá por <a href="{{ route('categorias.index') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">todas las categorías</a> o consultá cuáles están <a href="{{ route('negocios.index', ['abiertos' => 1]) }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">abiertos ahora</a>.
+                Explorá el <a href="{{ route('mapa.index') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">mapa interactivo</a> para descubrir negocios cercanos, navegá por <a href="{{ route('categorias.index') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">todas las categorías</a> o consultá cuáles están <a href="{{ route('negocios.index', ['abiertos' => 1]) }}" rel="nofollow" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">abiertos ahora</a>.
             </p>
             <p>
                 Si tenés un negocio, podés <a href="{{ route('contacto.show') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">registrarlo de forma gratuita</a> y gestionar tu ficha desde un panel propio con métricas de visitas y herramientas de promoción.
