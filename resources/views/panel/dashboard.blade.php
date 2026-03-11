@@ -96,8 +96,24 @@
     </div>
 
     {{-- ② QUÉ INCLUYE TU PLAN --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
-        <h2 class="text-sm font-semibold text-gray-700 mb-4">Funciones disponibles en tu plan</h2>
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6" x-data="{ abierto: false }">
+        <button @click="abierto = !abierto"
+                class="w-full flex items-center justify-between px-6 py-4 text-left group">
+            <h2 class="text-sm font-semibold text-gray-700">Funciones de tu plan</h2>
+            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
+                 :class="abierto ? 'rotate-180' : ''"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+        <div x-show="abierto"
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="px-6 pb-6">
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
 
             @php
@@ -169,6 +185,7 @@
             </div>
 
         </div>
+        </div>{{-- /x-show --}}
     </div>
 
     {{-- ③ STATS DE LA SEMANA --}}
@@ -310,7 +327,12 @@
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3 flex-wrap">
-                <h2 class="text-sm font-semibold text-gray-700">Horario</h2>
+                <h2 class="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Horario
+                </h2>
                 @if(!empty($horariosFlat))
                     @if($abiertoAhora)
                         <span class="flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 ring-1 ring-green-200 px-2.5 py-1 rounded-full">
@@ -333,18 +355,35 @@
         @if(empty($horariosFlat))
             <p class="text-sm text-gray-400 italic">No hay horario configurado aún. <a href="{{ route('panel.edit') }}" class="text-amber-600 hover:underline">Configurar ahora</a></p>
         @else
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2">
-                @foreach($diasNombres as $idx => $dia)
-                @php $h = $horariosFlat[$dia] ?? null; @endphp
-                <div class="flex items-center gap-2 text-sm">
-                    <span class="w-8 text-xs font-semibold
-                        {{ (!$h || $h['cerrado']) ? 'text-gray-300' : 'text-gray-500' }} shrink-0">
-                        {{ $diasCortos[$idx] }}
-                    </span>
-                    @if(!$h || $h['cerrado'])
+            @php
+                $grupos = [];
+                $i = 0;
+                while ($i < 7) {
+                    $h = $horariosFlat[$diasNombres[$i]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
+                    $j = $i + 1;
+                    while ($j < 7) {
+                        $hNext = $horariosFlat[$diasNombres[$j]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
+                        if ($h['cerrado'] == $hNext['cerrado'] && $h['apertura'] == $hNext['apertura'] && $h['cierre'] == $hNext['cierre']) {
+                            $j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    $label = ($j - 1 > $i)
+                        ? $diasCortos[$i] . ' – ' . $diasCortos[$j - 1]
+                        : $diasCortos[$i];
+                    $grupos[] = ['label' => $label, 'cerrado' => $h['cerrado'], 'apertura' => $h['apertura'], 'cierre' => $h['cierre']];
+                    $i = $j;
+                }
+            @endphp
+            <div class="space-y-2">
+                @foreach($grupos as $g)
+                <div class="flex items-center gap-3 text-sm">
+                    <span class="w-32 text-xs font-semibold {{ $g['cerrado'] ? 'text-gray-300' : 'text-gray-500' }} shrink-0">{{ $g['label'] }}</span>
+                    @if($g['cerrado'])
                         <span class="text-xs text-gray-300">Cerrado</span>
                     @else
-                        <span class="text-xs text-gray-700">{{ $h['apertura'] }} – {{ $h['cierre'] }}</span>
+                        <span class="text-xs text-gray-700">{{ $g['apertura'] }} – {{ $g['cierre'] }}</span>
                     @endif
                 </div>
                 @endforeach

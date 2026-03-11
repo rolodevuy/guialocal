@@ -554,16 +554,51 @@
                             </span>
                         @endif
                     </div>
+                    @php
+                        $dnombres = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+                        $dcortos  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+                        $hflat    = [];
+                        foreach ($ficha->horarios as $franja) {
+                            $ini = array_search($franja['dia_inicio'] ?? '', $dnombres);
+                            $fin = !empty($franja['dia_fin']) ? array_search($franja['dia_fin'], $dnombres) : $ini;
+                            if ($ini === false) continue;
+                            if ($fin === false) $fin = $ini;
+                            for ($x = $ini; $x <= $fin; $x++) {
+                                $hflat[$dnombres[$x]] = [
+                                    'cerrado'  => (bool)($franja['cerrado'] ?? false),
+                                    'apertura' => $franja['apertura'] ?? '',
+                                    'cierre'   => $franja['cierre'] ?? '',
+                                ];
+                            }
+                        }
+                        $grupos = [];
+                        $i = 0;
+                        while ($i < 7) {
+                            $h = $hflat[$dnombres[$i]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
+                            $j = $i + 1;
+                            while ($j < 7) {
+                                $hn = $hflat[$dnombres[$j]] ?? ['cerrado' => true, 'apertura' => '', 'cierre' => ''];
+                                if ($h['cerrado'] == $hn['cerrado'] && $h['apertura'] == $hn['apertura'] && $h['cierre'] == $hn['cierre']) {
+                                    $j++;
+                                } else { break; }
+                            }
+                            $grupos[] = [
+                                'label'    => ($j - 1 > $i) ? $dcortos[$i] . ' – ' . $dcortos[$j - 1] : $dcortos[$i],
+                                'cerrado'  => $h['cerrado'],
+                                'apertura' => $h['apertura'],
+                                'cierre'   => $h['cierre'],
+                            ];
+                            $i = $j;
+                        }
+                    @endphp
                     <ul class="space-y-1.5">
-                        @foreach($ficha->horarios as $franja)
+                        @foreach($grupos as $g)
                         <li class="flex items-start justify-between gap-2 text-sm">
-                            <span class="text-gray-500 shrink-0">
-                                {{ $franja['dia_inicio'] }}{{ !empty($franja['dia_fin']) ? ' a ' . $franja['dia_fin'] : '' }}
-                            </span>
-                            @if($franja['cerrado'] ?? false)
+                            <span class="text-gray-500 shrink-0">{{ $g['label'] }}</span>
+                            @if($g['cerrado'])
                                 <span class="text-gray-400 italic">Cerrado</span>
                             @else
-                                <span class="text-gray-700 text-right">{{ $franja['apertura'] }} – {{ $franja['cierre'] }}</span>
+                                <span class="text-gray-700 text-right">{{ $g['apertura'] }} – {{ $g['cierre'] }}</span>
                             @endif
                         </li>
                         @endforeach
