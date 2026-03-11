@@ -3,20 +3,21 @@
 
 Llegó un mensaje desde el formulario de contacto de **{{ config('app.name') }}**.
 
-<x-mail::table>
-| Campo | Detalle |
-|:------|:--------|
-| **Nombre** | {{ $consulta->nombre }} |
-| **Email** | {{ $consulta->email }} |
+**Nombre:** {{ $consulta->nombre }}
+
+**Email:** {{ $consulta->email }}
+
 @if($consulta->asunto)
-| **Asunto** | {{ $consulta->asunto }} |
+**Asunto:** {{ $consulta->asunto }}
+
 @endif
-| **Fecha** | {{ $consulta->created_at->translatedFormat('j M Y, H:i') }} |
-</x-mail::table>
+**Fecha:** {{ $consulta->created_at->translatedFormat('j M Y, H:i') }}
+
+---
 
 **Mensaje:**
 
-> {{ $consulta->mensaje }}
+{{ $consulta->mensaje }}
 
 <x-mail::button :url="config('app.url') . '/admin/consultas'">
 Gestionar consultas
