@@ -167,12 +167,12 @@
             <div class="flex items-center gap-2">
                 <button wire:click="seleccionarTodos"
                         type="button"
-                        class="rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors dark:border-amber-600 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50">
+                        class="rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition-colors shadow-sm">
                     Seleccionar todos los nuevos
                 </button>
                 <button wire:click="deseleccionarTodos"
                         type="button"
-                        class="rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                        class="rounded-lg bg-gray-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-gray-700 transition-colors shadow-sm">
                     Deseleccionar todos
                 </button>
             </div>
