@@ -20,12 +20,27 @@
         Para verificar que sos el titular, necesitamos tu constancia de inscripción en DGI.
     </p>
 
-    {{-- Gratuito --}}
-    <div class="mb-6 flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
-        <svg class="w-5 h-5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-        </svg>
-        <p class="text-sm text-green-700 font-medium">Este proceso es 100% gratuito. No tiene ningún costo reclamar tu negocio.</p>
+    {{-- Beneficios + gratuito --}}
+    <div class="mb-6 bg-green-50 border border-green-200 rounded-xl px-4 py-4">
+        <p class="text-sm text-green-800 font-semibold mb-2">Tu cuenta es 100% gratuita e incluye:</p>
+        <ul class="text-sm text-green-700 space-y-1.5">
+            <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Panel de autogestión para editar tu ficha
+            </li>
+            <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Badge de negocio verificado
+            </li>
+            <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Estadísticas de visitas y consultas
+            </li>
+            <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Responder reseñas de clientes
+            </li>
+        </ul>
     </div>
 
     {{-- Info box --}}
