@@ -12,9 +12,12 @@
 <section id="hero" class="bg-gray-50 relative">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16 pb-20 sm:pb-24 text-center">
 
-        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6 sm:mb-8">
-            Descubrí negocios<br class="hidden sm:block"> cerca tuyo
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight mb-3 sm:mb-4">
+            Guía Local — Tu barrio<br class="hidden sm:block"> en un solo lugar
         </h1>
+        <p class="text-base sm:text-lg text-gray-500 max-w-xl mx-auto mb-6 sm:mb-8">
+            Encontrá negocios, restaurantes, farmacias y servicios cerca tuyo. Explorá por categoría, zona o sector.
+        </p>
 
         {{-- Buscador --}}
         <form action="{{ route('negocios.index') }}" method="GET" class="max-w-2xl mx-auto">
@@ -251,8 +254,8 @@
 <section class="relative z-10 bg-gray-50 pt-20 sm:pt-28 pb-10 sm:pb-14">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 mb-2">Explorar la guía</h2>
-        <p class="text-sm text-gray-500 mb-6 sm:mb-8">Tres universos, una sola guía.</p>
+        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 mb-2">Explorá la guía por sector</h2>
+        <p class="text-sm text-gray-500 mb-6 sm:mb-8">Navegá entre comercios, gastronomía y turismo. Cada sector agrupa negocios y categorías de tu barrio.</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
             @foreach($sectores as $sector)
@@ -298,7 +301,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-            <h2 class="text-lg sm:text-2xl font-bold text-gray-900">Destacados</h2>
+            <h2 class="text-lg sm:text-2xl font-bold text-gray-900">Negocios destacados</h2>
 
             {{-- Tabs --}}
             <div class="flex sm:inline-flex items-center gap-0.5 sm:gap-1 bg-gray-200/80 rounded-xl p-1">
@@ -359,7 +362,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="flex items-center justify-between mb-6 sm:mb-8">
-            <h2 class="text-lg sm:text-2xl font-bold text-gray-900">Del barrio</h2>
+            <h2 class="text-lg sm:text-2xl font-bold text-gray-900">Artículos y guías del barrio</h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -508,8 +511,28 @@
 
 
 {{-- ============================================================
-     SECCIÓN: registro
+     SECCIÓN: texto SEO descriptivo
      ============================================================ --}}
+<section class="bg-gray-50 border-t border-gray-100 py-10 sm:py-14">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Tu guía de negocios locales</h2>
+        <div class="prose prose-sm text-gray-500 leading-relaxed space-y-3">
+            <p>
+                Guía Local es el directorio de negocios y servicios de tu barrio. Reunimos comercios, restaurantes, alojamientos, farmacias y servicios en un solo lugar para que encuentres lo que necesitás cerca tuyo.
+            </p>
+            <p>
+                Cada negocio cuenta con una ficha detallada que incluye horarios actualizados en tiempo real, ubicación en el mapa, datos de contacto y reseñas de otros vecinos. Podés filtrar por zona, categoría o buscar los que están abiertos ahora.
+            </p>
+            <p>
+                Explorá el <a href="{{ route('mapa.index') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">mapa interactivo</a> para descubrir negocios cercanos, navegá por <a href="{{ route('categorias.index') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">todas las categorías</a> o consultá cuáles están <a href="{{ route('negocios.index', ['abiertos' => 1]) }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">abiertos ahora</a>.
+            </p>
+            <p>
+                Si tenés un negocio, podés <a href="{{ route('contacto.show') }}" class="text-amber-600 hover:text-amber-700 underline underline-offset-2">registrarlo de forma gratuita</a> y gestionar tu ficha desde un panel propio con métricas de visitas y herramientas de promoción.
+            </p>
+        </div>
+    </div>
+</section>
+
 {{-- ============================================================
      SECCIÓN: newsletter
      ============================================================ --}}
