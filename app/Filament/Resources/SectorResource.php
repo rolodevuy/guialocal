@@ -51,10 +51,45 @@ class SectorResource extends Resource
                     ->rows(3)
                     ->columnSpanFull(),
 
-                Forms\Components\TextInput::make('icono')
+                Forms\Components\Select::make('icono')
                     ->label('Ícono')
-                    ->maxLength(255)
-                    ->helperText('Nombre del ícono Lucide (ej: shopping-bag, utensils, map-pin).'),
+                    ->searchable()
+                    ->placeholder('Buscá un ícono...')
+                    ->options([
+                        'Comercio' => [
+                            'shopping-bag'    => 'shopping-bag — Bolsa de compras',
+                            'shopping-cart'   => 'shopping-cart — Carrito de compras',
+                            'building-storefront' => 'building-storefront — Tienda',
+                            'banknotes'       => 'banknotes — Dinero / Finanzas',
+                            'briefcase'       => 'briefcase — Negocios / Profesional',
+                            'tag'             => 'tag — Etiqueta / Ofertas',
+                        ],
+                        'Gastronomía y Ocio' => [
+                            'utensils'        => 'utensils — Restaurantes / Gastronomía',
+                            'coffee'          => 'coffee — Cafés y Bares',
+                            'cake'            => 'cake — Panaderías / Confiterías',
+                            'wine'            => 'wine — Vinotecas / Bares',
+                            'musical-note'    => 'musical-note — Música / Espectáculos',
+                            'bolt'            => 'bolt — Deporte / Gimnasio',
+                            'trophy'          => 'trophy — Deportes / Clubes',
+                            'sparkles'        => 'sparkles — Estética / Belleza',
+                        ],
+                        'Turismo y Alojamiento' => [
+                            'building-office'  => 'building-office — Hotel / Alojamiento',
+                            'globe-alt'        => 'globe-alt — Turismo / Agencias',
+                            'map-pin'          => 'map-pin — Puntos turísticos',
+                            'sun'              => 'sun — Playa / Sol',
+                            'camera'           => 'camera — Fotografía / Turismo',
+                            'map'              => 'map — Mapa / Guía',
+                        ],
+                        'General' => [
+                            'squares-2x2'     => 'squares-2x2 — Cuadrícula / General',
+                            'star'            => 'star — Estrella / Destacado',
+                            'heart'           => 'heart — Favorito / Salud',
+                            'home'            => 'home — Hogar',
+                            'light-bulb'      => 'light-bulb — Ideas / Servicios',
+                        ],
+                    ]),
 
                 Forms\Components\Select::make('color_preset')
                     ->label('Color')
