@@ -59,8 +59,11 @@ class OverpassService
         $t    = $tipos[$tipoKey];
         $name = addslashes($nombreLocalidad);
 
+        // Busca el área de la localidad DENTRO de Uruguay (relation 287072)
+        // para evitar traer resultados de localidades homónimas en otros países.
         $query = "[out:json][timeout:30];\n"
-            . "area[\"name\"=\"{$name}\"]->.searchArea;\n"
+            . "area(3600287072)->.uruguay;\n"
+            . "area[\"name\"=\"{$name}\"](area.uruguay)->.searchArea;\n"
             . "(\n"
             . "  node[\"{$t['key']}\"=\"{$t['value']}\"](area.searchArea);\n"
             . "  way[\"{$t['key']}\"=\"{$t['value']}\"](area.searchArea);\n"
