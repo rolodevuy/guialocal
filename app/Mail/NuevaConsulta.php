@@ -17,9 +17,12 @@ class NuevaConsulta extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Nueva consulta de ' . $this->consulta->nombre,
-        );
+        $subject = 'Nueva consulta de ' . $this->consulta->nombre;
+        if ($this->consulta->asunto) {
+            $subject .= ' — ' . $this->consulta->asunto;
+        }
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content
