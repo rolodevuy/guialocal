@@ -35,11 +35,11 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->navigationGroups([
-                NavigationGroup::make('Directorio')->icon('heroicon-o-building-storefront'),
-                NavigationGroup::make('Comercial')->icon('heroicon-o-currency-dollar'),
-                NavigationGroup::make('Contenido')->icon('heroicon-o-document-text'),
-                NavigationGroup::make('Propietarios')->icon('heroicon-o-users'),
-                NavigationGroup::make('Comunidad')->icon('heroicon-o-chat-bubble-left-right'),
+                NavigationGroup::make('Directorio'),
+                NavigationGroup::make('Comercial'),
+                NavigationGroup::make('Contenido'),
+                NavigationGroup::make('Propietarios'),
+                NavigationGroup::make('Comunidad'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
