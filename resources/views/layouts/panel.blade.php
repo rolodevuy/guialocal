@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <title>@yield('title', 'Mi negocio') — Panel</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="h-full" x-data="{}">
 
@@ -41,5 +42,6 @@
         @yield('content')
     </main>
 
+    @livewireScripts
 </body>
 </html>
