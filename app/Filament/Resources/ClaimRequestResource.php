@@ -121,7 +121,14 @@ class ClaimRequestResource extends Resource
 
                         // Actualizar RUT en el lugar si no tenía
                         if (!$record->lugar->rut) {
-                            $record->lugar->update(['rut' => $record->rut_numero]);
+                            // Verificar que el RUT no esté en uso por otro lugar
+                            $rutEnUso = \App\Models\Lugar::where('rut', $record->rut_numero)
+                                ->where('id', '!=', $record->lugar_id)
+                                ->exists();
+
+                            if (!$rutEnUso) {
+                                $record->lugar->update(['rut' => $record->rut_numero]);
+                            }
                         }
 
                         // Marcar claim como aprobado

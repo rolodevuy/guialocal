@@ -92,8 +92,8 @@
                 <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">La guía en números</h3>
                 <div class="space-y-4">
                     @php
-                        $totalNegocios   = App\Models\Negocio::activo()->count();
-                        $totalCategorias = App\Models\Categoria::activo()->count();
+                        $totalNegocios   = App\Models\Lugar::where('activo', true)->count();
+                        $totalCategorias = App\Models\Categoria::where('activo', true)->count();
                         $totalZonas      = App\Models\Zona::count();
                     @endphp
                     <div class="flex items-center justify-between">
