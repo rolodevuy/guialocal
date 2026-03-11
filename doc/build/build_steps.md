@@ -1752,6 +1752,28 @@ Referencia de stack: [ARCHITECTURE.md](../tech/ARCHITECTURE.md)
 
 ---
 
+### Paso 44 — Configurar email producción (Zoho SMTP) ✅
+
+**Objetivo:** Configurar envío de emails reales desde `info@guialocal.uy` via Zoho Mail.
+
+**Configuración `.env`:**
+- `MAIL_MAILER=smtp`
+- `MAIL_HOST=smtp.zoho.com`
+- `MAIL_PORT=587`
+- `MAIL_ENCRYPTION=tls`
+- `MAIL_USERNAME=info@guialocal.uy`
+- `MAIL_FROM_ADDRESS=info@guialocal.uy`
+- App password generada en Zoho (nombre: `guialocal-prod`)
+
+**DNS (Cloudflare):**
+- MX, SPF y DKIM configurados por el usuario
+
+**Criterio de terminado:**
+- Email de prueba enviado y recibido correctamente ✅
+- Autenticación SMTP con app password funcional ✅
+
+---
+
 ## Notas
 
 - Los pasos de **Etapa 2 en adelante** (Livewire, mapas, SEO avanzado, editorial, comercial) se agregarán a este archivo cuando comience cada etapa.
