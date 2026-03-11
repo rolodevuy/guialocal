@@ -123,26 +123,41 @@ class HomeController extends Controller
         // ── Zona preferida del usuario (cookie) ───────────────────────────────
         $zonaPreferida = null;
         if ($cookieSlug = request()->cookie('zona_preferida')) {
-            $zonaPreferida = Zona::where('slug', $cookieSlug)->first();
+            $zonaPreferida = $zonas->firstWhere('slug', $cookieSlug);
         }
 
         // ── Destacados por sector (para tabs) ───────────────────────────────
-        $destacadosPorSector = [];
+        // Una sola query con todas las categorías, luego agrupar en memoria
+        $allSectorCatMap = [];
+        $allSectorCatIds = collect();
         foreach ($sectores as $sector) {
-            $sectorCatIds = $sector->categorias->flatMap(
+            $ids = $sector->categorias->flatMap(
                 fn ($cat) => collect([$cat->id])->merge($cat->children->pluck('id'))
             );
-            if ($sectorCatIds->isEmpty()) continue;
+            $allSectorCatMap[$sector->id] = $ids;
+            $allSectorCatIds = $allSectorCatIds->merge($ids);
+        }
 
-            $destacadosPorSector[$sector->id] = Ficha::activo()
+        $allSectorFichas = $allSectorCatIds->isNotEmpty()
+            ? Ficha::activo()
                 ->whereHas('lugar', fn ($q) => $q
                     ->where('activo', true)
-                    ->whereIn('categoria_id', $sectorCatIds)
+                    ->whereIn('categoria_id', $allSectorCatIds->unique())
                 )
                 ->with(['lugar.categoria', 'lugar.zona'])
                 ->orderByDesc('featured_score')
-                ->limit(6)
-                ->get();
+                ->get()
+            : collect();
+
+        $destacadosPorSector = [];
+        foreach ($sectores as $sector) {
+            $ids = $allSectorCatMap[$sector->id] ?? collect();
+            if ($ids->isEmpty()) continue;
+
+            $destacadosPorSector[$sector->id] = $allSectorFichas
+                ->filter(fn ($f) => $ids->contains($f->lugar->categoria_id))
+                ->take(6)
+                ->values();
         }
 
         // ── Eventos próximos para el home (máx. 3) ────────────────────────────
