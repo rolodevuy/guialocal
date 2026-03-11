@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->favicon(asset('favicon.png'))
+            ->theme(asset('css/filament/admin/theme.css'))
             ->colors([
                 'primary' => Color::Amber,
             ])
