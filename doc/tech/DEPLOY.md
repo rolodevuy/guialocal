@@ -2,6 +2,8 @@
 
 Notas técnicas para pasar de entorno local (XAMPP/dev) a producción.
 
+> Para info completa de infraestructura (servidor, DNS, correo, SSH, backups): ver **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)**
+
 ---
 
 ## Infraestructura de producción
@@ -24,7 +26,7 @@ Notas técnicas para pasar de entorno local (XAMPP/dev) a producción.
 
 ---
 
-## DNS (NIC.uy)
+## DNS (NIC.uy → migrar a Cloudflare)
 
 Para ambos dominios (`guialocal.uy` y `guialocal.com.uy`), configurar en NIC.uy → Configuración avanzada:
 
