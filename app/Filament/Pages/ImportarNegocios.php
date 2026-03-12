@@ -203,12 +203,20 @@ class ImportarNegocios extends Page
             ->map(function ($r) use ($existentes, $zonas) {
                 // ── Duplicado ─────────────────────────────────────────────────
                 $match = $existentes->first(function ($l) use ($r) {
-                    if (strtolower(trim($l->nombre)) === strtolower(trim($r['nombre']))) {
+                    $mismoNombre = strtolower(trim($l->nombre)) === strtolower(trim($r['nombre']));
+                    $cercano     = $l->lat && $l->lng
+                        && abs($l->lat - $r['lat']) < 0.0003
+                        && abs($l->lng - $r['lng']) < 0.0003; // ~33m
+
+                    // Duplicado si: mismo nombre Y cerca, O exactamente mismo punto (<5m)
+                    if ($mismoNombre && $cercano) {
                         return true;
                     }
-                    if ($l->lat && $l->lng) {
-                        return abs($l->lat - $r['lat']) < 0.001
-                            && abs($l->lng - $r['lng']) < 0.001;
+                    // Mismo punto geográfico (~5m) aunque nombre difiera (misma dirección)
+                    if ($l->lat && $l->lng
+                        && abs($l->lat - $r['lat']) < 0.00005
+                        && abs($l->lng - $r['lng']) < 0.00005) {
+                        return true;
                     }
                     return false;
                 });
