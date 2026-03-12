@@ -224,18 +224,27 @@
                             $childSlugs     = $cat->children->pluck('slug')->toArray();
                             $isChildActive  = in_array($categoria, $childSlugs);
                             $isExpanded     = $isParentActive || $isChildActive;
+                            $catIds         = collect([$cat->id])->merge($cat->children->pluck('id'));
+                            $catCount       = $catIds->sum(fn ($id) => $conteosPorCat[$id] ?? 0);
                         @endphp
                         <button wire:click="$set('categoria', '{{ $cat->slug }}')"
-                                class="w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors
+                                class="w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors flex items-center justify-between
                                        {{ $isParentActive ? 'bg-amber-100 text-amber-700 font-medium' : ($isChildActive ? 'text-amber-600 font-medium' : 'text-gray-600 hover:bg-gray-100') }}">
-                            {{ $cat->nombre }}
+                            <span>{{ $cat->nombre }}</span>
+                            @if($catCount > 0)
+                                <span class="text-[10px] min-w-[1.25rem] text-center rounded-full px-1 {{ $isParentActive ? 'bg-amber-200/70 text-amber-800' : 'bg-gray-100 text-gray-400' }}">{{ $catCount }}</span>
+                            @endif
                         </button>
                         @if($cat->children->isNotEmpty() && $isExpanded)
                             @foreach($cat->children as $sub)
+                            @php $subCount = $conteosPorCat[$sub->id] ?? 0; @endphp
                             <button wire:click="$set('categoria', '{{ $sub->slug }}')"
-                                    class="w-full text-left pl-7 pr-3 py-1 rounded-lg text-xs transition-colors
+                                    class="w-full text-left pl-7 pr-3 py-1 rounded-lg text-xs transition-colors flex items-center justify-between
                                            {{ $categoria === $sub->slug ? 'bg-amber-100 text-amber-700 font-medium' : 'text-gray-500 hover:bg-gray-50' }}">
-                                {{ $sub->nombre }}
+                                <span>{{ $sub->nombre }}</span>
+                                @if($subCount > 0)
+                                    <span class="text-[10px] min-w-[1.25rem] text-center rounded-full px-1 {{ $categoria === $sub->slug ? 'bg-amber-200/70 text-amber-800' : 'bg-gray-100 text-gray-400' }}">{{ $subCount }}</span>
+                                @endif
                             </button>
                             @endforeach
                         @endif
@@ -477,17 +486,30 @@
                             Todas
                         </button>
                         @foreach($categorias as $cat)
+                        @php
+                            $catIdsMobile  = collect([$cat->id])->merge($cat->children->pluck('id'));
+                            $catCountMobile = $catIdsMobile->sum(fn ($id) => $conteosPorCat[$id] ?? 0);
+                            $isActiveMobile = $categoria === $cat->slug;
+                            $isChildActiveMobile = in_array($categoria, $cat->children->pluck('slug')->toArray());
+                        @endphp
                         <button wire:click="$set('categoria', '{{ $cat->slug }}')" @click="sheetOpen = false"
-                                class="w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors
-                                       {{ $categoria === $cat->slug ? 'bg-amber-100 text-amber-700 font-medium' : (in_array($categoria, $cat->children->pluck('slug')->toArray()) ? 'text-amber-600 font-medium' : 'text-gray-600 hover:bg-gray-50') }}">
-                            {{ $cat->nombre }}
+                                class="w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors flex items-center justify-between
+                                       {{ $isActiveMobile ? 'bg-amber-100 text-amber-700 font-medium' : ($isChildActiveMobile ? 'text-amber-600 font-medium' : 'text-gray-600 hover:bg-gray-50') }}">
+                            <span>{{ $cat->nombre }}</span>
+                            @if($catCountMobile > 0)
+                                <span class="text-[10px] min-w-[1.25rem] text-center rounded-full px-1 {{ $isActiveMobile ? 'bg-amber-200/70 text-amber-800' : 'bg-gray-100 text-gray-400' }}">{{ $catCountMobile }}</span>
+                            @endif
                         </button>
                         @if($cat->children->isNotEmpty())
                             @foreach($cat->children as $sub)
+                            @php $subCountMobile = $conteosPorCat[$sub->id] ?? 0; @endphp
                             <button wire:click="$set('categoria', '{{ $sub->slug }}')" @click="sheetOpen = false"
-                                    class="w-full text-left pl-7 pr-3 py-2 rounded-xl text-xs transition-colors
+                                    class="w-full text-left pl-7 pr-3 py-2 rounded-xl text-xs transition-colors flex items-center justify-between
                                            {{ $categoria === $sub->slug ? 'bg-amber-100 text-amber-700 font-medium' : 'text-gray-500 hover:bg-gray-50' }}">
-                                {{ $sub->nombre }}
+                                <span>{{ $sub->nombre }}</span>
+                                @if($subCountMobile > 0)
+                                    <span class="text-[10px] min-w-[1.25rem] text-center rounded-full px-1 {{ $categoria === $sub->slug ? 'bg-amber-200/70 text-amber-800' : 'bg-gray-100 text-gray-400' }}">{{ $subCountMobile }}</span>
+                                @endif
                             </button>
                             @endforeach
                         @endif

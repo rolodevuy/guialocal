@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Categoria;
 use App\Models\Ficha;
+use App\Models\Lugar;
 use App\Models\Zona;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
@@ -81,6 +82,15 @@ class NegociosIndex extends Component
             Zona::orderBy('nombre')->get()
         );
 
+        // Conteo de negocios activos por categoría (cache 1h)
+        $conteosPorCat = Cache::remember('negocios_conteos_cat', 3600, fn () =>
+            Lugar::where('activo', true)
+                ->whereHas('fichas', fn ($q) => $q->activo())
+                ->selectRaw('categoria_id, COUNT(*) as total')
+                ->groupBy('categoria_id')
+                ->pluck('total', 'categoria_id')
+        );
+
         $query = Ficha::activo()
             ->whereHas('lugar', fn ($q) => $q->where('activo', true))
             // categoria.parent.parent cubre hasta 3 niveles para el accessor raiz
@@ -125,6 +135,6 @@ class NegociosIndex extends Component
             $fichas = $query->paginate(12);
         }
 
-        return view('livewire.negocios-index', compact('fichas', 'categorias', 'zonas'));
+        return view('livewire.negocios-index', compact('fichas', 'categorias', 'zonas', 'conteosPorCat'));
     }
 }

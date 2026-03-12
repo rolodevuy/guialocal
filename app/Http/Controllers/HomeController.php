@@ -30,14 +30,20 @@ class HomeController extends Controller
             ->take(6);
 
         // Precargar relaciones según tipo para evitar N+1
-        $lugarSlots = $slotsNegocios->filter(fn ($s) => $s instanceof Lugar);
-        $fichaSlots = $slotsNegocios->filter(fn ($s) => $s instanceof Ficha);
+        $lugarIds = $slotsNegocios->filter(fn ($s) => $s instanceof Lugar)->pluck('id')->all();
+        $fichaIds = $slotsNegocios->filter(fn ($s) => $s instanceof Ficha)->pluck('id')->all();
 
-        if ($lugarSlots->isNotEmpty()) {
-            $lugarSlots->load(['categoria', 'zona', 'fichas' => fn ($q) => $q->activo()->limit(1)]);
+        if ($lugarIds) {
+            $preloaded = Lugar::whereIn('id', $lugarIds)
+                ->with(['categoria', 'zona', 'fichas' => fn ($q) => $q->activo()->limit(1)])
+                ->get()->keyBy('id');
+            $slotsNegocios = $slotsNegocios->map(fn ($s) => $s instanceof Lugar ? ($preloaded[$s->id] ?? $s) : $s);
         }
-        if ($fichaSlots->isNotEmpty()) {
-            $fichaSlots->load(['lugar.categoria', 'lugar.zona']);
+        if ($fichaIds) {
+            $preloaded = Ficha::whereIn('id', $fichaIds)
+                ->with(['lugar.categoria', 'lugar.zona'])
+                ->get()->keyBy('id');
+            $slotsNegocios = $slotsNegocios->map(fn ($s) => $s instanceof Ficha ? ($preloaded[$s->id] ?? $s) : $s);
         }
 
         $slotsNegocios = $slotsNegocios->map(fn ($item) => $item instanceof Lugar
