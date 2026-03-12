@@ -66,6 +66,7 @@
             @if($portada)
                 <div class="rounded-2xl overflow-hidden shadow-sm border border-gray-100 aspect-video">
                     <img src="{{ $portada }}" alt="{{ $evento->titulo }}"
+                         loading="lazy"
                          class="w-full h-full object-cover">
                 </div>
             @else

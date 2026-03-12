@@ -8,6 +8,7 @@ use App\Models\Lugar;
 use App\Models\Sector;
 use App\Models\Setting;
 use App\Observers\LugarObserver;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -30,24 +31,24 @@ class AppServiceProvider extends ServiceProvider
             request()->server->set('HTTPS', 'on');
         }
 
-        // Backup: aplicar password desde settings si está habilitada
+        // Backup: aplicar password desde settings si está habilitada (cacheado)
         try {
-            if (Schema::hasTable('settings')) {
-                $pwEnabled = Setting::get('backup_password_enabled', '0');
-                if ($pwEnabled === '1') {
-                    $pw = Setting::get('backup_password', '');
-                    if ($pw) {
-                        config(['backup.backup.destination.password' => $pw]);
-                    }
-                }
+            $backupConfig = Cache::remember('backup_password_config', 3600, function () {
+                if (!Schema::hasTable('settings')) return null;
+                $enabled = Setting::get('backup_password_enabled', '0');
+                if ($enabled !== '1') return null;
+                return Setting::get('backup_password', '');
+            });
+            if ($backupConfig) {
+                config(['backup.backup.destination.password' => $backupConfig]);
             }
         } catch (\Throwable) {}
 
-        // Comparte datos globales con todas las vistas del layout
+        // Comparte datos globales con todas las vistas del layout (cacheado 1h)
         View::composer('layouts.app', function ($view) {
-            $view->with('hayArticulos', Articulo::publicado()->exists());
-            $view->with('hayGuias', Guia::publicado()->exists());
-            $view->with('sectoresNav', Sector::activo()->orderBy('orden')->get());
+            $view->with('hayArticulos', Cache::remember('nav_hay_articulos', 3600, fn () => Articulo::publicado()->exists()));
+            $view->with('hayGuias', Cache::remember('nav_hay_guias', 3600, fn () => Guia::publicado()->exists()));
+            $view->with('sectoresNav', Cache::remember('nav_sectores', 3600, fn () => Sector::activo()->orderBy('orden')->get()));
         });
     }
 }

@@ -344,6 +344,7 @@
                     <div class="aspect-square rounded-xl overflow-hidden bg-gray-100">
                         <img src="{{ $imagen->getUrl() }}"
                              alt="{{ $lugar->nombre }}"
+                             loading="lazy"
                              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
                     </div>
                     @endforeach
@@ -479,6 +480,7 @@
                 <div class="flex justify-center pb-1">
                     <img src="{{ $ficha->getFirstMediaUrl('logo') }}"
                          alt="Logo {{ $lugar->nombre }}"
+                         loading="lazy"
                          class="max-h-20 max-w-full object-contain rounded-2xl">
                 </div>
                 @endif

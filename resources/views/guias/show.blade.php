@@ -57,6 +57,7 @@
     <div class="mb-8 rounded-xl overflow-hidden">
         <img src="{{ $guia->getFirstMediaUrl('portada') }}"
              alt="{{ $guia->titulo }}"
+             loading="lazy"
              class="w-full object-cover max-h-80">
     </div>
     @endif
@@ -88,6 +89,7 @@
                     @if($negocio->getFirstMediaUrl('portada'))
                         <img src="{{ $negocio->getFirstMediaUrl('portada') }}"
                              alt="{{ $negocio->nombre }}"
+                             loading="lazy"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100">

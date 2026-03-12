@@ -63,6 +63,7 @@
                     @if($ficha->getFirstMediaUrl('portada'))
                         <img src="{{ $ficha->getFirstMediaUrl('portada') }}"
                              alt="{{ $ficha->lugar->nombre }}"
+                             loading="lazy"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     @else
                         <div class="w-full h-full bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center">

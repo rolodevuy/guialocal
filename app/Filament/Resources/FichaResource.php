@@ -42,9 +42,10 @@ class FichaResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('lugar_id')
                                     ->label('Lugar')
-                                    ->options(Lugar::orderBy('nombre')->pluck('nombre', 'id'))
+                                    ->relationship('lugar', 'nombre')
                                     ->required()
                                     ->searchable()
+                                    ->preload()
                                     ->columnSpanFull(),
                                 Forms\Components\Textarea::make('descripcion')
                                     ->label('Descripción')

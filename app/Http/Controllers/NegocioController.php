@@ -129,7 +129,7 @@ class NegocioController extends Controller
 
     public function show(string $slug)
     {
-        $lugar = Lugar::where('slug', $slug)->first();
+        $lugar = Lugar::with(['categoria.parent.parent', 'zona'])->where('slug', $slug)->first();
 
         if (! $lugar) {
             $redirect = SlugRedirect::where('old_slug', $slug)->with('lugar')->first();
@@ -169,12 +169,18 @@ class NegocioController extends Controller
         $similares = $cerca->isEmpty() ? $this->getSimilares($lugar) : collect();
 
         // ── Nombre de la categoría raíz para el heading de "cerca" ───────────
-        $categoriaRaizId   = ($cerca->isNotEmpty() && $lugar->lat && $lugar->lng)
-            ? $this->getCategoriaRaizId($lugar)
-            : null;
-        $categoriaRaizNombre = $categoriaRaizId
-            ? \App\Models\Categoria::find($categoriaRaizId)?->nombre
-            : null;
+        $categoriaRaizNombre = null;
+        if ($cerca->isNotEmpty() && $lugar->lat && $lugar->lng) {
+            $categoriaRaizId = $this->getCategoriaRaizId($lugar);
+            // Buscar en la jerarquía ya cargada en lugar de hacer query extra
+            $cat = $lugar->categoria;
+            $categoriaRaizNombre = match ($categoriaRaizId) {
+                $cat->id => $cat->nombre,
+                $cat->parent?->id => $cat->parent->nombre,
+                $cat->parent?->parent?->id => $cat->parent->parent->nombre,
+                default => $cat->nombre,
+            };
+        }
 
         // ── Reseñas (solo carga si la feature está activa) ───────────────────
         $resenas = (config('features.resenas') && $ficha)

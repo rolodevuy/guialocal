@@ -55,6 +55,7 @@
     <div class="mb-8 rounded-xl overflow-hidden">
         <img src="{{ $articulo->getFirstMediaUrl('portada') }}"
              alt="{{ $articulo->titulo }}"
+             loading="lazy"
              class="w-full object-cover max-h-96">
     </div>
     @endif
@@ -80,6 +81,7 @@
         @if($portadaRelacionada)
             <img src="{{ $portadaRelacionada }}"
                  alt="{{ $articulo->lugar->nombre }}"
+                 loading="lazy"
                  class="w-14 h-14 rounded-lg object-cover shrink-0">
         @endif
         <div class="flex-1 min-w-0">

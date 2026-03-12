@@ -321,21 +321,20 @@ class Ficha extends Model implements HasMedia
                 ?? optional(Lugar::find($ficha->lugar_id))->categoria_id;
 
             if ($categoriaId) {
-                $cat = Categoria::find($categoriaId);
-                if ($cat) {
-                    $activos = self::whereHas('lugar', fn ($q) => $q
-                        ->where('categoria_id', $categoriaId)
-                        ->where('activo', true)
-                    )->where('activo', true)->where('estado', 'activa')->count();
+                // Una sola query con SUM condicional en vez de 2 queries separadas
+                $stats = \Illuminate\Support\Facades\DB::table('fichas')
+                    ->join('lugares', 'fichas.lugar_id', '=', 'lugares.id')
+                    ->where('lugares.categoria_id', $categoriaId)
+                    ->where('lugares.activo', true)
+                    ->where('fichas.activo', true)
+                    ->where('fichas.estado', 'activa')
+                    ->selectRaw('COUNT(*) as activos, SUM(fichas.plan = ?) as premium', ['premium'])
+                    ->first();
 
-                    $premium = self::whereHas('lugar', fn ($q) => $q
-                        ->where('categoria_id', $categoriaId)
-                        ->where('activo', true)
-                    )->where('activo', true)->where('estado', 'activa')->where('plan', 'premium')->count();
-
+                if ($stats) {
                     Categoria::withoutEvents(
-                        fn () => $cat->update([
-                            'popularidad_score' => $activos * 5 + $premium * 10,
+                        fn () => Categoria::where('id', $categoriaId)->update([
+                            'popularidad_score' => $stats->activos * 5 + ($stats->premium ?? 0) * 10,
                         ])
                     );
                 }

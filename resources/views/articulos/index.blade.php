@@ -29,6 +29,7 @@
                     @if($articulo->getFirstMediaUrl('portada'))
                         <img src="{{ $articulo->getFirstMediaUrl('portada') }}"
                              alt="{{ $articulo->titulo }}"
+                             loading="lazy"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     @else
                         <div class="w-full h-full flex items-center justify-center text-amber-200">

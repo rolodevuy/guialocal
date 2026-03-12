@@ -23,19 +23,27 @@ class HomeController extends Controller
         //   3. Fallback: fichas con flag "featured = true"
 
         $slotsNegocios = FeaturedSlot::activo('home_negocios')
-            ->with('slotable')
+            ->with(['slotable'])
             ->get()
             ->pluck('slotable')
             ->filter()
-            ->map(function ($item) {
-                // Normalizar: si el slot apunta a un Lugar, devolver su Ficha
-                if ($item instanceof \App\Models\Lugar) {
-                    return $item->fichas()->with(['lugar.categoria', 'lugar.zona'])->first();
-                }
-                return $item->load(['lugar.categoria', 'lugar.zona']);
-            })
-            ->filter()
             ->take(6);
+
+        // Precargar relaciones según tipo para evitar N+1
+        $lugarSlots = $slotsNegocios->filter(fn ($s) => $s instanceof Lugar);
+        $fichaSlots = $slotsNegocios->filter(fn ($s) => $s instanceof Ficha);
+
+        if ($lugarSlots->isNotEmpty()) {
+            $lugarSlots->load(['categoria', 'zona', 'fichas' => fn ($q) => $q->activo()->limit(1)]);
+        }
+        if ($fichaSlots->isNotEmpty()) {
+            $fichaSlots->load(['lugar.categoria', 'lugar.zona']);
+        }
+
+        $slotsNegocios = $slotsNegocios->map(fn ($item) => $item instanceof Lugar
+            ? optional($item->fichas->first())?->setRelation('lugar', $item)
+            : $item
+        )->filter()->values();
 
         if ($slotsNegocios->isNotEmpty()) {
             $destacados = $slotsNegocios;
@@ -46,16 +54,24 @@ class HomeController extends Controller
                 ->limit(6)
                 ->get();
 
-            $destacados = $topCategorias->map(function (Categoria $cat) {
-                $candidatos = Ficha::activo()
+            // Una sola query: top 5 fichas por cada categoría top
+            $topCatIds = $topCategorias->pluck('id');
+            $candidatosTodos = $topCatIds->isNotEmpty()
+                ? Ficha::activo()
                     ->whereHas('lugar', fn ($q) => $q
-                        ->where('categoria_id', $cat->id)
+                        ->whereIn('categoria_id', $topCatIds)
                         ->where('activo', true)
                     )
                     ->orderByDesc('featured_score')
                     ->with(['lugar.categoria', 'lugar.zona'])
-                    ->limit(5)
-                    ->get();
+                    ->get()
+                : collect();
+
+            $destacados = $topCategorias->map(function (Categoria $cat) use ($candidatosTodos) {
+                $candidatos = $candidatosTodos
+                    ->filter(fn ($f) => $f->lugar->categoria_id === $cat->id)
+                    ->take(5)
+                    ->values();
 
                 if ($candidatos->isEmpty()) {
                     return null;

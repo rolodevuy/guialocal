@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Categoria;
 use App\Models\Ficha;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class RecalcularScores extends Command
 {
@@ -13,57 +14,55 @@ class RecalcularScores extends Command
 
     public function handle(): int
     {
-        // ── 1. featured_score por ficha ───────────────────────────────────────
+        // ── 1. featured_score por ficha (bulk update, sin cargar modelos) ────
         $this->info('Calculando featured_score de fichas...');
 
-        $fichas = Ficha::all();
-        $bar    = $this->output->createProgressBar($fichas->count());
-        $bar->start();
+        // Un UPDATE por cada combinación plan × featured en vez de N updates
+        $cases = [
+            ['plan' => 'premium', 'featured' => true,  'score' => 80],
+            ['plan' => 'premium', 'featured' => false, 'score' => 50],
+            ['plan' => 'basico',  'featured' => true,  'score' => 50],
+            ['plan' => 'basico',  'featured' => false, 'score' => 20],
+            ['plan' => 'gratuito','featured' => true,  'score' => 30],
+            ['plan' => 'gratuito','featured' => false, 'score' => 0],
+        ];
 
-        foreach ($fichas as $ficha) {
-            $score = match ($ficha->plan ?? 'gratuito') {
-                'premium' => 50,
-                'basico'  => 20,
-                default   => 0,
-            };
-            if ($ficha->featured) {
-                $score += 30;
-            }
-
-            Ficha::withoutEvents(
-                fn () => $ficha->update(['featured_score' => $score])
-            );
-
-            $bar->advance();
+        foreach ($cases as $case) {
+            Ficha::where('plan', $case['plan'])
+                ->where('featured', $case['featured'])
+                ->update(['featured_score' => $case['score']]);
         }
 
-        $bar->finish();
-        $this->newLine();
+        $this->info('✓ featured_score actualizado.');
 
-        // ── 2. popularidad_score por categoría ────────────────────────────────
+        // ── 2. popularidad_score por categoría (2 queries en vez de 2N) ──────
         $this->info('Calculando popularidad_score de categorías...');
 
-        $categorias = Categoria::all();
+        // Contar fichas activas por categoría en una sola query
+        $stats = DB::table('fichas')
+            ->join('lugares', 'fichas.lugar_id', '=', 'lugares.id')
+            ->where('fichas.activo', true)
+            ->where('fichas.estado', 'activa')
+            ->where('lugares.activo', true)
+            ->selectRaw('lugares.categoria_id,
+                COUNT(*) as activos,
+                SUM(CASE WHEN fichas.plan = ? THEN 1 ELSE 0 END) as premium', ['premium'])
+            ->groupBy('lugares.categoria_id')
+            ->get()
+            ->keyBy('categoria_id');
 
-        foreach ($categorias as $cat) {
-            $activos = Ficha::whereHas('lugar', fn ($q) => $q
-                ->where('categoria_id', $cat->id)
-                ->where('activo', true)
-            )->where('activo', true)->count();
+        // Resetear todas a 0 y luego actualizar las que tienen datos
+        Categoria::query()->update(['popularidad_score' => 0]);
 
-            $premium = Ficha::whereHas('lugar', fn ($q) => $q
-                ->where('categoria_id', $cat->id)
-                ->where('activo', true)
-            )->where('activo', true)->where('plan', 'premium')->count();
-
-            $score = ($activos * 5) + ($premium * 10);
-
-            Categoria::withoutEvents(
-                fn () => $cat->update(['popularidad_score' => $score])
+        foreach ($stats as $catId => $row) {
+            Categoria::withoutEvents(fn () =>
+                Categoria::where('id', $catId)->update([
+                    'popularidad_score' => $row->activos * 5 + $row->premium * 10,
+                ])
             );
         }
 
-        $this->info("✓ {$categorias->count()} categorías actualizadas.");
+        $this->info("✓ {$stats->count()} categorías con fichas actualizadas.");
         $this->info('Listo.');
 
         return Command::SUCCESS;

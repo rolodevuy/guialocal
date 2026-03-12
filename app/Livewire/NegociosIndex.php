@@ -68,8 +68,8 @@ class NegociosIndex extends Component
 
     public function render()
     {
-        // Cache de 5 min: categorías y zonas cambian raramente
-        $categorias = Cache::remember('negocios_categorias_nav', 300, fn () =>
+        // Cache de 1h: categorías y zonas cambian raramente
+        $categorias = Cache::remember('negocios_categorias_nav', 3600, fn () =>
             Categoria::activo()
                 ->whereNull('parent_id')
                 ->with(['children' => fn ($q) => $q->activo()->orderBy('nombre')])
@@ -77,7 +77,7 @@ class NegociosIndex extends Component
                 ->get()
         );
 
-        $zonas = Cache::remember('negocios_zonas_nav', 300, fn () =>
+        $zonas = Cache::remember('negocios_zonas_nav', 3600, fn () =>
             Zona::orderBy('nombre')->get()
         );
 

@@ -14,15 +14,16 @@ class PurgeRejectedClaims extends Command
     {
         $days = (int) $this->option('days');
 
-        $claims = ClaimRequest::where('estado', 'rechazado')
-            ->where('reviewed_at', '<', now()->subDays($days))
-            ->get();
-
         $count = 0;
-        foreach ($claims as $claim) {
-            $claim->clearMediaCollection('constancia_rut');
-            $count++;
-        }
+
+        ClaimRequest::where('estado', 'rechazado')
+            ->where('reviewed_at', '<', now()->subDays($days))
+            ->chunkById(100, function ($claims) use (&$count) {
+                foreach ($claims as $claim) {
+                    $claim->clearMediaCollection('constancia_rut');
+                    $count++;
+                }
+            });
 
         $this->info("Constancias eliminadas: {$count}");
 
