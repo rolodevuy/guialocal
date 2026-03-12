@@ -53,16 +53,16 @@
             {{-- Tipo de negocio --}}
             <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Tipo de negocio <span class="text-red-500">*</span>
+                    Tipo de negocio
                 </label>
                 <select wire:model="tipo"
                         class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                    <option value="">— Elegí un tipo —</option>
+                    <option value="">⚡ Todos los tipos</option>
                     @foreach($this->getTipos() as $key => $label)
                         <option value="{{ $key }}">{{ $label }}</option>
                     @endforeach
                 </select>
-                @error('tipo') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
+                <p class="text-xs text-gray-400">Dejá en "Todos" para importar toda la zona de una vez.</p>
             </div>
 
             {{-- Zona --}}
@@ -140,8 +140,9 @@
 
         {{-- Barra de stats --}}
         @php
-            $totalNuevos    = collect($resultados)->where('existe', false)->count();
+            $totalNuevos     = collect($resultados)->where('existe', false)->count();
             $totalExistentes = collect($resultados)->where('existe', true)->count();
+            $categoriasMap   = \App\Models\Categoria::pluck('nombre', 'id');
         @endphp
 
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -186,6 +187,7 @@
                         <th class="w-10 px-4 py-3"></th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Nombre</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Tipo OSM</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Categoría sugerida</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Localidad</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Zona a asignar</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Teléfono</th>
@@ -227,6 +229,21 @@
                                         <span class="text-gray-400 text-xs">—</span>
                                     @endif
                                 </div>
+                            </td>
+
+                            {{-- Categoría sugerida --}}
+                            <td class="px-4 py-3 text-sm">
+                                @if($r['categoria_id_sugerida'] ?? null)
+                                    @php $catNombre = $categoriasMap[$r['categoria_id_sugerida']] ?? '—'; @endphp
+                                    <span class="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium text-xs">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ $catNombre }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-400 text-xs">sin mapeo</span>
+                                @endif
                             </td>
 
                             {{-- Localidad --}}
@@ -289,12 +306,14 @@
                     {{-- Selector de categoría --}}
                     <div class="flex flex-col gap-1 min-w-[260px]">
                         <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            Categoría en la guía <span class="text-red-500">*</span>
+                            Categoría en la guía
                         </label>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">¿En qué categoría querés publicar estos negocios?</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Forzá una categoría para todos, o dejá vacío para usar la sugerida por tipo OSM.
+                        </p>
                         <select wire:model="categoriaId"
                                 class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                            <option value="">— Elegí una categoría —</option>
+                            <option value="">— Usar categoría sugerida por tipo —</option>
                             @foreach($this->getCategorias() as $id => $nombre)
                                 <option value="{{ $id }}">{{ $nombre }}</option>
                             @endforeach
@@ -326,7 +345,7 @@
             </div>{{-- /panel ámbar --}}
         @endif
 
-    @elseif(! $buscando && ! $error && count($resultados) === 0 && $tipo)
+    @elseif(! $buscando && ! $error && count($resultados) === 0 && $zonaId)
         <div class="rounded-xl border border-gray-200 bg-white p-12 text-center text-gray-400 dark:border-gray-700 dark:bg-gray-900">
             <svg class="mx-auto w-10 h-10 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>

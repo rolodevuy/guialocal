@@ -74,6 +74,55 @@ class OverpassService
     }
 
     /**
+     * Busca TODOS los tipos de negocio dentro de una localidad.
+     * Hace una sola query Overpass con union de todos los tags.
+     */
+    public function buscarTodosEnLocalidad(string $nombreLocalidad): array
+    {
+        $name  = addslashes($nombreLocalidad);
+        $tipos = self::tipos();
+
+        // Construir union de todos los tipos
+        $unions = '';
+        foreach ($tipos as $t) {
+            $unions .= "  node[\"{$t['key']}\"=\"{$t['value']}\"](area.searchArea);\n";
+            $unions .= "  way[\"{$t['key']}\"=\"{$t['value']}\"](area.searchArea);\n";
+        }
+
+        $query = "[out:json][timeout:60];\n"
+            . "area(3600287072)->.uruguay;\n"
+            . "area[\"name\"=\"{$name}\"](area.uruguay)->.searchArea;\n"
+            . "(\n"
+            . $unions
+            . ");\n"
+            . "out center;";
+
+        return $this->ejecutar($query);
+    }
+
+    /**
+     * Busca TODOS los tipos de negocio en un radio.
+     */
+    public function buscarTodos(float $lat, float $lng, int $radio = 2000): array
+    {
+        $tipos = self::tipos();
+
+        $unions = '';
+        foreach ($tipos as $t) {
+            $unions .= "  node[\"{$t['key']}\"=\"{$t['value']}\"](around:{$radio},{$lat},{$lng});\n";
+            $unions .= "  way[\"{$t['key']}\"=\"{$t['value']}\"](around:{$radio},{$lat},{$lng});\n";
+        }
+
+        $query = "[out:json][timeout:60];\n"
+            . "(\n"
+            . $unions
+            . ");\n"
+            . "out center;";
+
+        return $this->ejecutar($query);
+    }
+
+    /**
      * Busca negocios de un tipo en un radio alrededor de unas coordenadas.
      *
      * @throws \RuntimeException
