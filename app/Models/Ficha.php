@@ -305,6 +305,11 @@ class Ficha extends Model implements HasMedia
     protected static function booted(): void
     {
         static::saving(function (Ficha $ficha) {
+            // Auto-verificar al asignar dueño
+            if ($ficha->isDirty('user_id') && $ficha->user_id && !$ficha->verified_at) {
+                $ficha->verified_at = now();
+            }
+
             $score = match ($ficha->plan ?? 'gratuito') {
                 'premium' => 50,
                 'basico'  => 20,
