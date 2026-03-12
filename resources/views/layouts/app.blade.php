@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <title>@yield('title', 'Guía Local — Tu barrio en un solo lugar')</title>
     <meta name="description" content="@yield('description', 'Encontrá los mejores negocios, restaurantes, farmacias y servicios de tu barrio.')">
     <link rel="canonical" href="{{ url()->current() }}">

@@ -19,8 +19,11 @@ Auditoría basada en Seobility SEO Checker (2026-03-11) para `https://guialocal.
 
 - [x] H1 alineado con title y meta description
 - [x] Encabezados H2 únicos y descriptivos
+- [x] Encabezados H3 verificados — sin duplicados (sectores, negocios, newsletter: todos únicos)
 - [x] Más contenido textual en home (+sección SEO descriptiva)
 - [x] Enlaces internos contextuales (mapa, categorías, abiertos, contacto)
+- [x] **Redes sociales / compartir**: botones share en home y ficha de negocio (WhatsApp, Facebook, X, copiar link)
+- [x] **Apple Touch Icon**: generado apple-touch-icon.png (180x180) desde favicon.png + meta tag en layout
 
 ## Pendientes — Código / On-page
 
